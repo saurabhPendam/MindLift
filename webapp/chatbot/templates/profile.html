@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-dark" style="background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px);">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="{% url 'chat' %}">
+            <i class="fas fa-brain me-2"></i>MindLift
+        </a>
+        <div class="ms-auto">
+            <a href="{% url 'chat' %}" class="btn btn-outline-light">
+                <i class="fas fa-arrow-left me-2"></i>Back to Chat
+            </a>
+        </div>
+    </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="profile-page">
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <div class="profile-card" data-aos="fade-up">
+                    <div class="text-center mb-4">
+                        <div class="profile-avatar mx-auto mb-3">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h4 class="fw-bold mb-1">{{ username }}</h4>
+                        <p class="text-muted">{{ email }}</p>
+                    </div>
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-comments text-primary"></i>
+                            <div>
+                                <h5 class="mb-0">127</h5>
+                                <small class="text-muted">Conversations</small>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-calendar text-success"></i>
+                            <div>
+                                <h5 class="mb-0">45</h5>
+                                <small class="text-muted">Days Active</small>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-smile text-warning"></i>
+                            <div>
+                                <h5 class="mb-0">Positive</h5>
+                                <small class="text-muted">Overall Mood</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-8">
+                <div class="profile-card" data-aos="fade-up" data-aos-delay="100">
+                    <h5 class="fw-bold mb-4">Account Settings</h5>
+                    <form>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Username</label>
+                            <input type="text" class="form-control" value="{{ username }}" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Email</label>
+                            <input type="email" class="form-control" value="{{ email }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Change Password</label>
+                            <input type="password" class="form-control" placeholder="New password">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
+                </div>
+                
+                <div class="profile-card mt-4" data-aos="fade-up" data-aos-delay="200">
+                    <h5 class="fw-bold mb-4">Preferences</h5>
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="notifications" checked>
+                        <label class="form-check-label" for="notifications">
+                            Enable notifications
+                        </label>
+                    </div>
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="voiceEnabled" checked>
+                        <label class="form-check-label" for="voiceEnabled">
+                            Enable voice features
+                        </label>
+                    </div>
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="darkMode">
+                        <label class="form-check-label" for="darkMode">
+                            Dark mode
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.profile-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding-top: 80px;
+}
+
+.profile-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    color: var(--dark);
+}
+
+.profile-avatar {
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: white;
+}
+
+.profile-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 12px;
+}
+
+.stat-item i {
+    font-size: 2rem;
+}
+</style>
+{% endblock %}

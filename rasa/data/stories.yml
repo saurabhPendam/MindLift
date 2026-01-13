@@ -1,0 +1,183 @@
+version: "3.1"
+
+stories:
+
+- story: greet and ask help
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: ask_help
+  - action: utter_help
+
+- story: happy path
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: mood_great
+  - action: utter_mood_great
+  - intent: thank
+  - action: utter_thank
+  - intent: goodbye
+  - action: utter_goodbye
+
+- story: unhappy path with activities
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: mood_unhappy
+  - action: utter_mood_unhappy
+  - intent: affirm
+  - action: action_suggest_activity
+  - intent: thank
+  - action: utter_thank
+
+- story: unhappy path declined
+  steps:
+  - intent: mood_unhappy
+  - action: utter_mood_unhappy
+  - intent: deny
+  - action: utter_default
+
+- story: anxiety support
+  steps:
+  - intent: anxious
+  - action: utter_anxious
+  - intent: ask_breathing
+  - action: utter_breathing
+  - intent: thank
+  - action: utter_thank
+
+- story: lonely user
+  steps:
+  - intent: lonely
+  - action: utter_lonely
+  - intent: ask_activities
+  - action: action_suggest_activity
+
+- story: user asks for activities
+  steps:
+  - intent: ask_activities
+  - action: action_suggest_activity
+
+- story: breathing exercise request
+  steps:
+  - intent: ask_breathing
+  - action: utter_breathing
+
+- story: meditation request
+  steps:
+  - intent: ask_meditation
+  - action: utter_meditation
+
+- story: motivational quote
+  steps:
+  - intent: ask_quote
+  - action: action_provide_quote
+
+- story: report request
+  steps:
+  - intent: ask_report
+  - action: action_generate_report
+
+- story: doctor consultation
+  steps:
+  - intent: talk_doctor
+  - action: utter_doctor
+
+- story: crisis intervention
+  steps:
+  - intent: crisis
+  - action: utter_crisis
+  - action: action_crisis_resources
+
+- story: sleep issues
+  steps:
+  - intent: sleep_issues
+  - action: utter_sleep
+
+- story: stress management
+  steps:
+  - intent: stress
+  - action: utter_stress
+  - intent: affirm
+  - action: utter_breathing
+
+- story: stress management declined
+  steps:
+  - intent: stress
+  - action: utter_stress
+  - intent: deny
+  - action: utter_default
+
+- story: work stress
+  steps:
+  - intent: work_stress
+  - action: utter_work_stress
+  - intent: ask_activities
+  - action: action_suggest_activity
+
+- story: relationship problems
+  steps:
+  - intent: relationship_issues
+  - action: utter_relationship
+  - intent: talk_doctor
+  - action: utter_doctor
+
+- story: relationship problems declined
+  steps:
+  - intent: relationship_issues
+  - action: utter_relationship
+  - intent: deny
+  - action: utter_default
+
+- story: bot challenge
+  steps:
+  - intent: bot_challenge
+  - action: utter_iamabot
+
+- story: interactive sad to activities
+  steps:
+  - intent: mood_unhappy
+  - action: utter_mood_unhappy
+  - intent: ask_activities
+  - action: action_suggest_activity
+  - intent: thank
+  - action: utter_thank
+
+- story: anxiety with meditation
+  steps:
+  - intent: anxious
+  - action: utter_anxious
+  - intent: ask_meditation
+  - action: utter_meditation
+  - intent: thank
+  - action: utter_thank
+
+- story: complete support flow
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: anxious
+  - action: utter_anxious
+  - intent: ask_breathing
+  - action: utter_breathing
+  - intent: thank
+  - action: utter_thank
+  - intent: ask_quote
+  - action: action_provide_quote
+  - intent: goodbye
+  - action: utter_goodbye
+
+- story: report after unhappy mood
+  steps:
+  - intent: mood_unhappy
+  - action: utter_mood_unhappy
+  - intent: ask_report
+  - action: action_generate_report
+
+- story: professional help recommendation
+  steps:
+  - intent: anxious
+  - action: utter_anxious
+  - intent: affirm
+  - action: action_recommend_professional

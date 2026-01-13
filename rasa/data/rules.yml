@@ -1,0 +1,66 @@
+version: "3.1"
+
+rules:
+
+- rule: Say goodbye anytime the user says goodbye
+  steps:
+  - intent: goodbye
+  - action: utter_goodbye
+
+- rule: Say 'I am a bot' anytime the user challenges
+  steps:
+  - intent: bot_challenge
+  - action: utter_iamabot
+
+- rule: Respond to thanks
+  steps:
+  - intent: thank
+  - action: utter_thank
+
+- rule: Crisis intervention always
+  steps:
+  - intent: crisis
+  - action: utter_crisis
+  - action: action_crisis_resources
+
+- rule: Greet user at conversation start
+  condition:
+  - active_loop: null
+  steps:
+  - intent: greet
+  - action: utter_greet
+
+- rule: Provide breathing exercise on request
+  steps:
+  - intent: ask_breathing
+  - action: utter_breathing
+
+- rule: Provide meditation on request
+  steps:
+  - intent: ask_meditation
+  - action: utter_meditation
+
+- rule: Connect to doctor on request
+  steps:
+  - intent: talk_doctor
+  - action: utter_doctor
+
+- rule: Help sleep issues
+  steps:
+  - intent: sleep_issues
+  - action: utter_sleep
+
+- rule: Provide activities on request
+  steps:
+  - intent: ask_activities
+  - action: action_suggest_activity
+
+- rule: Provide quote on request
+  steps:
+  - intent: ask_quote
+  - action: action_provide_quote
+
+- rule: Generate report on request
+  steps:
+  - intent: ask_report
+  - action: action_generate_report

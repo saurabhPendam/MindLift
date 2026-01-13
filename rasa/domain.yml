@@ -1,0 +1,135 @@
+version: "3.1"
+
+intents:
+  - greet
+  - goodbye
+  - affirm
+  - deny
+  - mood_great
+  - mood_unhappy
+  - anxious
+  - lonely
+  - ask_help
+  - ask_activities
+  - ask_breathing
+  - ask_meditation
+  - ask_quote
+  - ask_report
+  - talk_doctor
+  - crisis
+  - sleep_issues
+  - stress
+  - relationship_issues
+  - work_stress
+  - thank
+  - bot_challenge
+
+responses:
+  utter_greet:
+  - text: "Hello! I'm MindLift, your mental health companion. How are you feeling today?"
+  - text: "Hi there! I'm here to listen and support you. How can I help you today?"
+  - text: "Hello! Welcome to MindLift. I'm here for you. What's on your mind?"
+
+  utter_goodbye:
+  - text: "Take care of yourself. Remember, I'm always here when you need to talk."
+  - text: "Goodbye! Don't hesitate to reach out whenever you need support."
+  - text: "See you soon! Remember to be kind to yourself."
+
+  utter_mood_great:
+  - text: "That's wonderful to hear! I'm so glad you're feeling great. What's been contributing to your positive mood?"
+  - text: "Fantastic! It's great to hear you're doing well. Keep up whatever you're doing!"
+  - text: "I'm happy you're feeling good! Would you like to share what's making you feel this way?"
+
+  utter_mood_unhappy:
+  - text: "I'm sorry you're feeling down. Would you like to talk about what's bothering you? Sometimes sharing helps."
+  - text: "I hear you, and I'm here to listen. It's okay to feel this way. What's been on your mind?"
+  - text: "Thank you for sharing how you feel. Would you like some suggestions for activities that might help improve your mood?"
+
+  utter_anxious:
+  - text: "I understand that anxiety can be overwhelming. Let's try some breathing exercises together. Would that help?"
+  - text: "Anxiety can be tough. I'm here with you. Would you like to try a calming activity or breathing exercise?"
+  - text: "It's okay to feel anxious. Here's a helpful video on managing anxiety:\n\nhttps://www.youtube.com/watch?v=1ZYbU82GVz4"
+
+  utter_lonely:
+  - text: "I'm sorry you're feeling lonely. Remember, you're not alone - I'm here to listen and support you."
+  - text: "Loneliness can be difficult. Would you like to talk about what you're experiencing?"
+  - text: "I'm here with you. Sometimes connecting with others or engaging in activities can help. Would you like some suggestions?"
+
+  utter_help:
+  - text: "Of course, I'm here to help! You can talk to me about your feelings, try activities to improve your mood, get motivational quotes, or connect with a professional therapist."
+  - text: "I'm here to support you in several ways: we can chat about your feelings, I can suggest activities, share motivational content, or help you connect with a professional."
+
+  utter_breathing:
+  - text: "Let's practice breathing together. Here's a helpful guided breathing exercise:\n\nhttps://www.youtube.com/watch?v=tybOi4hjZFQ\n\nTry the 4-4-4 technique: Breathe in for 4 counts, hold for 4, breathe out for 4."
+  - text: "Breathing exercises can really help calm anxiety. Watch this video:\n\nhttps://www.youtube.com/watch?v=tybOi4hjZFQ"
+
+  utter_meditation:
+  - text: "Meditation is a wonderful practice. Here's a 10-minute guided meditation to help you relax:\n\nhttps://www.youtube.com/watch?v=ZToicYcHIOU"
+  - text: "Let's meditate together. This video will guide you through a calming meditation:\n\nhttps://www.youtube.com/watch?v=ZToicYcHIOU"
+
+  utter_doctor:
+  - text: "Connecting with a mental health professional is a great step! Visit our Doctor Consultation page to schedule a video call with a licensed therapist or psychiatrist."
+  - text: "I can help you connect with a professional. Click on 'Doctor Consultation' to see available therapists and schedule an appointment."
+
+  utter_crisis:
+  - text: "🚨 **IMMEDIATE HELP AVAILABLE** 🚨\n\nYour safety is the most important thing right now. Please reach out for immediate professional help:\n\n📞 National Suicide Prevention Lifeline: 988\n📱 Crisis Text Line: Text HOME to 741741\n🚑 Emergency: 911\n\nYou're not alone, and there are people who want to help you."
+  - text: "I'm very concerned about you. Please contact emergency services immediately:\n\n📞 Call 988 (Suicide Prevention Lifeline)\n📱 Text HOME to 741741\n🚨 Or call 911\n\nProfessional help is available 24/7."
+
+  utter_sleep:
+  - text: "Sleep issues can really affect your well-being. Here are some tips:\n\n1. Stick to a sleep schedule\n2. Create a relaxing bedtime routine\n3. Limit screen time before bed\n\nWould you like a guided sleep meditation?\n\nhttps://www.youtube.com/watch?v=1vkjQQyu1xo"
+
+  utter_stress:
+  - text: "Stress is common, but there are ways to manage it. Would you like to try:\n\n1. Breathing exercises\n2. Physical activity\n3. Meditation\n\nOr I can suggest specific stress-relief activities."
+  - text: "Let's work on reducing your stress. Here's a stress relief exercise:\n\nhttps://www.youtube.com/watch?v=92i5m3tV5XY"
+
+  utter_relationship:
+  - text: "Relationship issues can be challenging. Would you like to talk about what's happening? Sometimes expressing your feelings can provide clarity."
+  - text: "Relationships require work and communication. If you're struggling, consider talking to a couples therapist. Visit our Doctor Consultation page."
+
+  utter_work_stress:
+  - text: "Work stress is very common. Some strategies that help:\n\n1. Set boundaries\n2. Take regular breaks\n3. Practice stress management\n4. Talk to someone about it\n\nWould you like some specific stress-relief activities?"
+
+  utter_thank:
+  - text: "You're very welcome! I'm here whenever you need support."
+  - text: "Happy to help! Remember, I'm always here to listen."
+  - text: "Anytime! Take care of yourself."
+
+  utter_iamabot:
+  - text: "I'm MindLift, an AI-powered mental health companion. While I'm not human, I'm here to listen, support, and guide you 24/7."
+  - text: "I'm an AI assistant created to support your mental health journey. I can provide resources, activities, and a listening ear anytime you need it."
+
+  utter_default:
+  - text: "I'm here to listen. Can you tell me more about how you're feeling?"
+  - text: "I understand. Would you like to talk more about that?"
+  - text: "Thank you for sharing. How can I support you with this?"
+
+actions:
+  - utter_greet
+  - utter_goodbye
+  - utter_mood_great
+  - utter_mood_unhappy
+  - utter_anxious
+  - utter_lonely
+  - utter_help
+  - utter_breathing
+  - utter_meditation
+  - utter_doctor
+  - utter_crisis
+  - utter_sleep
+  - utter_stress
+  - utter_relationship
+  - utter_work_stress
+  - utter_thank
+  - utter_iamabot
+  - utter_default
+  - action_suggest_activity
+  - action_provide_quote
+  - action_generate_report
+  - action_crisis_resources
+  - action_check_in
+  - action_recommend_professional
+  - action_breathing_guidance
+
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true

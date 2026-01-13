@@ -1,0 +1,166 @@
+INFO 2026-01-12 17:46:19,654 autoreload Watching for file changes with StatReloader
+INFO 2026-01-12 17:49:24,533 autoreload E:\mindlift\webapp\webapp\settings.py changed, reloading.
+INFO 2026-01-12 17:49:26,985 autoreload Watching for file changes with StatReloader
+INFO 2026-01-12 17:52:47,705 autoreload Watching for file changes with StatReloader
+INFO 2026-01-12 17:55:50,322 basehttp "GET / HTTP/1.1" 302 0
+INFO 2026-01-12 17:55:50,358 basehttp "GET /chat/ HTTP/1.1" 200 10423
+INFO 2026-01-12 17:55:50,628 basehttp "GET /static/js/chat.js HTTP/1.1" 200 30510
+INFO 2026-01-12 17:55:50,655 basehttp "GET /api/chat-history/?limit=50 HTTP/1.1" 200 2004
+INFO 2026-01-12 17:55:52,705 basehttp "GET /api/check-rasa-status/ HTTP/1.1" 200 76
+INFO 2026-01-12 17:55:59,441 basehttp "GET / HTTP/1.1" 302 0
+INFO 2026-01-12 17:55:59,473 basehttp "GET /chat/ HTTP/1.1" 200 10423
+INFO 2026-01-12 17:55:59,826 basehttp "GET /api/chat-history/?limit=50 HTTP/1.1" 200 2004
+INFO 2026-01-12 17:56:01,861 basehttp "GET /api/check-rasa-status/ HTTP/1.1" 200 76
+INFO 2026-01-12 17:56:05,239 basehttp "GET /chat/ HTTP/1.1" 200 10423
+INFO 2026-01-12 17:56:05,317 basehttp "GET /api/chat-history/?limit=50 HTTP/1.1" 200 2004
+INFO 2026-01-12 17:56:07,359 basehttp "GET /api/check-rasa-status/ HTTP/1.1" 200 76
+WARNING 2026-01-12 17:56:12,475 log Not Found: /.well-known/appspecific/com.chrome.devtools.json
+WARNING 2026-01-12 17:56:12,487 basehttp "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 7310
+INFO 2026-01-12 17:59:01,101 basehttp "GET /chat/ HTTP/1.1" 200 10423
+INFO 2026-01-12 17:59:01,216 basehttp "GET /static/js/chat.js HTTP/1.1" 200 30486
+WARNING 2026-01-12 17:59:01,275 log Not Found: /.well-known/appspecific/com.chrome.devtools.json
+WARNING 2026-01-12 17:59:01,279 basehttp "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 7310
+INFO 2026-01-12 17:59:01,286 basehttp "GET /api/chat-history/?limit=50 HTTP/1.1" 200 2004
+INFO 2026-01-12 17:59:03,360 basehttp "GET /api/check-rasa-status/ HTTP/1.1" 200 76
+INFO 2026-01-12 17:59:30,862 autoreload Watching for file changes with StatReloader
+INFO 2026-01-12 17:59:35,033 basehttp "GET / HTTP/1.1" 302 0
+INFO 2026-01-12 17:59:35,079 basehttp "GET /chat/ HTTP/1.1" 200 10423
+INFO 2026-01-12 17:59:35,349 basehttp "GET /static/js/chat.js HTTP/1.1" 200 30495
+INFO 2026-01-12 17:59:35,410 basehttp "GET /api/chat-history/?limit=50 HTTP/1.1" 200 2004
+INFO 2026-01-12 17:59:37,467 basehttp "GET /api/check-rasa-status/ HTTP/1.1" 200 76
+INFO 2026-01-12 17:59:57,575 autoreload Watching for file changes with StatReloader
+INFO 2026-01-12 18:00:01,235 basehttp "GET / HTTP/1.1" 302 0
+INFO 2026-01-12 18:00:01,295 basehttp "GET /chat/ HTTP/1.1" 200 10423
+INFO 2026-01-12 18:00:01,553 basehttp "GET /static/js/chat.js HTTP/1.1" 200 30552
+INFO 2026-01-12 18:00:01,668 basehttp "GET /api/chat-history/?limit=50 HTTP/1.1" 200 2004
+INFO 2026-01-12 18:00:03,719 basehttp "GET /api/check-rasa-status/ HTTP/1.1" 200 76
+INFO 2026-01-12 18:14:45,174 autoreload Watching for file changes with StatReloader
+INFO 2026-01-12 18:14:47,176 basehttp "GET /activities/ HTTP/1.1" 200 32684
+INFO 2026-01-12 18:14:50,512 basehttp "GET / HTTP/1.1" 302 0
+INFO 2026-01-12 18:14:50,553 basehttp "GET /chat/ HTTP/1.1" 200 10423
+INFO 2026-01-12 18:14:50,753 basehttp "GET /static/js/chat.js HTTP/1.1" 304 0
+INFO 2026-01-12 18:14:50,811 basehttp "GET /api/chat-history/?limit=50 HTTP/1.1" 200 2004
+INFO 2026-01-12 18:14:52,860 basehttp "GET /api/check-rasa-status/ HTTP/1.1" 200 76
+INFO 2026-01-12 18:14:54,542 basehttp "GET /activities/ HTTP/1.1" 200 32684
+INFO 2026-01-12 18:15:31,558 basehttp "GET /chat/ HTTP/1.1" 200 10423
+INFO 2026-01-12 18:15:31,638 basehttp "GET /api/chat-history/?limit=50 HTTP/1.1" 200 2004
+INFO 2026-01-12 18:15:33,694 basehttp "GET /api/check-rasa-status/ HTTP/1.1" 200 76
+INFO 2026-01-12 18:15:58,330 autoreload E:\mindlift\webapp\chatbot\middleware.py changed, reloading.
+INFO 2026-01-12 18:16:00,159 autoreload Watching for file changes with StatReloader
+INFO 2026-01-12 18:18:16,395 autoreload E:\mindlift\webapp\webapp\settings.py changed, reloading.
+INFO 2026-01-12 18:18:18,750 autoreload Watching for file changes with StatReloader
+INFO 2026-01-12 18:18:51,674 autoreload E:\mindlift\webapp\webapp\settings.py changed, reloading.
+INFO 2026-01-12 18:18:53,439 autoreload Watching for file changes with StatReloader
+INFO 2026-01-12 18:25:26,570 basehttp "GET /activities/ HTTP/1.1" 200 32684
+INFO 2026-01-12 18:25:33,215 basehttp "GET /chat/ HTTP/1.1" 200 10423
+INFO 2026-01-12 18:25:33,273 basehttp "GET /static/js/chat.js HTTP/1.1" 304 0
+INFO 2026-01-12 18:25:33,353 basehttp "GET /api/chat-history/?limit=50 HTTP/1.1" 200 2004
+INFO 2026-01-12 18:25:35,411 basehttp "GET /api/check-rasa-status/ HTTP/1.1" 200 76
+INFO 2026-01-12 18:25:37,892 basehttp "GET /api/chat-history/?conversation_id= HTTP/1.1" 200 2004
+INFO 2026-01-12 18:25:41,568 basehttp "GET /profile/ HTTP/1.1" 200 7455
+INFO 2026-01-12 18:26:04,919 basehttp "GET /chat/ HTTP/1.1" 200 10423
+INFO 2026-01-12 18:26:04,988 basehttp "GET /api/chat-history/?limit=50 HTTP/1.1" 200 2004
+INFO 2026-01-12 18:26:07,033 basehttp "GET /api/check-rasa-status/ HTTP/1.1" 200 76
+INFO 2026-01-12 18:26:07,969 basehttp "GET /profile/ HTTP/1.1" 200 7455
+INFO 2026-01-12 18:26:12,657 basehttp "GET /chat/ HTTP/1.1" 200 10423
+INFO 2026-01-12 18:26:12,724 basehttp "GET /api/chat-history/?limit=50 HTTP/1.1" 200 2004
+INFO 2026-01-12 18:26:14,452 basehttp "GET /profile/ HTTP/1.1" 200 7455
+INFO 2026-01-12 18:26:14,750 basehttp - Broken pipe from ('127.0.0.1', 53140)
+INFO 2026-01-12 18:26:25,421 basehttp "GET /chat/ HTTP/1.1" 200 10423
+INFO 2026-01-12 18:26:25,487 basehttp "GET /api/chat-history/?limit=50 HTTP/1.1" 200 2004
+INFO 2026-01-12 18:26:27,137 basehttp "POST /api/generate-report/ HTTP/1.1" 200 710
+INFO 2026-01-12 18:26:27,523 basehttp "GET /api/check-rasa-status/ HTTP/1.1" 200 76
+INFO 2026-01-12 18:27:34,339 basehttp "POST /api/generate-report/ HTTP/1.1" 200 710
+INFO 2026-01-12 18:33:14,960 autoreload E:\mindlift\webapp\chatbot\middleware.py changed, reloading.
+INFO 2026-01-12 18:33:18,653 autoreload Watching for file changes with StatReloader
+INFO 2026-01-12 18:33:33,518 autoreload E:\mindlift\webapp\webapp\settings.py changed, reloading.
+INFO 2026-01-12 18:33:35,362 autoreload Watching for file changes with StatReloader
+INFO 2026-01-12 18:37:27,636 autoreload E:\mindlift\webapp\webapp\settings.py changed, reloading.
+INFO 2026-01-12 18:37:29,600 autoreload Watching for file changes with StatReloader
+INFO 2026-01-12 18:37:55,566 basehttp "GET / HTTP/1.1" 302 0
+INFO 2026-01-12 18:37:55,607 basehttp "GET /chat/ HTTP/1.1" 200 10423
+INFO 2026-01-12 18:37:55,724 basehttp "GET /static/css/style.css HTTP/1.1" 200 20409
+INFO 2026-01-12 18:37:55,793 basehttp "GET /static/js/chat.js HTTP/1.1" 200 30844
+INFO 2026-01-12 18:37:56,057 basehttp "GET /api/chat-history/?limit=50 HTTP/1.1" 200 2004
+INFO 2026-01-12 18:37:58,087 basehttp "GET /api/check-rasa-status/ HTTP/1.1" 200 76
+INFO 2026-01-12 18:38:46,772 basehttp "GET /logout/ HTTP/1.1" 302 0
+INFO 2026-01-12 18:38:46,782 basehttp "GET / HTTP/1.1" 200 18263
+INFO 2026-01-12 18:38:52,871 basehttp "GET /login/ HTTP/1.1" 200 6992
+INFO 2026-01-12 18:39:02,249 basehttp "POST /login/ HTTP/1.1" 302 0
+INFO 2026-01-12 18:39:02,269 basehttp "GET /chat/ HTTP/1.1" 200 11035
+INFO 2026-01-12 18:39:02,319 basehttp "GET /static/js/chat.js HTTP/1.1" 304 0
+INFO 2026-01-12 18:39:02,367 basehttp "GET /api/chat-history/?limit=50 HTTP/1.1" 200 2004
+INFO 2026-01-12 18:39:04,423 basehttp "GET /api/check-rasa-status/ HTTP/1.1" 200 76
+INFO 2026-01-12 18:39:05,438 basehttp "GET /api/chat-history/?conversation_id= HTTP/1.1" 200 2004
+INFO 2026-01-12 18:39:43,832 basehttp "POST /api/send-message/ HTTP/1.1" 200 1773
+INFO 2026-01-12 18:39:51,021 basehttp "POST /api/generate-report/ HTTP/1.1" 200 920
+INFO 2026-01-12 18:41:04,526 basehttp "POST /api/send-message/ HTTP/1.1" 200 668
+INFO 2026-01-12 18:41:10,553 basehttp "POST /api/generate-report/ HTTP/1.1" 200 633
+INFO 2026-01-12 18:41:41,357 basehttp "POST /api/send-message/ HTTP/1.1" 200 501
+INFO 2026-01-12 18:41:50,084 basehttp "GET /activities/ HTTP/1.1" 200 33622
+INFO 2026-01-12 18:43:12,197 basehttp "GET /chat/ HTTP/1.1" 200 10423
+INFO 2026-01-12 18:43:12,244 basehttp "GET /static/js/chat.js HTTP/1.1" 304 0
+INFO 2026-01-12 18:43:12,299 basehttp "GET /api/chat-history/?limit=50 HTTP/1.1" 200 5123
+INFO 2026-01-12 18:43:14,348 basehttp "GET /api/check-rasa-status/ HTTP/1.1" 200 76
+INFO 2026-01-12 18:43:15,905 basehttp "GET /quotes/ HTTP/1.1" 200 35325
+INFO 2026-01-12 18:43:20,488 basehttp "GET /chat/ HTTP/1.1" 200 10423
+INFO 2026-01-12 18:43:20,555 basehttp "GET /api/chat-history/?limit=50 HTTP/1.1" 200 5123
+INFO 2026-01-12 18:43:22,591 basehttp "GET /api/check-rasa-status/ HTTP/1.1" 200 76
+INFO 2026-01-12 18:43:59,032 basehttp "POST /api/send-message/ HTTP/1.1" 200 442
+INFO 2026-01-12 18:44:04,245 basehttp "GET /doctor/ HTTP/1.1" 200 15978
+INFO 2026-01-12 18:44:04,352 basehttp "GET /static/js/doctor.js HTTP/1.1" 200 14359
+INFO 2026-01-12 18:49:12,325 autoreload Watching for file changes with StatReloader
+INFO 2026-01-12 18:50:35,221 basehttp "GET / HTTP/1.1" 302 0
+INFO 2026-01-12 18:50:35,450 basehttp "GET /chat/ HTTP/1.1" 200 10423
+INFO 2026-01-12 18:50:35,590 basehttp "GET /static/css/style.css HTTP/1.1" 200 20409
+INFO 2026-01-12 18:50:35,697 basehttp "GET /static/js/chat.js HTTP/1.1" 200 30844
+INFO 2026-01-12 18:50:35,893 basehttp "GET /api/chat-history/?limit=50 HTTP/1.1" 200 5564
+INFO 2026-01-12 18:50:38,093 basehttp "GET /api/check-rasa-status/ HTTP/1.1" 200 76
+INFO 2026-01-12 18:50:49,075 basehttp "GET /chat/ HTTP/1.1" 200 10423
+INFO 2026-01-12 18:50:49,183 basehttp "GET /static/js/chat.js HTTP/1.1" 200 30843
+INFO 2026-01-12 18:50:49,234 basehttp "GET /api/chat-history/?limit=50 HTTP/1.1" 200 5564
+INFO 2026-01-12 18:50:51,287 basehttp "GET /api/check-rasa-status/ HTTP/1.1" 200 76
+INFO 2026-01-12 18:51:43,381 basehttp "POST /api/generate-report/ HTTP/1.1" 200 639
+INFO 2026-01-12 18:51:46,822 basehttp "GET /api/chat-history/?conversation_id= HTTP/1.1" 200 5564
+INFO 2026-01-12 18:51:51,717 basehttp "GET /profile/ HTTP/1.1" 200 7455
+INFO 2026-01-12 18:51:55,383 basehttp "GET /chat/ HTTP/1.1" 200 10423
+INFO 2026-01-12 18:51:55,421 basehttp "GET /static/js/chat.js HTTP/1.1" 304 0
+INFO 2026-01-12 18:51:55,463 basehttp "GET /api/chat-history/?limit=50 HTTP/1.1" 200 5564
+INFO 2026-01-12 18:51:57,501 basehttp "GET /api/check-rasa-status/ HTTP/1.1" 200 76
+INFO 2026-01-12 18:51:59,279 basehttp "GET /quotes/ HTTP/1.1" 200 35385
+INFO 2026-01-12 18:52:02,018 basehttp "GET /chat/ HTTP/1.1" 200 10423
+INFO 2026-01-12 18:52:02,102 basehttp "GET /static/js/chat.js HTTP/1.1" 304 0
+INFO 2026-01-12 18:52:02,167 basehttp "GET /api/chat-history/?limit=50 HTTP/1.1" 200 5564
+INFO 2026-01-12 18:52:04,505 basehttp "GET /api/check-rasa-status/ HTTP/1.1" 200 76
+INFO 2026-01-12 18:52:17,254 basehttp "POST /api/generate-report/ HTTP/1.1" 200 639
+INFO 2026-01-12 18:52:57,829 basehttp "POST /api/send-message/ HTTP/1.1" 200 196
+INFO 2026-01-12 18:53:28,766 basehttp "GET /chat/ HTTP/1.1" 200 10423
+INFO 2026-01-12 18:53:28,791 basehttp "GET /static/js/chat.js HTTP/1.1" 304 0
+INFO 2026-01-12 18:53:28,835 basehttp "GET /api/chat-history/?limit=50 HTTP/1.1" 200 5730
+INFO 2026-01-12 18:53:30,865 basehttp "GET /api/check-rasa-status/ HTTP/1.1" 200 76
+INFO 2026-01-12 18:53:35,444 basehttp "GET /profile/ HTTP/1.1" 200 7455
+INFO 2026-01-12 18:53:39,604 basehttp "GET /api/chat-history/?conversation_id= HTTP/1.1" 200 5730
+INFO 2026-01-12 18:54:04,419 basehttp "POST /api/send-message/ HTTP/1.1" 200 192
+INFO 2026-01-12 18:54:24,503 basehttp "POST /api/send-message/ HTTP/1.1" 200 209
+INFO 2026-01-12 19:10:27,104 basehttp "GET /chat/ HTTP/1.1" 200 10423
+INFO 2026-01-12 19:10:27,144 basehttp "GET /static/js/chat.js HTTP/1.1" 304 0
+INFO 2026-01-12 19:10:27,218 basehttp "GET /api/chat-history/?limit=50 HTTP/1.1" 200 6069
+INFO 2026-01-12 19:10:29,257 basehttp "GET /api/check-rasa-status/ HTTP/1.1" 200 76
+INFO 2026-01-12 19:12:06,049 basehttp "GET /quotes/ HTTP/1.1" 200 35385
+INFO 2026-01-12 19:12:11,087 basehttp "GET /quotes/?category=motivation HTTP/1.1" 200 15869
+INFO 2026-01-12 19:12:14,530 basehttp "GET /quotes/?category=inspiration HTTP/1.1" 200 16005
+INFO 2026-01-12 19:12:16,544 basehttp "GET /quotes/ HTTP/1.1" 200 35414
+INFO 2026-01-12 19:12:21,136 basehttp "GET /chat/ HTTP/1.1" 200 10423
+INFO 2026-01-12 19:12:21,207 basehttp "GET /api/chat-history/?limit=50 HTTP/1.1" 200 6069
+INFO 2026-01-12 19:12:23,253 basehttp "GET /api/check-rasa-status/ HTTP/1.1" 200 76
+INFO 2026-01-12 19:26:45,299 basehttp "POST /api/generate-report/ HTTP/1.1" 200 636
+INFO 2026-01-12 19:26:50,060 basehttp "GET /quotes/ HTTP/1.1" 200 35401
+INFO 2026-01-12 19:26:54,928 basehttp "GET /chat/ HTTP/1.1" 200 10423
+INFO 2026-01-12 19:26:54,965 basehttp "GET /static/js/chat.js HTTP/1.1" 304 0
+INFO 2026-01-12 19:26:55,003 basehttp "GET /api/chat-history/?limit=50 HTTP/1.1" 200 6069
+INFO 2026-01-12 19:26:57,009 basehttp "GET /activities/ HTTP/1.1" 200 33622
+INFO 2026-01-12 19:26:57,061 basehttp "GET /api/check-rasa-status/ HTTP/1.1" 200 76
+INFO 2026-01-12 19:27:10,545 basehttp "GET /chat/ HTTP/1.1" 200 10423
+INFO 2026-01-12 19:27:10,623 basehttp "GET /api/chat-history/?limit=50 HTTP/1.1" 200 6069
+INFO 2026-01-12 19:27:12,678 basehttp "GET /api/check-rasa-status/ HTTP/1.1" 200 76
+INFO 2026-01-13 09:56:32,928 autoreload Watching for file changes with StatReloader

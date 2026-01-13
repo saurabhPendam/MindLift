@@ -1,0 +1,32 @@
+# --------------------
+# Virtual Environment
+# --------------------
+venv/
+
+# --------------------
+# Python
+# --------------------
+__pycache__/
+*.pyc
+*.pyo
+
+# --------------------
+# Django
+# --------------------
+*.sqlite3
+.env
+debug.log
+
+# --------------------
+# Rasa (CRITICAL)
+# --------------------
+rasa/.rasa/
+rasa/models/
+rasa/.rasa/cache/
+
+# --------------------
+# OS / Editor
+# --------------------
+.DS_Store
+Thumbs.db
+.vscode/

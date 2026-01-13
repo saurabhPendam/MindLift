@@ -1,0 +1,366 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load youtube_filters %}
+
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-light" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); box-shadow: 0 2px 10px rgba(124, 156, 191, 0.1);">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="{% url 'chat' %}">
+            <i class="fas fa-brain me-2" style="color: var(--primary);"></i>MindLift
+        </a>
+        <div class="ms-auto d-flex gap-2">
+            <a href="{% url 'chat' %}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Chat
+            </a>
+        </div>
+    </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="activities-page">
+    <div class="container py-5">
+        <!-- Header -->
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h1 class="display-4 fw-bold mb-3">Wellness Activities</h1>
+            <p class="lead" style="color: var(--text-secondary);">Engage in these activities when you're feeling low or stressed</p>
+        </div>
+        
+        <!-- Category Filter -->
+        <div class="category-filter mb-5" data-aos="fade-up">
+            <div class="d-flex flex-wrap gap-2 justify-content-center">
+                <a href="{% url 'activities' %}" class="btn {% if not selected_category %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                    All Activities
+                </a>
+                {% for category in categories %}
+                <a href="?category={{ category }}" class="btn {% if selected_category == category %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                    {{ category|title }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Activities Grid -->
+        <div class="row g-4">
+            {% for activity in activities %}
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="activity-card {% if activity.id in completed_ids %}completed{% endif %}" data-activity-id="{{ activity.id }}">
+                    <div class="activity-icon">
+                        {% if activity.category == 'breathing' %}
+                            <i class="fas fa-wind"></i>
+                        {% elif activity.category == 'meditation' %}
+                            <i class="fas fa-spa"></i>
+                        {% elif activity.category == 'physical' %}
+                            <i class="fas fa-running"></i>
+                        {% elif activity.category == 'creative' %}
+                            <i class="fas fa-palette"></i>
+                        {% elif activity.category == 'social' %}
+                            <i class="fas fa-users"></i>
+                        {% elif activity.category == 'mindfulness' %}
+                            <i class="fas fa-brain"></i>
+                        {% else %}
+                            <i class="fas fa-heart"></i>
+                        {% endif %}
+                    </div>
+                    
+                    <span class="activity-badge">{{ activity.category|title }}</span>
+                    
+                    <h4 class="fw-bold mb-2">{{ activity.title }}</h4>
+                    <p class="text-muted mb-3">{{ activity.description }}</p>
+                    
+                    <div class="activity-meta mb-3">
+                        <span><i class="fas fa-clock me-1"></i>{{ activity.duration_minutes }} min</span>
+                        <span><i class="fas fa-signal me-1"></i>{{ activity.difficulty|title }}</span>
+                    </div>
+                    
+                    <div class="activity-instructions mb-3">
+                        <strong>Instructions:</strong>
+                        <p class="small">{{ activity.instructions|truncatewords:30 }}</p>
+                    </div>
+                    
+                    {% if activity.video_url %}
+                    <div class="video-preview mb-3">
+                        <div class="video-container" style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 10px; background: #000;">
+                            <iframe 
+                                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"
+                                src="{{ activity.video_url|youtube_embed_url }}?rel=0&modestbranding=1"
+                                title="{{ activity.title }}"
+                                frameborder="0" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                                referrerpolicy="strict-origin-when-cross-origin"
+                                allowfullscreen
+                                loading="lazy">
+                            </iframe>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="d-grid gap-2">
+                        {% if activity.id in completed_ids %}
+                        <button class="btn btn-success" disabled>
+                            <i class="fas fa-check me-2"></i>Completed
+                        </button>
+                        {% else %}
+                        <button class="btn btn-primary start-activity-btn" 
+                                data-activity-id="{{ activity.id }}" 
+                                data-activity-title="{{ activity.title|escapejs }}">
+                            <i class="fas fa-play me-2"></i>Start Activity
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <p class="text-muted">No activities found in this category.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Completion Modal -->
+<div class="modal fade" id="completionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Activity Completed!</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Great job completing <strong id="activityTitle"></strong>!</p>
+                <p>How helpful was this activity?</p>
+                <div class="rating-buttons mb-3">
+                    <button class="btn btn-outline-primary btn-sm rating-btn" data-rating="1">1 ⭐</button>
+                    <button class="btn btn-outline-primary btn-sm rating-btn" data-rating="2">2 ⭐</button>
+                    <button class="btn btn-outline-primary btn-sm rating-btn" data-rating="3">3 ⭐</button>
+                    <button class="btn btn-outline-primary btn-sm rating-btn" data-rating="4">4 ⭐</button>
+                    <button class="btn btn-outline-primary btn-sm rating-btn" data-rating="5">5 ⭐</button>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Notes (optional)</label>
+                    <textarea class="form-control" id="activityNotes" rows="3" placeholder="How do you feel after this activity?"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Skip</button>
+                <button type="button" class="btn btn-primary" id="submitCompletionBtn">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.activities-page {
+    min-height: 100vh;
+    background: var(--gradient-soft);
+    padding-top: 80px;
+}
+
+.category-filter .btn {
+    border-radius: 20px;
+}
+
+.activity-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 2px 10px rgba(124, 156, 191, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.activity-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px rgba(124, 156, 191, 0.15);
+}
+
+.activity-card.completed {
+    border: 2px solid var(--success);
+}
+
+.activity-icon {
+    width: 60px;
+    height: 60px;
+    background: var(--gradient-primary);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    color: white;
+    margin-bottom: 1rem;
+}
+
+.activity-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(124, 156, 191, 0.1);
+    color: var(--primary);
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.activity-meta {
+    display: flex;
+    gap: 1rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.activity-instructions {
+    background: var(--bg-soft);
+    padding: 1rem;
+    border-radius: 10px;
+    flex-grow: 1;
+}
+
+.video-container {
+    background: #000;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.rating-buttons {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.rating-btn.selected {
+    background-color: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let currentActivityId = null;
+    let currentRating = null;
+
+    // Handle start activity button clicks
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('start-activity-btn') || e.target.closest('.start-activity-btn')) {
+            const btn = e.target.classList.contains('start-activity-btn') ? e.target : e.target.closest('.start-activity-btn');
+            const activityId = btn.getAttribute('data-activity-id');
+            const activityTitle = btn.getAttribute('data-activity-title');
+            completeActivity(activityId, activityTitle);
+        }
+    });
+
+    // Handle rating button clicks
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('rating-btn')) {
+            const rating = parseInt(e.target.getAttribute('data-rating'));
+            setRating(rating);
+        }
+    });
+
+    // Handle submit button
+    const submitBtn = document.getElementById('submitCompletionBtn');
+    if (submitBtn) {
+        submitBtn.addEventListener('click', submitCompletion);
+    }
+
+    function completeActivity(activityId, activityTitle) {
+        currentActivityId = activityId;
+        document.getElementById('activityTitle').textContent = activityTitle;
+        const modal = new bootstrap.Modal(document.getElementById('completionModal'));
+        modal.show();
+    }
+
+    function setRating(rating) {
+        currentRating = rating;
+        const buttons = document.querySelectorAll('.rating-btn');
+        buttons.forEach(btn => {
+            const btnRating = parseInt(btn.getAttribute('data-rating'));
+            if (btnRating <= rating) {
+                btn.classList.add('selected');
+                btn.classList.remove('btn-outline-primary');
+                btn.classList.add('btn-primary');
+            } else {
+                btn.classList.remove('selected');
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-outline-primary');
+            }
+        });
+    }
+
+    async function submitCompletion() {
+        if (!currentActivityId) {
+            alert('No activity selected');
+            return;
+        }
+        
+        const notes = document.getElementById('activityNotes').value;
+        
+        try {
+            const response = await fetch('/api/complete-activity/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    activity_id: currentActivityId,
+                    rating: currentRating,
+                    notes: notes
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok && data.success) {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('completionModal'));
+                modal.hide();
+                
+                showNotification('Activity completed successfully!', 'success');
+                
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
+            } else {
+                showNotification('Failed to save completion. Please try again.', 'danger');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showNotification('An error occurred. Please try again.', 'danger');
+        }
+    }
+
+    function showNotification(message, type = 'success') {
+        const notification = document.createElement('div');
+        notification.className = `alert alert-${type} position-fixed top-0 start-50 translate-middle-x mt-3`;
+        notification.style.zIndex = '9999';
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+});
+</script>
+{% endblock %}

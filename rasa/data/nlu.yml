@@ -1,0 +1,263 @@
+version: "3.1"
+
+nlu:
+- intent: greet
+  examples: |
+    - hey
+    - hello
+    - hi
+    - hello there
+    - good morning
+    - good evening
+    - hey there
+    - hi there
+    - greetings
+    - what's up
+    - howdy
+
+- intent: goodbye
+  examples: |
+    - bye
+    - goodbye
+    - see you later
+    - see you
+    - talk to you later
+    - gotta go
+    - catch you later
+    - farewell
+    - take care
+    - have a good day
+
+- intent: affirm
+  examples: |
+    - yes
+    - yeah
+    - yep
+    - sure
+    - of course
+    - that sounds good
+    - correct
+    - right
+    - indeed
+    - absolutely
+    - definitely
+
+- intent: deny
+  examples: |
+    - no
+    - nope
+    - never
+    - I don't think so
+    - no way
+    - not really
+    - nah
+    - no thanks
+    - not now
+    - maybe later
+
+- intent: mood_great
+  examples: |
+    - I'm feeling great
+    - I feel wonderful
+    - I'm doing amazing
+    - I'm happy
+    - I feel good
+    - I'm in a great mood
+    - feeling fantastic
+    - I'm feeling positive
+    - I feel awesome
+    - I'm doing well
+
+- intent: mood_unhappy
+  examples: |
+    - I'm sad
+    - I feel down
+    - I'm not happy
+    - I feel depressed
+    - I'm feeling low
+    - I'm upset
+    - I'm not doing well
+    - I feel terrible
+    - I'm feeling blue
+    - I'm not okay
+    - feeling down today
+    - I'm unhappy
+
+- intent: anxious
+  examples: |
+    - I'm anxious
+    - I feel worried
+    - I'm nervous
+    - I can't stop worrying
+    - I'm feeling anxious
+    - I'm having anxiety
+    - I'm panicking
+    - I feel stressed out
+    - I'm overwhelmed
+    - anxiety is bad today
+    - I'm having a panic attack
+
+- intent: lonely
+  examples: |
+    - I feel lonely
+    - I'm alone
+    - I have no one to talk to
+    - I feel isolated
+    - I'm feeling lonely
+    - nobody understands me
+    - I feel disconnected
+    - I'm by myself
+    - feeling isolated
+
+- intent: ask_help
+  examples: |
+    - can you help me
+    - I need help
+    - help me please
+    - I need support
+    - can you support me
+    - I need someone to talk to
+    - please help
+    - I'm looking for help
+
+- intent: ask_activities
+  examples: |
+    - what activities can I do
+    - suggest some activities
+    - what can I do to feel better
+    - give me activity ideas
+    - I want to do something
+    - what should I do
+    - suggest activities
+    - show me activities
+    - activity suggestions
+
+- intent: ask_breathing
+  examples: |
+    - teach me breathing exercises
+    - breathing exercise
+    - help me breathe
+    - breathing techniques
+    - I want to practice breathing
+    - show me breathing exercises
+    - guide me through breathing
+
+- intent: ask_meditation
+  examples: |
+    - I want to meditate
+    - meditation
+    - teach me meditation
+    - meditation exercises
+    - how to meditate
+    - guide me through meditation
+    - meditation help
+
+- intent: ask_quote
+  examples: |
+    - give me a quote
+    - motivational quote
+    - inspire me
+    - I need motivation
+    - share a quote
+    - tell me something motivational
+    - I need inspiration
+    - give me some motivation
+    - inspirational quote
+
+- intent: ask_report
+  examples: |
+    - show me my report
+    - generate report
+    - how am I doing
+    - sentiment report
+    - my progress
+    - show my analysis
+    - analyze my mood
+    - mood report
+    - my mental health report
+
+- intent: talk_doctor
+  examples: |
+    - I want to talk to a doctor
+    - connect me with a therapist
+    - I need professional help
+    - talk to professional
+    - see a doctor
+    - consult a therapist
+    - I need therapy
+    - mental health professional
+    - book a therapist
+
+- intent: crisis
+  examples: |
+    - I want to hurt myself
+    - I'm thinking of suicide
+    - I want to die
+    - I can't go on
+    - life is not worth living
+    - I'm going to end it
+    - suicidal thoughts
+    - I want to kill myself
+    - I want to harm myself
+
+- intent: sleep_issues
+  examples: |
+    - I can't sleep
+    - I have insomnia
+    - trouble sleeping
+    - can't fall asleep
+    - I'm not sleeping well
+    - sleep problems
+    - help me sleep
+    - sleeping issues
+
+- intent: stress
+  examples: |
+    - I'm under stress
+    - too much stress
+    - feeling stressed
+    - I'm under pressure
+    - work is stressing me
+    - I'm burned out
+    - stress relief
+    - I need stress management
+    - help with stress
+
+- intent: relationship_issues
+  examples: |
+    - relationship problems
+    - fighting with partner
+    - my relationship is failing
+    - relationship advice
+    - relationship troubles
+    - partner issues
+    - marriage problems
+
+- intent: work_stress
+  examples: |
+    - work is stressful
+    - job stress
+    - work pressure
+    - workplace issues
+    - work problems
+    - career stress
+    - job is overwhelming
+
+- intent: thank
+  examples: |
+    - thanks
+    - thank you
+    - thanks a lot
+    - thank you so much
+    - appreciate it
+    - thanks for helping
+    - grateful
+
+- intent: bot_challenge
+  examples: |
+    - are you a bot?
+    - are you human?
+    - am I talking to a bot?
+    - are you real?
+    - who are you?
+    - what are you?

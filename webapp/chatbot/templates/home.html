@@ -1,0 +1,287 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-light fixed-top" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); box-shadow: 0 2px 10px rgba(124, 156, 191, 0.1);">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="/">
+            <i class="fas fa-brain me-2" style="color: var(--primary);"></i>MindLift
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#features">Features</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#about">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#how-it-works">How It Works</a>
+                </li>
+                <li class="nav-item ms-3">
+                    <a class="btn btn-outline-primary rounded-pill px-4" href="{% url 'login' %}" style="border-color: var(--primary); color: var(--primary);">Login</a>
+                </li>
+                <li class="nav-item ms-2">
+                    <a class="btn btn-primary rounded-pill px-4" href="{% url 'register' %}" style="background: var(--gradient-primary); border: none;">Get Started</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-particles"></div>
+    <div class="container">
+        <div class="row align-items-center min-vh-100">
+            <div class="col-lg-6" data-aos="fade-right">
+                <h1 class="display-3 fw-bold mb-4" style="color: var(--dark);">
+                    Welcome to <span class="gradient-text">MindLift</span>
+                </h1>
+                <p class="lead mb-4" style="color: var(--text-primary);">
+                    Your compassionate AI-powered mental health companion. 
+                    Available 24/7 to listen, support, and guide you towards better mental wellness.
+                </p>
+                <div class="d-flex gap-3 mb-4">
+                    <a href="{% url 'register' %}" class="btn btn-primary btn-lg rounded-pill px-5">
+                        <i class="fas fa-rocket me-2"></i>Start Your Journey
+                    </a>
+                    <a href="#how-it-works" class="btn btn-outline-primary btn-lg rounded-pill px-5" style="border-color: var(--primary); color: var(--primary);">
+                        <i class="fas fa-play-circle me-2"></i>Learn More
+                    </a>
+                </div>
+                <div class="d-flex gap-4 mt-5">
+                    <div>
+                        <h3 class="fw-bold mb-0" style="color: var(--primary);">10K+</h3>
+                        <small style="color: var(--text-secondary);">Active Users</small>
+                    </div>
+                    <div>
+                        <h3 class="fw-bold mb-0" style="color: var(--primary);">50K+</h3>
+                        <small style="color: var(--text-secondary);">Conversations</small>
+                    </div>
+                    <div>
+                        <h3 class="fw-bold mb-0" style="color: var(--primary);">98%</h3>
+                        <small style="color: var(--text-secondary);">Satisfaction</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6" data-aos="fade-left" data-aos-delay="200">
+                <div class="hero-image-container">
+                    <img src="https://cdnjs.cloudflare.com/ajax/libs/simple-icons/9.0.0/data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MDAiIGhlaWdodD0iNTAwIj48cmVjdCBmaWxsPSIjN2M5Y2JmIiB3aWR0aD0iNTAwIiBoZWlnaHQ9IjUwMCIgcng9IjUwIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSI4MCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj7wn6exPC90ZXh0Pjwvc3ZnPg==" alt="MindLift AI" class="img-fluid chatbot-illustration">
+                    <div class="floating-card card-1" data-aos="fade-up" data-aos-delay="400">
+                        <i class="fas fa-comments"></i>
+                        <p class="mb-0">24/7 Support</p>
+                    </div>
+                    <div class="floating-card card-2" data-aos="fade-up" data-aos-delay="600">
+                        <i class="fas fa-shield-alt"></i>
+                        <p class="mb-0">100% Private</p>
+                    </div>
+                    <div class="floating-card card-3" data-aos="fade-up" data-aos-delay="800">
+                        <i class="fas fa-brain"></i>
+                        <p class="mb-0">AI Powered</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="features-section py-5">
+    <div class="container py-5">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h2 class="display-4 fw-bold mb-3">Powerful Features</h2>
+            <p class="lead" style="color: var(--text-secondary);">Everything you need for your mental wellness journey</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">AI Chatbot</h4>
+                    <p style="color: var(--text-secondary);">Intelligent conversations powered by advanced AI to understand and support your mental health needs.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Sentiment Analysis</h4>
+                    <p style="color: var(--text-secondary);">Track your emotional patterns with advanced sentiment analysis and receive personalized insights.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-video"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Video Recommendations</h4>
+                    <p style="color: var(--text-secondary);">Curated mental health videos and resources tailored to your specific needs and concerns.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="400">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-microphone"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Voice Support</h4>
+                    <p style="color: var(--text-secondary);">Speech-to-text and text-to-speech capabilities for hands-free, accessible conversations.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="500">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Doctor Consultation</h4>
+                    <p style="color: var(--text-secondary);">Connect with licensed mental health professionals through secure video calls when needed.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="600">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Progress Reports</h4>
+                    <p style="color: var(--text-secondary);">Generate detailed reports of your mental health journey with actionable insights.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section id="how-it-works" class="how-it-works-section py-5">
+    <div class="container py-5">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h2 class="display-4 fw-bold mb-3">How It Works</h2>
+            <p class="lead" style="color: var(--text-secondary);">Get started in three simple steps</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <i class="fas fa-user-plus step-icon"></i>
+                    <h4 class="fw-bold mt-3 mb-3">Create Account</h4>
+                    <p style="color: var(--text-secondary);">Sign up in seconds with just your email. Your privacy is our top priority.</p>
+                </div>
+            </div>
+            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <i class="fas fa-comments step-icon"></i>
+                    <h4 class="fw-bold mt-3 mb-3">Start Chatting</h4>
+                    <p style="color: var(--text-secondary);">Share your thoughts and feelings. Our AI listens and provides supportive guidance.</p>
+                </div>
+            </div>
+            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <i class="fas fa-chart-pie step-icon"></i>
+                    <h4 class="fw-bold mt-3 mb-3">Track Progress</h4>
+                    <p style="color: var(--text-secondary);">Monitor your emotional wellness with detailed reports and personalized insights.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section id="about" class="about-section py-5">
+    <div class="container py-5">
+        <div class="row align-items-center">
+            <div class="col-lg-6" data-aos="fade-right">
+                <h2 class="display-4 fw-bold mb-4">About MindLift</h2>
+                <p class="lead mb-4" style="color: var(--text-primary);">
+                    MindLift is an innovative AI-powered mental health platform designed to provide 
+                    accessible, confidential support whenever you need it.
+                </p>
+                <p class="mb-4" style="color: var(--text-secondary);">
+                    We combine cutting-edge artificial intelligence with evidence-based therapeutic 
+                    techniques to create a safe space for you to explore your thoughts and emotions. 
+                    Whether you're dealing with stress, anxiety, or just need someone to talk to, 
+                    MindLift is here for you.
+                </p>
+                <div class="d-flex gap-3">
+                    <div class="about-stat">
+                        <i class="fas fa-lock mb-2"></i>
+                        <h5 class="fw-bold">Private & Secure</h5>
+                        <p class="small" style="color: var(--text-secondary);">End-to-end encryption</p>
+                    </div>
+                    <div class="about-stat">
+                        <i class="fas fa-clock mb-2"></i>
+                        <h5 class="fw-bold">24/7 Available</h5>
+                        <p class="small" style="color: var(--text-secondary);">Always here for you</p>
+                    </div>
+                    <div class="about-stat">
+                        <i class="fas fa-heart mb-2"></i>
+                        <h5 class="fw-bold">Compassionate</h5>
+                        <p class="small" style="color: var(--text-secondary);">Judgment-free zone</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6" data-aos="fade-left">
+                <div class="about-image-container">
+                    <img src="https://cdnjs.cloudflare.com/ajax/libs/simple-icons/9.0.0/data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MDAiIGhlaWdodD0iNDAwIj48cmVjdCBmaWxsPSIjOWQ5Y2IzIiB3aWR0aD0iNTAwIiBoZWlnaHQ9IjQwMCIgcng9IjMwIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMDAiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+8J+koTwvdGV4dD48L3N2Zz4=" alt="About MindLift" class="img-fluid rounded-4">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section py-5">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center" data-aos="zoom-in">
+                <h2 class="display-4 fw-bold mb-4" style="color: white;">Ready to Start Your Wellness Journey?</h2>
+                <p class="lead mb-5" style="color: rgba(255,255,255,0.9);">Join thousands of users who are taking control of their mental health with MindLift.</p>
+                <a href="{% url 'register' %}" class="btn btn-light btn-lg rounded-pill px-5 mb-3" style="color: var(--primary); font-weight: 600;">
+                    <i class="fas fa-rocket me-2"></i>Get Started Free
+                </a>
+                <p class="small" style="color: rgba(255,255,255,0.8);">No credit card required • 100% confidential</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block footer %}
+<footer class="footer py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h5 class="fw-bold mb-3"><i class="fas fa-brain me-2" style="color: var(--primary);"></i>MindLift</h5>
+                <p style="color: var(--text-secondary);">Your AI-powered mental health companion, available 24/7.</p>
+            </div>
+            <div class="col-md-3">
+                <h6 class="fw-bold mb-3">Quick Links</h6>
+                <ul class="list-unstyled">
+                    <li><a href="#features" style="color: var(--text-secondary);">Features</a></li>
+                    <li><a href="#about" style="color: var(--text-secondary);">About</a></li>
+                    <li><a href="#how-it-works" style="color: var(--text-secondary);">How It Works</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h6 class="fw-bold mb-3">Support</h6>
+                <ul class="list-unstyled">
+                    <li><a href="#" style="color: var(--text-secondary);">Privacy Policy</a></li>
+                    <li><a href="#" style="color: var(--text-secondary);">Terms of Service</a></li>
+                    <li><a href="#" style="color: var(--text-secondary);">Contact Us</a></li>
+                </ul>
+            </div>
+        </div>
+        <hr class="my-4" style="border-color: rgba(124, 156, 191, 0.2);">
+        <div class="text-center" style="color: var(--text-secondary);">
+            <p class="mb-0">&copy; 2026 MindLift. All rights reserved. Made with <i class="fas fa-heart" style="color: var(--danger);"></i> for mental wellness.</p>
+        </div>
+    </div>
+</footer>
+{% endblock %}
