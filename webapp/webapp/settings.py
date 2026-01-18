@@ -1,55 +1,82 @@
 """
-Production-Ready Django Settings for Railway.app
+Django settings for webapp project - Optimized for Performance
+File: webapp/settings.py
 """
-import os
-from pathlib import Path
-from decouple import config
-import dj_database_url
 
+from pathlib import Path
+import os
+
+# ------------------------------------------------------------------
+# BASE DIRECTORY
+# ------------------------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
+# ------------------------------------------------------------------
 # SECURITY
-SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-this-key')
-DEBUG = config('DEBUG', default=False, cast=bool)
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',')
+# ------------------------------------------------------------------
+SECRET_KEY = 'django-insecure-q2z$9m3=o61l90eo&*4jne!nihuj-srh2piaxd+2xf3n*(l!y!'
 
-# Add Railway domains
-RAILWAY_STATIC_URL = config('RAILWAY_STATIC_URL', default='')
-if RAILWAY_STATIC_URL:
-    ALLOWED_HOSTS.append(RAILWAY_STATIC_URL)
+DEBUG = True
 
-# Add *.railway.app domains
-ALLOWED_HOSTS.extend([
-    '.railway.app',
-    '.up.railway.app',
-])
+ALLOWED_HOSTS = ['*']
 
-# INSTALLED APPS
+
+# ------------------------------------------------------------------
+# APPLICATIONS
+# ------------------------------------------------------------------
 INSTALLED_APPS = [
+    # Django default apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # Custom apps
     'chatbot',
 ]
 
-# MIDDLEWARE
+
+# ------------------------------------------------------------------
+# MIDDLEWARE - IMPORTANT: Order matters!
+# ------------------------------------------------------------------
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # Whitenoise for static files
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'chatbot.middleware.YouTubeEmbedMiddleware',
+    'chatbot.middleware.YouTubeEmbedMiddleware',  # Must be last
 ]
 
+
+# ------------------------------------------------------------------
+# CACHING CONFIGURATION (NEW - For Performance)
+# ------------------------------------------------------------------
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'mindlift-cache',
+        'TIMEOUT': 300,  # 5 minutes default
+        'OPTIONS': {
+            'MAX_ENTRIES': 1000
+        }
+    }
+}
+
+
+# ------------------------------------------------------------------
+# URL CONFIGURATION
+# ------------------------------------------------------------------
 ROOT_URLCONF = 'webapp.urls'
 
-# TEMPLATES
+
+# ------------------------------------------------------------------
+# TEMPLATES CONFIGURATION
+# ------------------------------------------------------------------
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -66,87 +93,194 @@ TEMPLATES = [
     },
 ]
 
+
+# ------------------------------------------------------------------
+# WSGI
+# ------------------------------------------------------------------
 WSGI_APPLICATION = 'webapp.wsgi.application'
 
-# DATABASE
-# Railway provides DATABASE_URL automatically
+
+# ------------------------------------------------------------------
+# DATABASE (DEV MODE)
+# ------------------------------------------------------------------
 DATABASES = {
-    'default': dj_database_url.config(
-        default=config('DATABASE_URL'),
-        conn_max_age=600,
-        conn_health_checks=True,
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'mindlift_db',
+        'USER': 'mindlift_user',
+        'PASSWORD': 'root',
+        'HOST': 'localhost',
+        'PORT': '3306',
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            'charset': 'utf8mb4',
+        },
+        'CONN_MAX_AGE': 600,  # Connection pooling for better performance
+    }
 }
 
+
+# ------------------------------------------------------------------
 # PASSWORD VALIDATION
+# ------------------------------------------------------------------
 AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
 ]
 
+
+# ------------------------------------------------------------------
 # INTERNATIONALIZATION
+# ------------------------------------------------------------------
 LANGUAGE_CODE = 'en-us'
+
 TIME_ZONE = 'UTC'
+
 USE_I18N = True
 USE_TZ = True
 
-# STATIC FILES
+
+# ------------------------------------------------------------------
+# STATIC FILES (CSS, JS, IMAGES)
+# ------------------------------------------------------------------
 STATIC_URL = '/static/'
+
+STATICFILES_DIRS = [
+    BASE_DIR / 'chatbot' / 'static'
+]
+
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_DIRS = [BASE_DIR / 'chatbot' / 'static']
 
-# Whitenoise configuration
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+# ------------------------------------------------------------------
 # MEDIA FILES
+# ------------------------------------------------------------------
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# AUTHENTICATION
+
+# ------------------------------------------------------------------
+# AUTHENTICATION REDIRECTS
+# ------------------------------------------------------------------
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/chat/'
 LOGOUT_REDIRECT_URL = '/'
 
+
+# ------------------------------------------------------------------
 # DEFAULT PRIMARY KEY
+# ------------------------------------------------------------------
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# SESSION
-SESSION_COOKIE_AGE = 86400
+
+# ------------------------------------------------------------------
+# SESSION SETTINGS
+# ------------------------------------------------------------------
+SESSION_COOKIE_AGE = 86400  # 24 hours
 SESSION_SAVE_EVERY_REQUEST = True
 
-# SECURITY SETTINGS
-if not DEBUG:
-    SECURE_SSL_REDIRECT = True
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
-    SECURE_BROWSER_XSS_FILTER = True
-    SECURE_CONTENT_TYPE_NOSNIFF = True
-    X_FRAME_OPTIONS = 'SAMEORIGIN'
 
-# LOGGING
+# ------------------------------------------------------------------
+# SECURITY SETTINGS FOR DEVELOPMENT
+# ------------------------------------------------------------------
+X_FRAME_OPTIONS = None
+SECURE_CONTENT_TYPE_NOSNIFF = False
+SECURE_BROWSER_XSS_FILTER = False
+SECURE_CROSS_ORIGIN_OPENER_POLICY = None
+SECURE_SSL_REDIRECT = False
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SAMESITE = 'Lax'
+
+
+# ------------------------------------------------------------------
+# LOGGING CONFIGURATION
+# ------------------------------------------------------------------
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
     'handlers': {
         'console': {
+            'level': 'INFO',
             'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'debug.log',
+            'formatter': 'verbose',
         },
     },
     'root': {
         'handlers': ['console'],
         'level': 'INFO',
     },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'chatbot': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',  # Changed from DEBUG
+            'propagate': False,
+        },
+        'llm_service': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
 }
+# ------------------------------------------------------------------
+# LLM CONFIGURATION (Ollama + RASA)
+# ------------------------------------------------------------------
 
-# LLM CONFIGURATION
-RASA_SERVER_URL = config('RASA_SERVER_URL', default='')
-OLLAMA_URL = config('OLLAMA_URL', default='')
-USE_OLLAMA = config('USE_OLLAMA', default=False, cast=bool)
+import os
 
-OLLAMA_PRIMARY_TIMEOUT = config('OLLAMA_PRIMARY_TIMEOUT', default=20, cast=int)
-OLLAMA_FALLBACK_TIMEOUT = config('OLLAMA_FALLBACK_TIMEOUT', default=15, cast=int)
-RASA_REQUEST_TIMEOUT = config('RASA_REQUEST_TIMEOUT', default=10, cast=int)
-MAX_CONTEXT_MESSAGES = config('MAX_CONTEXT_MESSAGES', default=4, cast=int)
-MAX_RESPONSE_TOKENS = config('MAX_RESPONSE_TOKENS', default=150, cast=int)
+# LLM CONFIGURATION (Ollama + RASA) - OPTIMIZED
+OLLAMA_URL = os.getenv('OLLAMA_URL', 'http://localhost:11434')
+OLLAMA_PRIMARY_MODEL = os.getenv('OLLAMA_PRIMARY_MODEL', 'gemma:2b')
+OLLAMA_FALLBACK_MODEL = os.getenv('OLLAMA_FALLBACK_MODEL', 'phi3:mini')
+USE_OLLAMA = os.getenv('USE_OLLAMA', 'True').lower() == 'true'
+
+# RASA Configuration
+RASA_SERVER_URL = os.getenv('RASA_SERVER_URL', 'http://localhost:5005')
+
+# ------------------------------------------------------------------
+# PERFORMANCE SETTINGS - OPTIMIZED
+# ------------------------------------------------------------------
+
+# Reduced timeouts for faster user experience
+OLLAMA_PRIMARY_TIMEOUT = int(os.getenv('OLLAMA_PRIMARY_TIMEOUT', '20'))   # 8 seconds 
+OLLAMA_FALLBACK_TIMEOUT = int(os.getenv('OLLAMA_FALLBACK_TIMEOUT', '15')) # 4 seconds 
+RASA_REQUEST_TIMEOUT = int(os.getenv('RASA_REQUEST_TIMEOUT', '10'))      # 10 seconds
+
+# Context window - reduced for speed
+MAX_CONTEXT_MESSAGES = int(os.getenv('MAX_CONTEXT_MESSAGES', '2'))  # Last 2 messages 
+
+# Response length - reduced for speed
+MAX_RESPONSE_TOKENS = int(os.getenv('MAX_RESPONSE_TOKENS', '100'))  # 100 tokens 

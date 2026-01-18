@@ -822,3 +822,4 @@ INFO 2026-01-18 13:55:17,736 basehttp "GET /api/conversations/ HTTP/1.1" 200 278
 INFO 2026-01-18 13:55:20,314 basehttp "POST /api/delete-conversation/ HTTP/1.1" 200 65
 INFO 2026-01-18 13:55:20,350 basehttp "GET /api/conversations/ HTTP/1.1" 200 38
 INFO 2026-01-18 13:57:10,730 autoreload E:\mindlift\webapp\webapp\settings.py changed, reloading.
+INFO 2026-01-18 14:09:32,423 autoreload Watching for file changes with StatReloader
