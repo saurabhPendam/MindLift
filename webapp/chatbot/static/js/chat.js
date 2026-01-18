@@ -1,26 +1,36 @@
-// MindLift Chat Application with RASA Integration
+// MindLift Chat Application - FIXED VERSION
 // File: chatbot/static/js/chat.js
 
 class MindLiftChat {
     constructor() {
         this.messages = [];
+        this.currentSessionId = null;
+        this.conversations = [];
         this.isRecording = false;
         this.recordingTimer = null;
         this.recordingSeconds = 0;
-        this.conversationId = null;
         this.init();
     }
 
     init() {
+        // Get session ID from URL ONLY (no auto-creation)
+        const urlParams = new URLSearchParams(window.location.search);
+        this.currentSessionId = urlParams.get('session_id');
+        
         this.setupEventListeners();
-        this.loadChatHistory();
-        this.checkRasaStatus();
+        this.loadConversations();
+        this.checkLLMStatus();
+        
+        // Save session ID if exists
+        if (this.currentSessionId) {
+            sessionStorage.setItem('currentSessionId', this.currentSessionId);
+        }
     }
 
     setupEventListeners() {
         // Send message
-        document.getElementById('sendBtn').addEventListener('click', () => this.sendMessage());
-        document.getElementById('messageInput').addEventListener('keypress', (e) => {
+        document.getElementById('sendBtn')?.addEventListener('click', () => this.sendMessage());
+        document.getElementById('messageInput')?.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 this.sendMessage();
@@ -32,32 +42,25 @@ class MindLiftChat {
         document.getElementById('stopRecordingBtn')?.addEventListener('click', () => this.stopRecording());
 
         // Clear chat
-        document.getElementById('clearChatBtn').addEventListener('click', () => this.clearChat());
+        document.getElementById('clearChatBtn')?.addEventListener('click', () => this.clearCurrentChat());
 
         // Generate report
-        document.getElementById('generateReportBtn').addEventListener('click', () => this.generateReport());
+        document.getElementById('generateReportBtn')?.addEventListener('click', () => this.generateReport());
+
+        // New conversation - FIXED
+        document.getElementById('newConversationBtn')?.addEventListener('click', () => this.createNewConversation());
 
         // Sidebar toggle
-        document.getElementById('sidebarToggle').addEventListener('click', () => this.toggleSidebar());
+        document.getElementById('sidebarToggle')?.addEventListener('click', () => this.toggleSidebar());
 
         // Panel controls
-        document.getElementById('showReportBtn')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            this.showPanel('Reports');
-        });
-
         document.getElementById('showHistoryBtn')?.addEventListener('click', (e) => {
             e.preventDefault();
-            this.showPanel('Chat History');
+            this.showConversationsPanel();
         });
 
         document.getElementById('closePanelBtn')?.addEventListener('click', () => {
             document.getElementById('rightPanel').style.display = 'none';
-        });
-
-        // Download report button
-        document.getElementById('downloadReportBtn')?.addEventListener('click', () => {
-            this.downloadReportPDF();
         });
     }
 
@@ -67,6 +70,14 @@ class MindLiftChat {
 
         if (!message) return;
 
+        // Check if we have a conversation session
+        if (!this.currentSessionId) {
+            // Create new conversation first
+            await this.createNewConversation();
+            // Wait a bit for the page to load with new session
+            await new Promise(resolve => setTimeout(resolve, 500));
+        }
+
         // Add user message to UI
         this.addMessage(message, 'user');
         input.value = '';
@@ -75,7 +86,7 @@ class MindLiftChat {
         this.showTypingIndicator();
 
         try {
-            // Send to Django backend which will communicate with RASA
+            // Send to Django backend
             const response = await fetch('/api/send-message/', {
                 method: 'POST',
                 headers: {
@@ -84,15 +95,20 @@ class MindLiftChat {
                 },
                 body: JSON.stringify({
                     message: message,
-                    conversation_id: this.conversationId
+                    session_id: this.currentSessionId
                 })
             });
 
             const data = await response.json();
 
             if (data.success) {
-                // Update conversation ID
-                this.conversationId = data.conversation_id;
+                // Update session ID
+                this.currentSessionId = data.session_id;
+                sessionStorage.setItem('currentSessionId', this.currentSessionId);
+                
+                // Update URL without reload
+                const newUrl = `${window.location.pathname}?session_id=${this.currentSessionId}`;
+                window.history.replaceState({}, '', newUrl);
 
                 // Hide typing indicator
                 this.hideTypingIndicator();
@@ -101,11 +117,12 @@ class MindLiftChat {
                 data.bot_messages.forEach(botMsg => {
                     this.addMessage(botMsg.text, 'bot', {
                         youtubeUrl: botMsg.youtube_url,
-                        buttons: botMsg.buttons,
-                        image: botMsg.image,
                         messageId: botMsg.id
                     });
                 });
+                
+                // Reload conversations list
+                this.loadConversations();
             } else {
                 throw new Error(data.error || 'Failed to send message');
             }
@@ -136,11 +153,9 @@ class MindLiftChat {
 
         // Add text content
         if (text) {
-            // Extract YouTube URL from text if present
             const youtubeUrl = this.extractYouTubeUrl(text);
             if (youtubeUrl && !options.youtubeUrl) {
                 options.youtubeUrl = youtubeUrl;
-                // Remove URL from text
                 text = text.replace(/https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube-nocookie\.com\/embed\/)[^\s]+/g, '').trim();
             }
             
@@ -149,7 +164,7 @@ class MindLiftChat {
             }
         }
 
-        // Add YouTube video with improved embedding
+        // Add YouTube video
         if (options.youtubeUrl) {
             const videoId = this.extractYouTubeId(options.youtubeUrl);
             if (videoId) {
@@ -157,7 +172,7 @@ class MindLiftChat {
                     <div class="youtube-embed" style="margin-top: 15px; border-radius: 12px; overflow: hidden; background: #000;">
                         <iframe 
                             width="400" 
-                            height="400" 
+                            height="300" 
                             src="https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1"
                             title="YouTube video player"
                             frameborder="0" 
@@ -169,25 +184,6 @@ class MindLiftChat {
                     </div>
                 `;
             }
-        }
-
-        // Add image if present
-        if (options.image) {
-            messageContent += `<img src="${options.image}" class="message-image" alt="Image" style="max-width: 100%; border-radius: 10px; margin-top: 10px;">`;
-        }
-
-        // Add buttons if present
-        if (options.buttons && options.buttons.length > 0) {
-            messageContent += '<div class="message-buttons" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px;">';
-            options.buttons.forEach(button => {
-                messageContent += `
-                    <button class="btn btn-sm btn-outline-primary message-button" 
-                            onclick="window.chatApp.handleButtonClick('${button.payload}')">
-                        ${button.title}
-                    </button>
-                `;
-            });
-            messageContent += '</div>';
         }
 
         messageContent += '</div>'; // Close message-content
@@ -225,20 +221,6 @@ class MindLiftChat {
         return null;
     }
 
-    formatMessage(text) {
-        // Convert URLs to links (but not YouTube URLs as they're embedded)
-        const urlRegex = /(https?:\/\/(?!(?:www\.)?(?:youtube\.com|youtu\.be|youtube-nocookie\.com))[^\s]+)/g;
-        text = text.replace(urlRegex, '<a href="$1" target="_blank">$1</a>');
-        
-        // Convert line breaks
-        text = text.replace(/\n/g, '<br>');
-        
-        // Format bold text
-        text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-        
-        return text;
-    }
-
     extractYouTubeId(url) {
         const patterns = [
             /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube-nocookie\.com\/embed\/)([a-zA-Z0-9_-]{11})/
@@ -252,10 +234,12 @@ class MindLiftChat {
         return null;
     }
 
-    handleButtonClick(payload) {
-        // Handle button clicks by sending the payload as a message
-        document.getElementById('messageInput').value = payload;
-        this.sendMessage();
+    formatMessage(text) {
+        const urlRegex = /(https?:\/\/(?!(?:www\.)?(?:youtube\.com|youtu\.be|youtube-nocookie\.com))[^\s]+)/g;
+        text = text.replace(urlRegex, '<a href="$1" target="_blank">$1</a>');
+        text = text.replace(/\n/g, '<br>');
+        text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        return text;
     }
 
     showTypingIndicator() {
@@ -272,71 +256,149 @@ class MindLiftChat {
         container.scrollTop = container.scrollHeight;
     }
 
-    async checkRasaStatus() {
+    async checkLLMStatus() {
         try {
-            const response = await fetch('/api/check-rasa-status/');
+            const response = await fetch('/api/check-llm-status/');
             const data = await response.json();
             
-            if (!data.rasa_running) {
-                console.warn('RASA server is not running');
+            console.log('📊 LLM Status:', data);
+            
+            if (!data.primary_model_ready && !data.fallback_model_ready && !data.rasa_ready) {
+                this.showNotification('⚠️ AI services unavailable. Using basic responses.', 'warning');
+            } else if (data.primary_model_ready) {
+                console.log('✅ Primary model (MindLift) is ready');
+            } else if (data.fallback_model_ready) {
+                console.log('⚠️ Using fallback model (Phi)');
             }
         } catch (error) {
-            console.error('Failed to check RASA status:', error);
+            console.error('Failed to check LLM status:', error);
         }
     }
 
-    toggleVoiceRecording() {
-        if (this.isRecording) {
-            this.stopRecording();
-        } else {
-            this.startRecording();
+    async loadConversations() {
+        try {
+            const response = await fetch('/api/conversations/');
+            const data = await response.json();
+            
+            if (data.success) {
+                this.conversations = data.conversations;
+                this.renderConversationsList();
+            }
+        } catch (error) {
+            console.error('Error loading conversations:', error);
         }
     }
 
-    startRecording() {
-        this.isRecording = true;
-        this.recordingSeconds = 0;
+    renderConversationsList() {
+        const sidebar = document.querySelector('.sidebar-conversations');
+        if (!sidebar) return;
         
-        document.getElementById('voiceRecording').style.display = 'block';
-        document.getElementById('voiceBtn').classList.add('btn-danger');
-        document.getElementById('voiceBtn').classList.remove('btn-light');
-
-        this.recordingTimer = setInterval(() => {
-            this.recordingSeconds++;
-            const minutes = Math.floor(this.recordingSeconds / 60);
-            const seconds = this.recordingSeconds % 60;
-            document.getElementById('recordingTime').textContent = 
-                `${minutes}:${seconds.toString().padStart(2, '0')}`;
-        }, 1000);
-
-        console.log('Recording started...');
-    }
-
-    stopRecording() {
-        this.isRecording = false;
-        clearInterval(this.recordingTimer);
+        sidebar.innerHTML = '<h6 class="px-3 py-2 text-muted small">CONVERSATIONS</h6>';
         
-        document.getElementById('voiceRecording').style.display = 'none';
-        document.getElementById('voiceBtn').classList.remove('btn-danger');
-        document.getElementById('voiceBtn').classList.add('btn-light');
-
-        console.log('Recording stopped');
-    }
-
-    clearChat() {
-        if (confirm('Are you sure you want to clear all messages?')) {
-            const messagesContainer = document.getElementById('chatMessages');
-            messagesContainer.innerHTML = `
-                <div class="welcome-message">
-                    <div class="welcome-icon">
-                        <i class="fas fa-brain"></i>
-                    </div>
-                    <h4 class="fw-bold mb-2">Chat Cleared</h4>
-                    <p class="text-muted mb-4">Start a new conversation</p>
+        this.conversations.forEach(conv => {
+            const isActive = conv.session_id === this.currentSessionId;
+            const convElement = document.createElement('a');
+            convElement.href = `/chat/?session_id=${conv.session_id}`;
+            convElement.className = `sidebar-item conversation-item ${isActive ? 'active' : ''}`;
+            convElement.innerHTML = `
+                <div class="flex-grow-1">
+                    <div class="conversation-title">${conv.title}</div>
+                    <small class="text-muted">${conv.message_count} messages</small>
                 </div>
+                <button class="btn btn-sm btn-link text-danger delete-conversation" 
+                        data-session-id="${conv.session_id}"
+                        onclick="event.preventDefault(); window.chatApp.deleteConversation('${conv.session_id}');">
+                    <i class="fas fa-trash"></i>
+                </button>
             `;
-            this.messages = [];
-            this.conversationId = null;
+            sidebar.appendChild(convElement);
+        });
+    }
+
+    async createNewConversation() {
+        try {
+            const response = await fetch('/api/new-conversation/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': this.getCookie('csrftoken')
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Redirect to new conversation
+                window.location.href = `/chat/?session_id=${data.session_id}`;
+            }
+        } catch (error) {
+            console.error('Error creating conversation:', error);
+            this.showNotification('Failed to create new conversation', 'danger');
+        }
+    }
+
+    async deleteConversation(sessionId) {
+        if (!confirm('Are you sure you want to delete this conversation? This cannot be undone.')) {
+            return;
+        }
+        
+        try {
+            const response = await fetch('/api/delete-conversation/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': this.getCookie('csrftoken')
+                },
+                body: JSON.stringify({ session_id: sessionId })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                this.showNotification('Conversation deleted', 'success');
+                
+                // If deleted current conversation, redirect to chat without session
+                if (sessionId === this.currentSessionId) {
+                    window.location.href = '/chat/';
+                } else {
+                    this.loadConversations();
+                }
+            }
+        } catch (error) {
+            console.error('Error deleting conversation:', error);
+            this.showNotification('Failed to delete conversation', 'danger');
+        }
+    }
+
+    async clearCurrentChat() {
+        if (!this.currentSessionId) {
+            this.showNotification('No active conversation to clear', 'warning');
+            return;
+        }
+        
+        if (!confirm('Are you sure you want to clear all messages in this conversation?')) {
+            return;
+        }
+        
+        try {
+            const response = await fetch('/api/clear-conversation/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': this.getCookie('csrftoken')
+                },
+                body: JSON.stringify({ session_id: this.currentSessionId })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Reload page to show cleared conversation
+                window.location.reload();
+            }
+        } catch (error) {
+            console.error('Error clearing conversation:', error);
+            this.showNotification('Failed to clear conversation', 'danger');
         }
     }
 
@@ -355,8 +417,7 @@ class MindLiftChat {
                     'X-CSRFToken': this.getCookie('csrftoken')
                 },
                 body: JSON.stringify({
-                    days: 7,
-                    conversation_id: this.conversationId
+                    session_id: this.currentSessionId
                 })
             });
 
@@ -364,7 +425,6 @@ class MindLiftChat {
 
             if (data.success) {
                 this.displayReport(data.report);
-                this.currentReport = data.report;
             } else {
                 reportContent.innerHTML = `
                     <div class="alert alert-danger">
@@ -378,7 +438,7 @@ class MindLiftChat {
             reportContent.innerHTML = `
                 <div class="alert alert-danger">
                     <i class="fas fa-exclamation-triangle me-2"></i>
-                    An error occurred while generating the report. Please try again.
+                    An error occurred while generating the report.
                 </div>
             `;
         }
@@ -422,27 +482,20 @@ class MindLiftChat {
             </div>
             
             <div class="report-section mb-4" style="background: #f5f7fa; padding: 1.5rem; border-radius: 15px;">
-                <h5 class="fw-bold mb-3"><i class="fas fa-heart me-2" style="color: #7c9cbf;"></i>Top Emotions Detected</h5>
+                <h5 class="fw-bold mb-3"><i class="fas fa-heart me-2" style="color: #7c9cbf;"></i>Top Emotions</h5>
                 <div class="emotions-list">
                     ${Object.entries(report.top_emotions).map(([emotion, score]) => `
                         <div class="emotion-item mb-2">
                             <div class="d-flex justify-content-between mb-1">
-                                <span class="emotion-name text-capitalize fw-bold">${emotion}</span>
+                                <span class="text-capitalize fw-bold">${emotion}</span>
                                 <span class="text-muted">${score}</span>
                             </div>
                             <div class="emotion-bar" style="background: #e8ecef; height: 8px; border-radius: 10px; overflow: hidden;">
-                                <div class="emotion-fill" style="width: ${(score / Math.max(...Object.values(report.top_emotions))) * 100}%; background: linear-gradient(135deg, #7c9cbf, #9d9cb3); height: 100%;"></div>
+                                <div style="width: ${(score / Math.max(...Object.values(report.top_emotions))) * 100}%; background: linear-gradient(135deg, #7c9cbf, #9d9cb3); height: 100%;"></div>
                             </div>
                         </div>
                     `).join('')}
                 </div>
-            </div>
-            
-            <div class="report-section mb-4" style="background: #f5f7fa; padding: 1.5rem; border-radius: 15px;">
-                <h5 class="fw-bold mb-3"><i class="fas fa-calendar me-2" style="color: #7c9cbf;"></i>Analysis Period</h5>
-                <p class="mb-2"><strong>From:</strong> ${report.date_range.start}</p>
-                <p class="mb-2"><strong>To:</strong> ${report.date_range.end}</p>
-                <p class="mb-0"><strong>Total Messages Analyzed:</strong> ${report.total_messages}</p>
             </div>
             
             <div class="report-section" style="background: #f5f7fa; padding: 1.5rem; border-radius: 15px;">
@@ -470,249 +523,88 @@ class MindLiftChat {
         return colors[sentiment] || colors['neutral'];
     }
 
-    downloadReportPDF() {
-        if (!this.currentReport) {
-            alert('No report available to download');
-            return;
-        }
-
-        const printWindow = window.open('', '_blank');
-        const reportData = this.currentReport;
-        
-        printWindow.document.write(`
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>MindLift Sentiment Report</title>
-                <style>
-                    body {
-                        font-family: Arial, sans-serif;
-                        padding: 40px;
-                        max-width: 800px;
-                        margin: 0 auto;
-                    }
-                    .header {
-                        text-align: center;
-                        margin-bottom: 30px;
-                        border-bottom: 3px solid #7c9cbf;
-                        padding-bottom: 20px;
-                    }
-                    .header h1 {
-                        color: #7c9cbf;
-                        margin-bottom: 10px;
-                    }
-                    .score-section {
-                        text-align: center;
-                        margin: 30px 0;
-                        padding: 20px;
-                        background: #f5f7fa;
-                        border-radius: 10px;
-                    }
-                    .score {
-                        font-size: 48px;
-                        font-weight: bold;
-                        color: ${reportData.overall_sentiment === 'positive' ? '#10b981' : reportData.overall_sentiment === 'negative' ? '#ef4444' : '#f59e0b'};
-                    }
-                    .stats {
-                        display: flex;
-                        justify-content: space-around;
-                        margin: 20px 0;
-                    }
-                    .stat-box {
-                        text-align: center;
-                        padding: 15px;
-                        background: #fff;
-                        border-radius: 8px;
-                        border: 2px solid #e8ecef;
-                    }
-                    .section {
-                        margin: 25px 0;
-                        page-break-inside: avoid;
-                    }
-                    .section h3 {
-                        color: #7c9cbf;
-                        border-bottom: 2px solid #e8ecef;
-                        padding-bottom: 10px;
-                        margin-bottom: 15px;
-                    }
-                    .emotion-item {
-                        margin: 10px 0;
-                        padding: 10px;
-                        background: #f5f7fa;
-                        border-radius: 5px;
-                    }
-                    ul {
-                        list-style: none;
-                        padding-left: 0;
-                    }
-                    ul li {
-                        margin: 8px 0;
-                        padding-left: 25px;
-                        position: relative;
-                    }
-                    ul li:before {
-                        content: "✓";
-                        position: absolute;
-                        left: 0;
-                        color: #10b981;
-                        font-weight: bold;
-                    }
-                    .footer {
-                        margin-top: 40px;
-                        padding-top: 20px;
-                        border-top: 2px solid #e8ecef;
-                        text-align: center;
-                        color: #7f8c8d;
-                        font-size: 14px;
-                    }
-                    @media print {
-                        body { padding: 20px; }
-                        .no-print { display: none; }
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="header">
-                    <h1>🧠 MindLift Sentiment Analysis Report</h1>
-                    <p>Generated on ${new Date().toLocaleDateString()}</p>
-                </div>
-
-                <div class="score-section">
-                    <div class="score">${Math.round(reportData.average_score * 100)}%</div>
-                    <div style="font-size: 24px; font-weight: bold; text-transform: uppercase; color: #7f8c8d;">
-                        ${reportData.overall_sentiment} Sentiment
-                    </div>
-                </div>
-
-                <div class="stats">
-                    <div class="stat-box">
-                        <div style="font-size: 28px; font-weight: bold; color: #10b981;">${reportData.positive.percentage}%</div>
-                        <div>Positive</div>
-                        <small>${reportData.positive.count} messages</small>
-                    </div>
-                    <div class="stat-box">
-                        <div style="font-size: 28px; font-weight: bold; color: #f59e0b;">${reportData.neutral.percentage}%</div>
-                        <div>Neutral</div>
-                        <small>${reportData.neutral.count} messages</small>
-                    </div>
-                    <div class="stat-box">
-                        <div style="font-size: 28px; font-weight: bold; color: #ef4444;">${reportData.negative.percentage}%</div>
-                        <div>Negative</div>
-                        <small>${reportData.negative.count} messages</small>
-                    </div>
-                </div>
-
-                <div class="section">
-                    <h3>📊 Analysis Period</h3>
-                    <p><strong>From:</strong> ${reportData.date_range.start}</p>
-                    <p><strong>To:</strong> ${reportData.date_range.end}</p>
-                    <p><strong>Total Messages:</strong> ${reportData.total_messages}</p>
-                </div>
-
-                <div class="section">
-                    <h3>❤️ Top Emotions Detected</h3>
-                    ${Object.entries(reportData.top_emotions).map(([emotion, score]) => `
-                        <div class="emotion-item">
-                            <strong style="text-transform: capitalize;">${emotion}:</strong> ${score}
-                        </div>
-                    `).join('')}
-                </div>
-
-                <div class="section">
-                    <h3>💡 Recommendations</h3>
-                    <ul>
-                        ${reportData.recommendations.map(rec => `<li>${rec}</li>`).join('')}
-                    </ul>
-                </div>
-
-                <div class="footer">
-                    <p>This report was generated by MindLift - Your AI Mental Health Companion</p>
-                    <p>For support, visit our website or contact a mental health professional</p>
-                </div>
-
-                <div class="no-print" style="text-align: center; margin-top: 30px;">
-                    <button onclick="window.print()" style="padding: 10px 30px; background: #7c9cbf; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">
-                        Print / Save as PDF
-                    </button>
-                </div>
-            </body>
-            </html>
-        `);
-        
-        printWindow.document.close();
-    }
-
-    toggleSidebar() {
-        document.querySelector('.chat-sidebar').classList.toggle('show');
-    }
-
-    showPanel(title) {
+    showConversationsPanel() {
         const panel = document.getElementById('rightPanel');
         const panelTitle = document.getElementById('panelTitle');
         const panelContent = document.getElementById('panelContent');
         
-        panelTitle.textContent = title;
+        panelTitle.textContent = 'Chat History';
         
-        if (title === 'Reports') {
-            panelContent.innerHTML = `
-                <div class="text-center py-5">
-                    <i class="fas fa-chart-line fa-3x text-primary mb-3"></i>
-                    <p>Click "Generate Report" to create your sentiment analysis report</p>
-                </div>
+        let historyHTML = '<div class="list-group">';
+        
+        this.conversations.forEach(conv => {
+            const isActive = conv.session_id === this.currentSessionId;
+            historyHTML += `
+                <a href="/chat/?session_id=${conv.session_id}" 
+                   class="list-group-item list-group-item-action ${isActive ? 'active' : ''}">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">${conv.title}</h6>
+                            <small>${conv.message_count} messages • ${new Date(conv.last_message_at).toLocaleDateString()}</small>
+                        </div>
+                        <button class="btn btn-sm btn-danger" 
+                                onclick="event.preventDefault(); window.chatApp.deleteConversation('${conv.session_id}');">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </a>
             `;
-        } else if (title === 'Chat History') {
-            this.loadChatHistoryPanel(panelContent);
-        }
+        });
         
+        historyHTML += '</div>';
+        panelContent.innerHTML = historyHTML;
         panel.style.display = 'flex';
     }
 
-    async loadChatHistoryPanel(container) {
-        try {
-            const response = await fetch(`/api/chat-history/?conversation_id=${this.conversationId || ''}`);
-            const data = await response.json();
-            
-            if (data.success && data.messages.length > 0) {
-                const historyHTML = data.messages.map((msg, index) => `
-                    <div class="history-item mb-3">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <strong class="text-${msg.sender === 'user' ? 'primary' : 'secondary'}">
-                                ${msg.sender === 'user' ? 'You' : 'MindLift'}
-                            </strong>
-                            <small class="text-muted">${new Date(msg.timestamp).toLocaleTimeString()}</small>
-                        </div>
-                        <p class="small mb-0">${msg.content.substring(0, 100)}${msg.content.length > 100 ? '...' : ''}</p>
-                        ${msg.sentiment ? `<span class="badge bg-${msg.sentiment === 'positive' ? 'success' : msg.sentiment === 'negative' ? 'danger' : 'secondary'}">${msg.sentiment}</span>` : ''}
-                    </div>
-                    ${index < data.messages.length - 1 ? '<hr>' : ''}
-                `).join('');
-                
-                container.innerHTML = historyHTML;
-            } else {
-                container.innerHTML = '<p class="text-center text-muted">No chat history yet</p>';
-            }
-        } catch (error) {
-            console.error('Error loading history:', error);
-            container.innerHTML = '<p class="text-center text-danger">Failed to load history</p>';
+    showNotification(message, type = 'success') {
+        const notification = document.createElement('div');
+        notification.className = `alert alert-${type} position-fixed top-0 start-50 translate-middle-x mt-3`;
+        notification.style.zIndex = '9999';
+        notification.style.minWidth = '300px';
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+
+    toggleSidebar() {
+        document.querySelector('.chat-sidebar')?.classList.toggle('show');
+    }
+
+    toggleVoiceRecording() {
+        if (this.isRecording) {
+            this.stopRecording();
+        } else {
+            this.startRecording();
         }
     }
 
-    async loadChatHistory() {
-        try {
-            const response = await fetch(`/api/chat-history/?limit=50`);
-            const data = await response.json();
-            
-            if (data.success && data.messages.length > 0) {
-                data.messages.forEach(msg => {
-                    this.addMessage(msg.content, msg.sender, {
-                        youtubeUrl: msg.video_url,
-                        messageId: msg.id
-                    });
-                });
-            }
-        } catch (error) {
-            console.error('Error loading history:', error);
-        }
+    startRecording() {
+        this.isRecording = true;
+        this.recordingSeconds = 0;
+        
+        document.getElementById('voiceRecording').style.display = 'block';
+        document.getElementById('voiceBtn').classList.add('btn-danger');
+        document.getElementById('voiceBtn').classList.remove('btn-light');
+
+        this.recordingTimer = setInterval(() => {
+            this.recordingSeconds++;
+            const minutes = Math.floor(this.recordingSeconds / 60);
+            const seconds = this.recordingSeconds % 60;
+            document.getElementById('recordingTime').textContent = 
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }, 1000);
+    }
+
+    stopRecording() {
+        this.isRecording = false;
+        clearInterval(this.recordingTimer);
+        
+        document.getElementById('voiceRecording').style.display = 'none';
+        document.getElementById('voiceBtn').classList.remove('btn-danger');
+        document.getElementById('voiceBtn').classList.add('btn-light');
     }
 
     getCookie(name) {

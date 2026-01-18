@@ -21,5 +21,11 @@ urlpatterns = [
     path('api/sentiment-trend/', views.get_sentiment_trend, name='sentiment_trend'),
     path('api/complete-activity/', views.complete_activity, name='complete_activity'),
     path('api/toggle-quote-favorite/', views.toggle_quote_favorite, name='toggle_quote_favorite'),
-    path('api/check-rasa-status/', views.check_rasa_status, name='check_rasa_status'),
+    
+    # NEW: Conversation Management Endpoints
+    path('api/conversations/', views.get_conversations, name='get_conversations'),
+    path('api/delete-conversation/', views.delete_conversation, name='delete_conversation'),
+    path('api/clear-conversation/', views.clear_conversation, name='clear_conversation'),
+    path('api/new-conversation/', views.create_new_conversation, name='create_new_conversation'),
+    path('api/check-llm-status/', views.check_llm_status, name='check_llm_status'),
 ]

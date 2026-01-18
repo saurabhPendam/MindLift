@@ -1,68 +1,55 @@
 """
-Django settings for webapp project.
-File: webapp/settings.py
+Production-Ready Django Settings for Railway.app
 """
-
-from pathlib import Path
 import os
+from pathlib import Path
+from decouple import config
+import dj_database_url
 
-# ------------------------------------------------------------------
-# BASE DIRECTORY
-# ------------------------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# ------------------------------------------------------------------
 # SECURITY
-# ------------------------------------------------------------------
-SECRET_KEY = 'django-insecure-q2z$9m3=o61l90eo&*4jne!nihuj-srh2piaxd+2xf3n*(l!y!'
+SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-this-key')
+DEBUG = config('DEBUG', default=False, cast=bool)
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',')
 
-DEBUG = True
+# Add Railway domains
+RAILWAY_STATIC_URL = config('RAILWAY_STATIC_URL', default='')
+if RAILWAY_STATIC_URL:
+    ALLOWED_HOSTS.append(RAILWAY_STATIC_URL)
 
-ALLOWED_HOSTS = ['*']
+# Add *.railway.app domains
+ALLOWED_HOSTS.extend([
+    '.railway.app',
+    '.up.railway.app',
+])
 
-
-# ------------------------------------------------------------------
-# APPLICATIONS
-# ------------------------------------------------------------------
+# INSTALLED APPS
 INSTALLED_APPS = [
-    # Django default apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
-    # Custom apps
     'chatbot',
 ]
 
-
-# ------------------------------------------------------------------
-# MIDDLEWARE - IMPORTANT: Order matters!
-# ------------------------------------------------------------------
+# MIDDLEWARE
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Whitenoise for static files
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    # REMOVED: 'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'chatbot.middleware.YouTubeEmbedMiddleware',  # Must be last
+    'chatbot.middleware.YouTubeEmbedMiddleware',
 ]
 
-
-# ------------------------------------------------------------------
-# URL CONFIGURATION
-# ------------------------------------------------------------------
 ROOT_URLCONF = 'webapp.urls'
 
-
-# ------------------------------------------------------------------
-# TEMPLATES CONFIGURATION
-# ------------------------------------------------------------------
+# TEMPLATES
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -79,162 +66,87 @@ TEMPLATES = [
     },
 ]
 
-
-# ------------------------------------------------------------------
-# WSGI
-# ------------------------------------------------------------------
 WSGI_APPLICATION = 'webapp.wsgi.application'
 
-
-# ------------------------------------------------------------------
-# DATABASE (DEV MODE)
-# ------------------------------------------------------------------
+# DATABASE
+# Railway provides DATABASE_URL automatically
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'mindlift_db',
-        'USER': 'mindlift_user',
-        'PASSWORD': 'root',
-        'HOST': 'localhost',
-        'PORT': '3306',
-    }
+    'default': dj_database_url.config(
+        default=config('DATABASE_URL'),
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 }
 
-
-# ------------------------------------------------------------------
 # PASSWORD VALIDATION
-# ------------------------------------------------------------------
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-
-# ------------------------------------------------------------------
 # INTERNATIONALIZATION
-# ------------------------------------------------------------------
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
 USE_TZ = True
 
-
-# ------------------------------------------------------------------
-# STATIC FILES (CSS, JS, IMAGES)
-# ------------------------------------------------------------------
+# STATIC FILES
 STATIC_URL = '/static/'
-
-STATICFILES_DIRS = [
-    BASE_DIR / 'chatbot' / 'static'
-]
-
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [BASE_DIR / 'chatbot' / 'static']
 
+# Whitenoise configuration
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# ------------------------------------------------------------------
 # MEDIA FILES
-# ------------------------------------------------------------------
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-
-# ------------------------------------------------------------------
-# AUTHENTICATION REDIRECTS
-# ------------------------------------------------------------------
+# AUTHENTICATION
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/chat/'
 LOGOUT_REDIRECT_URL = '/'
 
-
-# ------------------------------------------------------------------
 # DEFAULT PRIMARY KEY
-# ------------------------------------------------------------------
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-# ------------------------------------------------------------------
-# SESSION SETTINGS
-# ------------------------------------------------------------------
-SESSION_COOKIE_AGE = 86400  # 24 hours
+# SESSION
+SESSION_COOKIE_AGE = 86400
 SESSION_SAVE_EVERY_REQUEST = True
 
+# SECURITY SETTINGS
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'SAMEORIGIN'
 
-# ------------------------------------------------------------------
-# RASA CONFIGURATION
-# ------------------------------------------------------------------
-RASA_SERVER_URL = os.getenv('RASA_SERVER_URL', 'http://localhost:5005')
-
-
-# ------------------------------------------------------------------
-# SECURITY SETTINGS FOR DEVELOPMENT - YOUTUBE EMBED FIX
-# ------------------------------------------------------------------
-# Disable X-Frame-Options to allow YouTube embeds
-X_FRAME_OPTIONS = None
-
-# Disable these security features for development
-SECURE_CONTENT_TYPE_NOSNIFF = False
-SECURE_BROWSER_XSS_FILTER = False
-SECURE_CROSS_ORIGIN_OPENER_POLICY = None
-
-# SSL and Cookie settings for development
-SECURE_SSL_REDIRECT = False
-SESSION_COOKIE_SECURE = False
-CSRF_COOKIE_SECURE = False
-SESSION_COOKIE_SAMESITE = 'Lax'
-CSRF_COOKIE_SAMESITE = 'Lax'
-
-
-# ------------------------------------------------------------------
-# LOGGING CONFIGURATION
-# ------------------------------------------------------------------
+# LOGGING
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {message}',
-            'style': '{',
-        },
-    },
     'handlers': {
         'console': {
-            'level': 'INFO',
             'class': 'logging.StreamHandler',
-            'formatter': 'verbose'
-        },
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'debug.log',
-            'formatter': 'verbose',
         },
     },
     'root': {
-        'handlers': ['console', 'file'],
+        'handlers': ['console'],
         'level': 'INFO',
     },
-    'loggers': {
-        'django': {
-            'handlers': ['console', 'file'],
-            'level': 'INFO',
-            'propagate': False,
-        },
-        'chatbot': {
-            'handlers': ['console', 'file'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-    },
 }
+
+# LLM CONFIGURATION
+RASA_SERVER_URL = config('RASA_SERVER_URL', default='')
+OLLAMA_URL = config('OLLAMA_URL', default='')
+USE_OLLAMA = config('USE_OLLAMA', default=False, cast=bool)
+
+OLLAMA_PRIMARY_TIMEOUT = config('OLLAMA_PRIMARY_TIMEOUT', default=20, cast=int)
+OLLAMA_FALLBACK_TIMEOUT = config('OLLAMA_FALLBACK_TIMEOUT', default=15, cast=int)
+RASA_REQUEST_TIMEOUT = config('RASA_REQUEST_TIMEOUT', default=10, cast=int)
+MAX_CONTEXT_MESSAGES = config('MAX_CONTEXT_MESSAGES', default=4, cast=int)
+MAX_RESPONSE_TOKENS = config('MAX_RESPONSE_TOKENS', default=150, cast=int)

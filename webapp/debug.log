@@ -164,3 +164,661 @@ INFO 2026-01-12 19:27:10,545 basehttp "GET /chat/ HTTP/1.1" 200 10423
 INFO 2026-01-12 19:27:10,623 basehttp "GET /api/chat-history/?limit=50 HTTP/1.1" 200 6069
 INFO 2026-01-12 19:27:12,678 basehttp "GET /api/check-rasa-status/ HTTP/1.1" 200 76
 INFO 2026-01-13 09:56:32,928 autoreload Watching for file changes with StatReloader
+INFO 2026-01-13 19:26:46,447 autoreload Watching for file changes with StatReloader
+INFO 2026-01-13 22:14:52,335 autoreload Watching for file changes with StatReloader
+INFO 2026-01-13 22:15:01,934 basehttp "GET / HTTP/1.1" 302 0
+INFO 2026-01-13 22:15:02,133 basehttp "GET /chat/ HTTP/1.1" 200 10419
+INFO 2026-01-13 22:15:02,734 basehttp "GET /static/js/chat.js HTTP/1.1" 200 30843
+INFO 2026-01-13 22:15:03,184 basehttp "GET /api/chat-history/?limit=50 HTTP/1.1" 200 2463
+INFO 2026-01-13 22:15:05,716 basehttp "GET /api/check-rasa-status/ HTTP/1.1" 200 76
+ERROR 2026-01-13 22:15:10,157 log Internal Server Error: /api/send-message/
+ERROR 2026-01-13 22:15:10,165 basehttp "POST /api/send-message/ HTTP/1.1" 500 72
+ERROR 2026-01-13 22:15:13,068 log Internal Server Error: /api/send-message/
+ERROR 2026-01-13 22:15:13,068 basehttp "POST /api/send-message/ HTTP/1.1" 500 72
+INFO 2026-01-14 10:03:46,860 autoreload Watching for file changes with StatReloader
+INFO 2026-01-14 10:04:20,574 autoreload Watching for file changes with StatReloader
+INFO 2026-01-14 10:08:04,382 basehttp "GET / HTTP/1.1" 302 0
+INFO 2026-01-14 10:08:04,667 basehttp "GET /chat/ HTTP/1.1" 200 10419
+INFO 2026-01-14 10:08:04,732 basehttp "GET /static/css/style.css HTTP/1.1" 304 0
+INFO 2026-01-14 10:08:04,740 basehttp "GET /static/js/chat.js HTTP/1.1" 304 0
+INFO 2026-01-14 10:08:05,067 basehttp "GET /api/chat-history/?limit=50 HTTP/1.1" 200 2463
+INFO 2026-01-14 10:08:07,135 basehttp "GET /api/check-rasa-status/ HTTP/1.1" 200 76
+ERROR 2026-01-14 10:08:09,432 log Internal Server Error: /api/send-message/
+ERROR 2026-01-14 10:08:09,432 basehttp "POST /api/send-message/ HTTP/1.1" 500 72
+INFO 2026-01-14 10:18:26,545 autoreload E:\mindlift\webapp\chatbot\models.py changed, reloading.
+INFO 2026-01-14 10:18:30,904 autoreload Watching for file changes with StatReloader
+INFO 2026-01-14 10:21:32,781 autoreload E:\mindlift\webapp\chatbot\views.py changed, reloading.
+INFO 2026-01-14 10:21:39,436 autoreload Watching for file changes with StatReloader
+INFO 2026-01-14 10:22:11,800 autoreload E:\mindlift\webapp\chatbot\views.py changed, reloading.
+INFO 2026-01-14 10:22:15,120 autoreload Watching for file changes with StatReloader
+INFO 2026-01-14 10:22:34,354 autoreload E:\mindlift\webapp\chatbot\urls.py changed, reloading.
+INFO 2026-01-14 10:22:37,223 autoreload Watching for file changes with StatReloader
+INFO 2026-01-14 10:23:11,145 autoreload E:\mindlift\webapp\webapp\settings.py changed, reloading.
+INFO 2026-01-14 10:23:13,900 autoreload Watching for file changes with StatReloader
+INFO 2026-01-14 18:45:06,065 autoreload Watching for file changes with StatReloader
+INFO 2026-01-14 18:48:44,139 basehttp "GET / HTTP/1.1" 200 17636
+INFO 2026-01-14 18:48:44,256 basehttp "GET /static/css/style.css HTTP/1.1" 304 0
+INFO 2026-01-14 18:48:48,331 basehttp "GET /login/ HTTP/1.1" 200 6992
+INFO 2026-01-14 18:48:50,295 basehttp "GET /register/ HTTP/1.1" 200 12217
+INFO 2026-01-14 18:49:16,787 basehttp "POST /register/ HTTP/1.1" 302 0
+INFO 2026-01-14 18:49:17,252 basehttp "GET /chat/ HTTP/1.1" 200 12717
+INFO 2026-01-14 18:49:17,449 basehttp "GET /static/js/chat.js HTTP/1.1" 200 26685
+INFO 2026-01-14 18:49:17,486 basehttp "GET /api/conversations/ HTTP/1.1" 200 274
+INFO 2026-01-14 18:49:19,568 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 80
+ERROR 2026-01-14 18:50:29,296 llm_service Ollama request timeout
+INFO 2026-01-14 18:50:29,458 basehttp "POST /api/send-message/ HTTP/1.1" 200 449
+INFO 2026-01-14 18:50:30,035 basehttp "GET /api/conversations/ HTTP/1.1" 200 267
+ERROR 2026-01-14 18:54:07,004 llm_service Ollama request timeout
+INFO 2026-01-14 18:54:07,120 basehttp "POST /api/send-message/ HTTP/1.1" 200 502
+INFO 2026-01-14 18:54:07,307 basehttp "GET /api/conversations/ HTTP/1.1" 200 267
+INFO 2026-01-14 18:54:18,021 basehttp "POST /api/generate-report/ HTTP/1.1" 200 853
+INFO 2026-01-14 18:54:23,094 basehttp "POST /api/new-conversation/ HTTP/1.1" 200 132
+INFO 2026-01-14 18:54:23,213 basehttp "GET /chat/?session_id=eb2b1d09-b64b-4c6d-b264-6cda35b2a29e HTTP/1.1" 200 12831
+INFO 2026-01-14 18:54:23,389 basehttp "GET /api/conversations/ HTTP/1.1" 200 505
+INFO 2026-01-14 18:54:24,544 basehttp "GET /chat/?session_id=6393c3c6-919f-412b-9e96-d7ac187d10d6 HTTP/1.1" 200 13276
+INFO 2026-01-14 18:54:24,673 basehttp "GET /api/conversations/ HTTP/1.1" 200 505
+INFO 2026-01-14 18:54:25,457 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 80
+INFO 2026-01-14 18:54:25,712 basehttp "GET /chat/?session_id=eb2b1d09-b64b-4c6d-b264-6cda35b2a29e HTTP/1.1" 200 12831
+INFO 2026-01-14 18:54:25,814 basehttp "GET /api/conversations/ HTTP/1.1" 200 505
+INFO 2026-01-14 18:54:27,762 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 80
+INFO 2026-01-14 18:54:29,820 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 80
+INFO 2026-01-14 18:54:35,379 basehttp "GET /chat/?session_id=eb2b1d09-b64b-4c6d-b264-6cda35b2a29e HTTP/1.1" 200 11845
+INFO 2026-01-14 18:54:35,518 basehttp "GET /api/conversations/ HTTP/1.1" 200 505
+INFO 2026-01-14 18:54:36,341 basehttp "GET /chat/?session_id=6393c3c6-919f-412b-9e96-d7ac187d10d6 HTTP/1.1" 200 13276
+INFO 2026-01-14 18:54:36,471 basehttp "GET /api/conversations/ HTTP/1.1" 200 505
+INFO 2026-01-14 18:54:37,154 basehttp "GET /chat/?session_id=eb2b1d09-b64b-4c6d-b264-6cda35b2a29e HTTP/1.1" 200 11845
+INFO 2026-01-14 18:54:37,275 basehttp "GET /api/conversations/ HTTP/1.1" 200 505
+INFO 2026-01-14 18:54:37,754 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 80
+INFO 2026-01-14 18:54:39,752 basehttp "GET /chat/?session_id=6393c3c6-919f-412b-9e96-d7ac187d10d6 HTTP/1.1" 200 13276
+INFO 2026-01-14 18:54:39,923 basehttp "GET /api/conversations/ HTTP/1.1" 200 505
+INFO 2026-01-14 18:54:39,964 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 80
+INFO 2026-01-14 18:54:40,685 basehttp "GET /chat/?session_id=eb2b1d09-b64b-4c6d-b264-6cda35b2a29e HTTP/1.1" 200 11845
+INFO 2026-01-14 18:54:40,826 basehttp "GET /api/conversations/ HTTP/1.1" 200 505
+INFO 2026-01-14 18:54:42,050 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 80
+INFO 2026-01-14 18:54:42,382 basehttp "POST /api/generate-report/ HTTP/1.1" 200 640
+INFO 2026-01-14 18:54:44,554 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 80
+INFO 2026-01-14 18:54:45,975 basehttp "GET /chat/?session_id=6393c3c6-919f-412b-9e96-d7ac187d10d6 HTTP/1.1" 200 13276
+INFO 2026-01-14 18:54:46,109 basehttp "GET /api/conversations/ HTTP/1.1" 200 505
+INFO 2026-01-14 18:54:46,956 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 80
+INFO 2026-01-14 18:54:48,130 basehttp "GET /chat/?session_id=eb2b1d09-b64b-4c6d-b264-6cda35b2a29e HTTP/1.1" 200 11845
+INFO 2026-01-14 18:54:48,251 basehttp "GET /api/conversations/ HTTP/1.1" 200 505
+INFO 2026-01-14 18:54:49,024 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 80
+INFO 2026-01-14 18:54:51,363 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 80
+INFO 2026-01-14 18:54:56,425 basehttp "POST /api/delete-conversation/ HTTP/1.1" 200 65
+INFO 2026-01-14 18:54:56,508 basehttp "POST /api/new-conversation/ HTTP/1.1" 200 132
+INFO 2026-01-14 18:54:56,581 basehttp "GET /chat/?session_id=5cef8b2f-8f6a-41c8-b476-012515184f7c HTTP/1.1" 200 12831
+INFO 2026-01-14 18:54:56,718 basehttp "GET /api/conversations/ HTTP/1.1" 200 505
+INFO 2026-01-14 18:54:59,058 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 80
+INFO 2026-01-14 18:54:59,798 basehttp "POST /api/delete-conversation/ HTTP/1.1" 200 65
+INFO 2026-01-14 18:54:59,841 basehttp "GET /api/conversations/ HTTP/1.1" 200 274
+INFO 2026-01-14 18:55:01,154 basehttp "GET /chat/?session_id=5cef8b2f-8f6a-41c8-b476-012515184f7c HTTP/1.1" 200 12102
+INFO 2026-01-14 18:55:01,264 basehttp "GET /api/conversations/ HTTP/1.1" 200 274
+INFO 2026-01-14 18:55:03,317 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 80
+INFO 2026-01-14 18:55:05,480 basehttp "POST /api/clear-conversation/ HTTP/1.1" 200 65
+INFO 2026-01-14 18:55:05,600 basehttp "GET /chat/?session_id=5cef8b2f-8f6a-41c8-b476-012515184f7c HTTP/1.1" 200 12102
+INFO 2026-01-14 18:55:05,787 basehttp "GET /api/conversations/ HTTP/1.1" 200 274
+INFO 2026-01-14 18:55:06,775 basehttp "POST /api/generate-report/ HTTP/1.1" 200 80
+INFO 2026-01-14 18:55:07,793 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 80
+INFO 2026-01-14 18:55:12,269 basehttp "GET /reports/ HTTP/1.1" 200 16329
+INFO 2026-01-14 18:55:33,599 basehttp "POST /api/delete-conversation/ HTTP/1.1" 200 65
+INFO 2026-01-14 18:55:33,654 basehttp "POST /api/new-conversation/ HTTP/1.1" 200 132
+INFO 2026-01-14 18:55:33,718 basehttp "GET /chat/?session_id=3f6a4fce-1b86-417e-a758-d5df220d4651 HTTP/1.1" 200 12102
+INFO 2026-01-14 18:55:33,842 basehttp "GET /api/conversations/ HTTP/1.1" 200 274
+ERROR 2026-01-14 18:55:35,700 llm_service Ollama request timeout
+INFO 2026-01-14 18:55:35,764 basehttp - Broken pipe from ('127.0.0.1', 60811)
+INFO 2026-01-14 18:55:35,905 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 80
+INFO 2026-01-14 18:55:36,960 basehttp "GET /profile/ HTTP/1.1" 200 7439
+INFO 2026-01-14 18:55:43,217 basehttp "GET /doctor/ HTTP/1.1" 200 15978
+INFO 2026-01-14 18:55:43,405 basehttp "GET /static/js/doctor.js HTTP/1.1" 200 14359
+INFO 2026-01-14 19:58:52,263 autoreload E:\mindlift\webapp\chatbot\llm_service.py changed, reloading.
+INFO 2026-01-14 19:59:21,356 autoreload Watching for file changes with StatReloader
+INFO 2026-01-14 20:02:10,038 autoreload Watching for file changes with StatReloader
+INFO 2026-01-14 20:02:15,882 basehttp "GET / HTTP/1.1" 200 17636
+INFO 2026-01-14 20:02:16,019 basehttp "GET /static/css/style.css HTTP/1.1" 200 20409
+WARNING 2026-01-14 20:02:34,373 log Not Found: /.well-known/appspecific/com.chrome.devtools.json
+WARNING 2026-01-14 20:02:34,375 basehttp "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 8439
+INFO 2026-01-14 20:03:35,207 basehttp "GET /api/check-llm-status/ HTTP/1.1" 302 0
+INFO 2026-01-14 20:03:35,223 basehttp "GET /login/?next=/api/check-llm-status/ HTTP/1.1" 200 6992
+INFO 2026-01-14 20:04:22,774 basehttp "GET /api/check-llm-status/ HTTP/1.1" 302 0
+INFO 2026-01-14 20:04:22,780 basehttp "GET /login/?next=/api/check-llm-status/ HTTP/1.1" 200 6992
+INFO 2026-01-14 20:09:06,544 autoreload Watching for file changes with StatReloader
+INFO 2026-01-14 20:10:10,656 basehttp "GET / HTTP/1.1" 302 0
+INFO 2026-01-14 20:10:10,781 basehttp "GET /chat/ HTTP/1.1" 200 13577
+INFO 2026-01-14 20:10:10,828 basehttp "GET /static/js/chat.js HTTP/1.1" 304 0
+INFO 2026-01-14 20:10:11,106 basehttp "GET /api/conversations/ HTTP/1.1" 200 753
+INFO 2026-01-14 20:10:15,282 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 397
+INFO 2026-01-14 20:10:19,661 basehttp "POST /api/delete-conversation/ HTTP/1.1" 200 65
+INFO 2026-01-14 20:10:19,693 basehttp "GET /api/conversations/ HTTP/1.1" 200 512
+INFO 2026-01-14 20:10:25,187 llm_service Using Ollama for response
+INFO 2026-01-14 20:10:25,187 llm_service Sending message to Ollama (mistral)
+ERROR 2026-01-14 20:11:27,232 llm_service Ollama request timeout
+WARNING 2026-01-14 20:11:27,236 llm_service Ollama failed, trying RASA fallback
+INFO 2026-01-14 20:11:29,612 llm_service Using RASA for response
+INFO 2026-01-14 20:11:29,612 llm_service Sending message to RASA
+INFO 2026-01-14 20:11:40,812 llm_service RASA response received: 1 messages
+INFO 2026-01-14 20:11:40,872 basehttp "POST /api/send-message/ HTTP/1.1" 200 416
+INFO 2026-01-14 20:11:41,051 basehttp "GET /api/conversations/ HTTP/1.1" 200 505
+INFO 2026-01-14 20:12:08,421 llm_service Using Ollama for response
+INFO 2026-01-14 20:12:08,421 llm_service Sending message to Ollama (mistral)
+INFO 2026-01-14 20:12:24,902 basehttp "POST /api/delete-conversation/ HTTP/1.1" 200 65
+INFO 2026-01-14 20:12:24,939 basehttp "GET /api/conversations/ HTTP/1.1" 200 267
+ERROR 2026-01-14 20:13:10,464 llm_service Ollama request timeout
+WARNING 2026-01-14 20:13:10,469 llm_service Ollama failed, trying RASA fallback
+INFO 2026-01-14 20:13:12,499 llm_service Using RASA for response
+INFO 2026-01-14 20:13:12,499 llm_service Sending message to RASA
+INFO 2026-01-14 20:13:20,998 llm_service RASA response received: 3 messages
+INFO 2026-01-14 20:13:21,067 basehttp "POST /api/send-message/ HTTP/1.1" 200 726
+INFO 2026-01-14 20:13:21,230 basehttp "GET /api/conversations/ HTTP/1.1" 200 267
+INFO 2026-01-14 20:15:00,098 basehttp "POST /api/generate-report/ HTTP/1.1" 200 851
+INFO 2026-01-14 20:15:18,683 basehttp "POST /api/delete-conversation/ HTTP/1.1" 200 65
+INFO 2026-01-14 20:15:18,716 basehttp "POST /api/new-conversation/ HTTP/1.1" 200 132
+INFO 2026-01-14 20:15:18,769 basehttp "GET /chat/?session_id=eea14c29-c2f5-4335-94fb-5f1098c29234 HTTP/1.1" 200 12102
+INFO 2026-01-14 20:15:18,870 basehttp "GET /api/conversations/ HTTP/1.1" 200 274
+INFO 2026-01-14 20:15:21,938 basehttp "POST /api/generate-report/ HTTP/1.1" 200 80
+INFO 2026-01-14 20:15:23,031 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 397
+INFO 2026-01-14 20:26:15,008 basehttp "GET /activities/ HTTP/1.1" 200 33651
+INFO 2026-01-14 20:26:26,566 basehttp "GET /chat/ HTTP/1.1" 200 12838
+INFO 2026-01-14 20:26:26,790 basehttp "GET /api/conversations/ HTTP/1.1" 200 512
+INFO 2026-01-14 20:26:30,184 basehttp "GET /quotes/ HTTP/1.1" 200 35425
+INFO 2026-01-14 20:26:30,919 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 397
+INFO 2026-01-14 21:58:18,008 autoreload E:\mindlift\webapp\chatbot\llm_service.py changed, reloading.
+INFO 2026-01-14 21:58:45,822 autoreload Watching for file changes with StatReloader
+INFO 2026-01-14 22:27:49,359 autoreload E:\mindlift\webapp\webapp\settings.py changed, reloading.
+INFO 2026-01-14 22:28:02,952 autoreload Watching for file changes with StatReloader
+INFO 2026-01-14 22:48:23,641 autoreload E:\mindlift\webapp\webapp\settings.py changed, reloading.
+INFO 2026-01-14 22:48:34,791 autoreload Watching for file changes with StatReloader
+INFO 2026-01-14 22:49:01,363 autoreload E:\mindlift\webapp\chatbot\llm_service.py changed, reloading.
+INFO 2026-01-14 22:49:04,393 autoreload Watching for file changes with StatReloader
+INFO 2026-01-14 22:49:32,542 autoreload Watching for file changes with StatReloader
+INFO 2026-01-14 22:52:54,888 basehttp "GET / HTTP/1.1" 302 0
+INFO 2026-01-14 22:52:56,154 basehttp "GET /chat/ HTTP/1.1" 200 13574
+INFO 2026-01-14 22:52:56,487 basehttp "GET /static/js/chat.js HTTP/1.1" 304 0
+ERROR 2026-01-14 22:52:57,123 views Check LLM status error: 'HybridLLMService' object has no attribute 'get_status'
+ERROR 2026-01-14 22:52:57,123 log Internal Server Error: /api/check-llm-status/
+ERROR 2026-01-14 22:52:57,136 basehttp "GET /api/check-llm-status/ HTTP/1.1" 500 133
+INFO 2026-01-14 22:52:57,202 basehttp "GET /api/conversations/ HTTP/1.1" 200 751
+INFO 2026-01-14 22:54:17,422 autoreload E:\mindlift\webapp\webapp\settings.py changed, reloading.
+INFO 2026-01-14 22:54:28,221 autoreload Watching for file changes with StatReloader
+INFO 2026-01-14 22:54:58,742 basehttp "POST /api/delete-conversation/ HTTP/1.1" 200 65
+INFO 2026-01-14 22:54:58,792 basehttp "POST /api/new-conversation/ HTTP/1.1" 200 133
+INFO 2026-01-14 22:54:59,015 basehttp "GET /chat/?session_id=a528303b-0895-46df-a9f1-9490079e96f7 HTTP/1.1" 200 13574
+INFO 2026-01-14 22:54:59,158 basehttp "GET /api/conversations/ HTTP/1.1" 200 751
+INFO 2026-01-14 22:55:02,036 basehttp "POST /api/delete-conversation/ HTTP/1.1" 200 65
+INFO 2026-01-14 22:55:02,075 basehttp "POST /api/new-conversation/ HTTP/1.1" 200 133
+INFO 2026-01-14 22:55:02,152 basehttp "GET /chat/?session_id=247eb051-7c8d-494c-8015-55ce14105d12 HTTP/1.1" 200 13574
+INFO 2026-01-14 22:55:02,252 basehttp "GET /api/conversations/ HTTP/1.1" 200 751
+INFO 2026-01-14 22:55:03,432 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 430
+INFO 2026-01-14 22:55:03,466 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 430
+INFO 2026-01-14 22:55:05,282 basehttp "POST /api/clear-conversation/ HTTP/1.1" 200 65
+INFO 2026-01-14 22:55:05,350 basehttp "GET /chat/?session_id=247eb051-7c8d-494c-8015-55ce14105d12 HTTP/1.1" 200 13574
+INFO 2026-01-14 22:55:05,442 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 430
+INFO 2026-01-14 22:55:05,463 basehttp "GET /api/conversations/ HTTP/1.1" 200 751
+INFO 2026-01-14 22:55:09,424 basehttp "GET /profile/ HTTP/1.1" 200 7439
+INFO 2026-01-14 22:55:17,727 basehttp "POST /api/delete-conversation/ HTTP/1.1" 200 65
+INFO 2026-01-14 22:55:17,786 basehttp "POST /api/new-conversation/ HTTP/1.1" 200 133
+INFO 2026-01-14 22:55:17,893 basehttp "GET /chat/?session_id=7f4b2858-666c-42bb-815a-9887071b7e59 HTTP/1.1" 200 13574
+INFO 2026-01-14 22:55:18,042 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 430
+INFO 2026-01-14 22:55:18,107 basehttp "GET /api/conversations/ HTTP/1.1" 200 751
+INFO 2026-01-14 22:55:19,622 basehttp "GET /chat/?session_id=eea14c29-c2f5-4335-94fb-5f1098c29234 HTTP/1.1" 200 13574
+INFO 2026-01-14 22:55:19,764 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 430
+INFO 2026-01-14 22:55:19,809 basehttp "GET /api/conversations/ HTTP/1.1" 200 751
+INFO 2026-01-14 22:55:26,997 basehttp "POST /api/new-conversation/ HTTP/1.1" 200 133
+INFO 2026-01-14 22:55:27,097 basehttp "GET /chat/?session_id=67d79cea-e57c-47f9-876c-cd6d84dc1c9b HTTP/1.1" 200 14310
+INFO 2026-01-14 22:55:27,268 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 430
+INFO 2026-01-14 22:55:27,525 basehttp "GET /api/conversations/ HTTP/1.1" 200 990
+INFO 2026-01-14 22:55:28,246 basehttp "POST /api/new-conversation/ HTTP/1.1" 200 133
+INFO 2026-01-14 22:55:28,361 basehttp "GET /chat/?session_id=172d0f35-cb42-4015-a5e6-ab767cf7c492 HTTP/1.1" 200 15046
+INFO 2026-01-14 22:55:28,471 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 430
+INFO 2026-01-14 22:55:28,492 basehttp "GET /api/conversations/ HTTP/1.1" 200 1229
+INFO 2026-01-14 22:55:28,809 basehttp "POST /api/new-conversation/ HTTP/1.1" 200 133
+INFO 2026-01-14 22:55:28,960 basehttp "GET /chat/?session_id=67f974ae-4135-4677-9712-e2a2f8e65317 HTTP/1.1" 200 15782
+INFO 2026-01-14 22:55:28,960 basehttp "POST /api/new-conversation/ HTTP/1.1" 200 133
+INFO 2026-01-14 22:55:29,092 basehttp "GET /chat/?session_id=78665e87-e954-49d1-9fc0-e5e0b6493f44 HTTP/1.1" 200 16518
+INFO 2026-01-14 22:55:29,242 basehttp "POST /api/new-conversation/ HTTP/1.1" 200 133
+INFO 2026-01-14 22:55:29,259 basehttp "GET /api/conversations/ HTTP/1.1" 200 1707
+INFO 2026-01-14 22:55:29,302 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 430
+INFO 2026-01-14 22:55:29,667 basehttp "POST /api/new-conversation/ HTTP/1.1" 200 133
+INFO 2026-01-14 22:55:29,688 basehttp "POST /api/new-conversation/ HTTP/1.1" 200 133
+INFO 2026-01-14 22:55:29,864 basehttp "POST /api/new-conversation/ HTTP/1.1" 200 133
+INFO 2026-01-14 22:55:29,890 basehttp "GET /chat/?session_id=9fdf6a74-f025-450d-9a4e-a2325426ef4f HTTP/1.1" 200 18726
+INFO 2026-01-14 22:55:30,009 basehttp "GET /chat/?session_id=d0f93d97-9772-4395-bf04-3e61954bace8 HTTP/1.1" 200 19462
+INFO 2026-01-14 22:55:30,043 basehttp "POST /api/new-conversation/ HTTP/1.1" 200 133
+INFO 2026-01-14 22:55:30,161 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 430
+INFO 2026-01-14 22:55:30,211 basehttp "GET /api/conversations/ HTTP/1.1" 200 2902
+INFO 2026-01-14 23:16:02,434 autoreload E:\mindlift\webapp\chatbot\llm_service.py changed, reloading.
+INFO 2026-01-14 23:16:08,857 autoreload Watching for file changes with StatReloader
+INFO 2026-01-14 23:16:35,402 autoreload E:\mindlift\webapp\webapp\settings.py changed, reloading.
+INFO 2026-01-14 23:16:40,443 autoreload Watching for file changes with StatReloader
+INFO 2026-01-14 23:17:02,072 autoreload E:\mindlift\webapp\chatbot\views.py changed, reloading.
+INFO 2026-01-14 23:17:07,909 autoreload Watching for file changes with StatReloader
+INFO 2026-01-14 23:17:24,124 autoreload E:\mindlift\webapp\chatbot\views.py changed, reloading.
+INFO 2026-01-14 23:17:27,706 autoreload Watching for file changes with StatReloader
+INFO 2026-01-14 23:25:48,165 autoreload E:\mindlift\webapp\chatbot\views.py changed, reloading.
+INFO 2026-01-14 23:25:50,970 autoreload Watching for file changes with StatReloader
+INFO 2026-01-14 23:29:20,617 autoreload E:\mindlift\webapp\chatbot\views.py changed, reloading.
+INFO 2026-01-14 23:29:25,379 autoreload Watching for file changes with StatReloader
+INFO 2026-01-14 23:31:17,390 autoreload E:\mindlift\webapp\chatbot\views.py changed, reloading.
+INFO 2026-01-14 23:31:22,875 autoreload Watching for file changes with StatReloader
+INFO 2026-01-14 23:36:14,828 autoreload Watching for file changes with StatReloader
+INFO 2026-01-14 23:42:23,770 basehttp "GET / HTTP/1.1" 302 0
+INFO 2026-01-14 23:42:24,081 basehttp "GET /chat/ HTTP/1.1" 200 20160
+INFO 2026-01-14 23:42:24,380 basehttp "GET /api/conversations/ HTTP/1.1" 200 2902
+INFO 2026-01-14 23:42:28,663 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 667
+ERROR 2026-01-14 23:42:34,711 views Send message error: ['“None” is not a valid UUID.']
+Traceback (most recent call last):
+  File "E:\mindlift\venv\lib\site-packages\django\db\models\fields\__init__.py", line 2766, in to_python
+    return uuid.UUID(**{input_form: value})
+  File "C:\Users\saura\AppData\Local\Programs\Python\Python310\lib\uuid.py", line 177, in __init__
+    raise ValueError('badly formed hexadecimal UUID string')
+ValueError: badly formed hexadecimal UUID string
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "E:\mindlift\webapp\chatbot\views.py", line 273, in send_message
+    conversation = Conversation.objects.get(
+  File "E:\mindlift\venv\lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "E:\mindlift\venv\lib\site-packages\django\db\models\query.py", line 621, in get
+    clone = self._chain() if self.query.combinator else self.filter(*args, **kwargs)
+  File "E:\mindlift\venv\lib\site-packages\django\db\models\query.py", line 1495, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+  File "E:\mindlift\venv\lib\site-packages\django\db\models\query.py", line 1513, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+  File "E:\mindlift\venv\lib\site-packages\django\db\models\query.py", line 1523, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+  File "E:\mindlift\venv\lib\site-packages\django\db\models\sql\query.py", line 1646, in add_q
+    clause, _ = self._add_q(q_object, can_reuse)
+  File "E:\mindlift\venv\lib\site-packages\django\db\models\sql\query.py", line 1678, in _add_q
+    child_clause, needed_inner = self.build_filter(
+  File "E:\mindlift\venv\lib\site-packages\django\db\models\sql\query.py", line 1588, in build_filter
+    condition = self.build_lookup(lookups, col, value)
+  File "E:\mindlift\venv\lib\site-packages\django\db\models\sql\query.py", line 1415, in build_lookup
+    lookup = lookup_class(lhs, rhs)
+  File "E:\mindlift\venv\lib\site-packages\django\db\models\lookups.py", line 38, in __init__
+    self.rhs = self.get_prep_lookup()
+  File "E:\mindlift\venv\lib\site-packages\django\db\models\lookups.py", line 410, in get_prep_lookup
+    return super().get_prep_lookup()
+  File "E:\mindlift\venv\lib\site-packages\django\db\models\lookups.py", line 96, in get_prep_lookup
+    return self.lhs.output_field.get_prep_value(self.rhs)
+  File "E:\mindlift\venv\lib\site-packages\django\db\models\fields\__init__.py", line 2750, in get_prep_value
+    return self.to_python(value)
+  File "E:\mindlift\venv\lib\site-packages\django\db\models\fields\__init__.py", line 2768, in to_python
+    raise exceptions.ValidationError(
+django.core.exceptions.ValidationError: ['“None” is not a valid UUID.']
+ERROR 2026-01-14 23:42:35,009 log Internal Server Error: /api/send-message/
+ERROR 2026-01-14 23:42:35,016 basehttp "POST /api/send-message/ HTTP/1.1" 500 49
+INFO 2026-01-15 09:40:21,428 autoreload Watching for file changes with StatReloader
+INFO 2026-01-15 09:44:24,789 basehttp "GET / HTTP/1.1" 302 0
+INFO 2026-01-15 09:44:25,106 basehttp "GET /chat/ HTTP/1.1" 200 20160
+INFO 2026-01-15 09:44:25,138 basehttp "GET /static/css/style.css HTTP/1.1" 304 0
+INFO 2026-01-15 09:44:25,298 basehttp "GET /static/js/chat.js HTTP/1.1" 200 25729
+INFO 2026-01-15 09:44:25,512 basehttp "GET /api/conversations/ HTTP/1.1" 200 2902
+INFO 2026-01-15 09:44:30,536 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 667
+INFO 2026-01-15 09:44:33,379 views ✅ New conversation created: b8c7fe37-7348-429e-9d1b-51739e0c0c52
+INFO 2026-01-15 09:44:33,379 basehttp "POST /api/new-conversation/ HTTP/1.1" 200 133
+INFO 2026-01-15 09:44:33,474 basehttp "GET /chat/?session_id=b8c7fe37-7348-429e-9d1b-51739e0c0c52 HTTP/1.1" 200 20934
+INFO 2026-01-15 09:44:33,553 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 667
+INFO 2026-01-15 09:44:33,589 basehttp "GET /api/conversations/ HTTP/1.1" 200 3141
+INFO 2026-01-15 09:44:38,743 views 🚀 Sending message to LLM service
+INFO 2026-01-15 09:44:38,743 llm_service 🎯 Processing message: hey there...
+INFO 2026-01-15 09:44:38,743 llm_service 🤖 Using primary model (MindLift)
+INFO 2026-01-15 09:44:38,749 llm_service 🤖 Using primary model: mindlift
+INFO 2026-01-15 09:44:38,749 llm_service 📤 Sending to Ollama (mindlift) - timeout: 15s
+ERROR 2026-01-15 09:44:55,935 llm_service ⏱️ Ollama (mindlift) timeout after 15s
+WARNING 2026-01-15 09:44:55,941 llm_service ⚠️ MindLift failed, trying Phi fallback
+INFO 2026-01-15 09:44:55,946 llm_service 🔄 Using fallback model (Phi)
+INFO 2026-01-15 09:44:55,947 llm_service 🔄 Using fallback model: phi
+INFO 2026-01-15 09:44:55,948 llm_service 📤 Sending to Ollama (phi) - timeout: 6s
+ERROR 2026-01-15 09:45:04,003 llm_service ⏱️ Ollama (phi) timeout after 6s
+WARNING 2026-01-15 09:45:04,005 llm_service ⚠️ Phi failed, trying RASA
+INFO 2026-01-15 09:45:06,034 llm_service 🤖 Using RASA
+INFO 2026-01-15 09:45:06,034 llm_service 📤 Sending to RASA
+INFO 2026-01-15 09:45:13,269 llm_service ✅ RASA response: 1 messages
+INFO 2026-01-15 09:45:13,293 views ✅ Message processed successfully. Model: rasa
+INFO 2026-01-15 09:45:13,317 basehttp "POST /api/send-message/ HTTP/1.1" 200 408
+INFO 2026-01-15 09:45:13,397 basehttp "GET /api/conversations/ HTTP/1.1" 200 3134
+INFO 2026-01-15 09:45:33,544 views 🚀 Sending message to LLM service
+INFO 2026-01-15 09:45:33,544 llm_service 🎯 Processing message: i am good but feeling lonely!...
+INFO 2026-01-15 09:45:35,696 llm_service 🤖 Using primary model (MindLift)
+INFO 2026-01-15 09:45:35,697 llm_service 🤖 Using primary model: mindlift
+INFO 2026-01-15 09:45:35,697 llm_service 📤 Sending to Ollama (mindlift) - timeout: 15s
+ERROR 2026-01-15 09:45:52,729 llm_service ⏱️ Ollama (mindlift) timeout after 15s
+WARNING 2026-01-15 09:45:52,733 llm_service ⚠️ MindLift failed, trying Phi fallback
+INFO 2026-01-15 09:45:52,733 llm_service 🔄 Using fallback model (Phi)
+INFO 2026-01-15 09:45:52,733 llm_service 🔄 Using fallback model: phi
+INFO 2026-01-15 09:45:52,733 llm_service 📤 Sending to Ollama (phi) - timeout: 6s
+ERROR 2026-01-15 09:46:00,783 llm_service ⏱️ Ollama (phi) timeout after 6s
+WARNING 2026-01-15 09:46:00,887 llm_service ⚠️ Phi failed, trying RASA
+INFO 2026-01-15 09:46:02,923 llm_service 🤖 Using RASA
+INFO 2026-01-15 09:46:02,924 llm_service 📤 Sending to RASA
+INFO 2026-01-15 09:46:05,026 llm_service ✅ RASA response: 1 messages
+INFO 2026-01-15 09:46:05,076 views ✅ Message processed successfully. Model: rasa
+INFO 2026-01-15 09:46:05,079 basehttp "POST /api/send-message/ HTTP/1.1" 200 464
+INFO 2026-01-15 09:46:05,207 basehttp "GET /api/conversations/ HTTP/1.1" 200 3134
+INFO 2026-01-15 09:46:26,293 views 🚀 Sending message to LLM service
+INFO 2026-01-15 09:46:26,293 llm_service 🎯 Processing message: what can i do to get rid of loneliness...
+INFO 2026-01-15 09:46:28,365 llm_service 🤖 Using primary model (MindLift)
+INFO 2026-01-15 09:46:28,365 llm_service 🤖 Using primary model: mindlift
+INFO 2026-01-15 09:46:28,365 llm_service 📤 Sending to Ollama (mindlift) - timeout: 15s
+ERROR 2026-01-15 09:46:45,412 llm_service ⏱️ Ollama (mindlift) timeout after 15s
+WARNING 2026-01-15 09:46:45,416 llm_service ⚠️ MindLift failed, trying Phi fallback
+INFO 2026-01-15 09:46:45,416 llm_service 🔄 Using fallback model (Phi)
+INFO 2026-01-15 09:46:45,416 llm_service 🔄 Using fallback model: phi
+INFO 2026-01-15 09:46:45,416 llm_service 📤 Sending to Ollama (phi) - timeout: 6s
+ERROR 2026-01-15 09:46:53,465 llm_service ⏱️ Ollama (phi) timeout after 6s
+WARNING 2026-01-15 09:46:53,470 llm_service ⚠️ Phi failed, trying RASA
+INFO 2026-01-15 09:46:55,497 llm_service 🤖 Using RASA
+INFO 2026-01-15 09:46:55,497 llm_service 📤 Sending to RASA
+INFO 2026-01-15 09:47:00,716 llm_service ✅ RASA response: 3 messages
+INFO 2026-01-15 09:47:00,748 views ✅ Message processed successfully. Model: rasa
+INFO 2026-01-15 09:47:00,765 basehttp "POST /api/send-message/ HTTP/1.1" 200 695
+INFO 2026-01-15 09:47:00,886 basehttp "GET /api/conversations/ HTTP/1.1" 200 3134
+INFO 2026-01-15 09:47:10,404 basehttp "POST /api/delete-conversation/ HTTP/1.1" 200 65
+INFO 2026-01-15 09:47:10,468 basehttp "GET /api/conversations/ HTTP/1.1" 200 2895
+INFO 2026-01-15 09:47:15,460 basehttp "POST /api/delete-conversation/ HTTP/1.1" 200 65
+INFO 2026-01-15 09:47:15,535 basehttp "GET /api/conversations/ HTTP/1.1" 200 2657
+INFO 2026-01-15 09:47:18,779 basehttp "POST /api/delete-conversation/ HTTP/1.1" 200 65
+INFO 2026-01-15 09:47:18,820 basehttp "GET /api/conversations/ HTTP/1.1" 200 2419
+INFO 2026-01-15 09:47:21,922 basehttp "POST /api/delete-conversation/ HTTP/1.1" 200 65
+INFO 2026-01-15 09:47:21,959 basehttp "GET /api/conversations/ HTTP/1.1" 200 2180
+INFO 2026-01-15 09:47:25,936 basehttp "POST /api/delete-conversation/ HTTP/1.1" 200 65
+INFO 2026-01-15 09:47:25,967 basehttp "GET /api/conversations/ HTTP/1.1" 200 1941
+INFO 2026-01-15 09:47:28,940 basehttp "POST /api/delete-conversation/ HTTP/1.1" 200 65
+INFO 2026-01-15 09:47:28,972 basehttp "GET /api/conversations/ HTTP/1.1" 200 1702
+INFO 2026-01-15 09:47:31,684 basehttp "POST /api/delete-conversation/ HTTP/1.1" 200 65
+INFO 2026-01-15 09:47:31,712 basehttp "GET /api/conversations/ HTTP/1.1" 200 1463
+INFO 2026-01-15 09:47:34,360 basehttp "POST /api/delete-conversation/ HTTP/1.1" 200 65
+INFO 2026-01-15 09:47:34,385 basehttp "GET /api/conversations/ HTTP/1.1" 200 1224
+INFO 2026-01-15 09:47:37,656 basehttp "POST /api/delete-conversation/ HTTP/1.1" 200 65
+INFO 2026-01-15 09:47:37,684 basehttp "GET /api/conversations/ HTTP/1.1" 200 985
+INFO 2026-01-15 09:47:40,351 basehttp "POST /api/delete-conversation/ HTTP/1.1" 200 65
+INFO 2026-01-15 09:47:40,375 basehttp "GET /api/conversations/ HTTP/1.1" 200 746
+INFO 2026-01-15 09:47:43,660 basehttp "POST /api/delete-conversation/ HTTP/1.1" 200 65
+INFO 2026-01-15 09:47:43,682 basehttp "GET /api/conversations/ HTTP/1.1" 200 507
+INFO 2026-01-15 09:47:46,168 basehttp "POST /api/delete-conversation/ HTTP/1.1" 200 65
+INFO 2026-01-15 09:47:46,201 basehttp "GET /api/conversations/ HTTP/1.1" 200 268
+INFO 2026-01-15 09:47:53,834 basehttp "POST /api/generate-report/ HTTP/1.1" 200 920
+INFO 2026-01-15 09:51:05,189 basehttp "GET /activities/ HTTP/1.1" 200 33651
+INFO 2026-01-15 09:52:52,450 basehttp "POST /api/clear-conversation/ HTTP/1.1" 200 65
+INFO 2026-01-15 09:52:52,502 basehttp "GET /chat/?session_id=b8c7fe37-7348-429e-9d1b-51739e0c0c52 HTTP/1.1" 200 12102
+INFO 2026-01-15 09:52:52,613 basehttp "GET /api/conversations/ HTTP/1.1" 200 275
+INFO 2026-01-15 09:52:56,711 basehttp - Broken pipe from ('127.0.0.1', 62445)
+INFO 2026-01-15 10:30:00,987 autoreload Watching for file changes with StatReloader
+INFO 2026-01-15 10:31:07,314 basehttp "GET / HTTP/1.1" 302 0
+INFO 2026-01-15 10:31:07,405 basehttp "GET /chat/ HTTP/1.1" 200 12064
+INFO 2026-01-15 10:31:07,661 basehttp "GET /api/conversations/ HTTP/1.1" 200 275
+INFO 2026-01-15 10:31:11,686 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 661
+INFO 2026-01-15 10:31:13,471 views ✅ New conversation created: 7faaf543-c987-47a6-ae33-c1ca49861928
+INFO 2026-01-15 10:31:13,482 basehttp "POST /api/new-conversation/ HTTP/1.1" 200 133
+INFO 2026-01-15 10:31:13,519 basehttp "GET /chat/?session_id=7faaf543-c987-47a6-ae33-c1ca49861928 HTTP/1.1" 200 12838
+INFO 2026-01-15 10:31:13,586 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 661
+INFO 2026-01-15 10:31:13,593 basehttp "GET /api/conversations/ HTTP/1.1" 200 514
+INFO 2026-01-15 10:31:17,896 basehttp "POST /api/delete-conversation/ HTTP/1.1" 200 65
+INFO 2026-01-15 10:31:17,916 basehttp "GET /api/conversations/ HTTP/1.1" 200 275
+INFO 2026-01-15 10:31:20,574 views 🚀 Sending message to LLM service
+INFO 2026-01-15 10:31:20,574 llm_service 🎯 Processing: hey there...
+INFO 2026-01-15 10:31:20,574 llm_service 🤖 Trying primary (MindLift)
+INFO 2026-01-15 10:31:20,574 llm_service 🤖 Using primary: gemma:2b
+INFO 2026-01-15 10:31:20,574 llm_service 📤 Sending to gemma:2b (timeout: 8s)
+ERROR 2026-01-15 10:31:30,623 llm_service ⏱️ gemma:2b timeout after 8s
+WARNING 2026-01-15 10:31:30,625 llm_service ⚠️ MindLift timeout, trying Phi
+INFO 2026-01-15 10:31:30,625 llm_service 🔄 Trying fallback (Phi)
+INFO 2026-01-15 10:31:30,625 llm_service 🔄 Using fallback: phi3:mini
+INFO 2026-01-15 10:31:30,625 llm_service 📤 Sending to phi3:mini (timeout: 4s)
+ERROR 2026-01-15 10:31:36,664 llm_service ⏱️ phi3:mini timeout after 4s
+WARNING 2026-01-15 10:31:36,665 llm_service ⚠️ Phi timeout, trying RASA
+INFO 2026-01-15 10:31:36,665 llm_service 🤖 Using RASA
+INFO 2026-01-15 10:31:36,665 llm_service 📤 Sending to RASA
+INFO 2026-01-15 10:31:41,321 llm_service ✅ RASA: 1 messages
+INFO 2026-01-15 10:31:41,347 views ✅ Message processed successfully. Model: rasa
+INFO 2026-01-15 10:31:41,359 basehttp "POST /api/send-message/ HTTP/1.1" 200 419
+INFO 2026-01-15 10:31:41,410 basehttp "GET /api/conversations/ HTTP/1.1" 200 268
+INFO 2026-01-15 10:33:52,563 views 🚀 Sending message to LLM service
+INFO 2026-01-15 10:33:52,563 llm_service 🎯 Processing: how are you?...
+INFO 2026-01-15 10:33:54,572 llm_service 🤖 Trying primary (MindLift)
+INFO 2026-01-15 10:33:54,573 llm_service 🤖 Using primary: gemma:2b
+INFO 2026-01-15 10:33:54,573 llm_service 📤 Sending to gemma:2b (timeout: 8s)
+ERROR 2026-01-15 10:34:04,618 llm_service ⏱️ gemma:2b timeout after 8s
+WARNING 2026-01-15 10:34:04,623 llm_service ⚠️ MindLift timeout, trying Phi
+INFO 2026-01-15 10:34:04,623 llm_service 🔄 Trying fallback (Phi)
+INFO 2026-01-15 10:34:04,625 llm_service 🔄 Using fallback: phi3:mini
+INFO 2026-01-15 10:34:04,625 llm_service 📤 Sending to phi3:mini (timeout: 4s)
+ERROR 2026-01-15 10:34:10,672 llm_service ⏱️ phi3:mini timeout after 4s
+WARNING 2026-01-15 10:34:10,745 llm_service ⚠️ Phi timeout, trying RASA
+INFO 2026-01-15 10:34:12,820 llm_service 🤖 Using RASA
+INFO 2026-01-15 10:34:12,823 llm_service 📤 Sending to RASA
+INFO 2026-01-15 10:34:14,980 llm_service ✅ RASA: 1 messages
+INFO 2026-01-15 10:34:14,996 views ✅ Message processed successfully. Model: rasa
+INFO 2026-01-15 10:34:15,005 basehttp "POST /api/send-message/ HTTP/1.1" 200 489
+INFO 2026-01-15 10:34:15,084 basehttp "GET /api/conversations/ HTTP/1.1" 200 268
+INFO 2026-01-15 10:34:36,942 autoreload E:\mindlift\webapp\webapp\settings.py changed, reloading.
+INFO 2026-01-15 10:34:42,492 autoreload Watching for file changes with StatReloader
+INFO 2026-01-15 10:34:50,440 autoreload Watching for file changes with StatReloader
+INFO 2026-01-15 10:35:25,299 autoreload E:\mindlift\webapp\webapp\settings.py changed, reloading.
+INFO 2026-01-15 10:35:27,788 autoreload Watching for file changes with StatReloader
+INFO 2026-01-15 10:35:30,307 basehttp "GET / HTTP/1.1" 302 0
+INFO 2026-01-15 10:35:30,407 basehttp "GET /chat/ HTTP/1.1" 200 12057
+INFO 2026-01-15 10:35:30,673 basehttp "GET /api/conversations/ HTTP/1.1" 200 268
+INFO 2026-01-15 10:35:34,713 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 661
+INFO 2026-01-15 10:35:35,017 basehttp "POST /api/delete-conversation/ HTTP/1.1" 200 65
+INFO 2026-01-15 10:35:35,052 basehttp "GET /api/conversations/ HTTP/1.1" 200 38
+INFO 2026-01-15 10:35:36,582 views ✅ New conversation created: 8c656ccc-4859-4b0f-a180-003b62dfb568
+INFO 2026-01-15 10:35:36,591 basehttp "POST /api/new-conversation/ HTTP/1.1" 200 133
+INFO 2026-01-15 10:35:36,632 basehttp "GET /chat/?session_id=8c656ccc-4859-4b0f-a180-003b62dfb568 HTTP/1.1" 200 12102
+INFO 2026-01-15 10:35:36,689 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 661
+INFO 2026-01-15 10:35:36,695 basehttp "GET /api/conversations/ HTTP/1.1" 200 275
+INFO 2026-01-15 10:35:46,298 views 🚀 Sending message to LLM service
+INFO 2026-01-15 10:35:46,298 llm_service 🎯 Processing: hello, how are you...
+INFO 2026-01-15 10:35:46,298 llm_service 🤖 Trying primary (MindLift)
+INFO 2026-01-15 10:35:46,298 llm_service 🤖 Using primary: gemma:2b
+INFO 2026-01-15 10:35:46,298 llm_service 📤 Sending to gemma:2b (timeout: 20s)
+INFO 2026-01-15 10:35:56,542 llm_service ✅ gemma:2b responded
+INFO 2026-01-15 10:35:56,548 views ✅ Message processed successfully. Model: gemma:2b
+INFO 2026-01-15 10:35:56,564 basehttp "POST /api/send-message/ HTTP/1.1" 200 413
+INFO 2026-01-15 10:35:56,611 basehttp "GET /api/conversations/ HTTP/1.1" 200 277
+INFO 2026-01-15 10:36:18,430 views 🚀 Sending message to LLM service
+INFO 2026-01-15 10:36:18,446 llm_service 🎯 Processing: i am good...
+INFO 2026-01-15 10:36:20,469 llm_service 🤖 Trying primary (MindLift)
+INFO 2026-01-15 10:36:20,469 llm_service 🤖 Using primary: gemma:2b
+INFO 2026-01-15 10:36:20,469 llm_service 📤 Sending to gemma:2b (timeout: 20s)
+INFO 2026-01-15 10:36:33,683 llm_service ✅ gemma:2b responded
+INFO 2026-01-15 10:36:33,703 views ✅ Message processed successfully. Model: gemma:2b
+INFO 2026-01-15 10:36:33,714 basehttp "POST /api/send-message/ HTTP/1.1" 200 421
+INFO 2026-01-15 10:36:33,755 basehttp "GET /api/conversations/ HTTP/1.1" 200 277
+INFO 2026-01-15 10:37:48,867 basehttp "POST /api/generate-report/ HTTP/1.1" 200 640
+INFO 2026-01-15 10:38:06,109 views 🚀 Sending message to LLM service
+INFO 2026-01-15 10:38:06,109 llm_service 🎯 Processing: fuck saurabh...
+INFO 2026-01-15 10:38:08,127 llm_service 🤖 Trying primary (MindLift)
+INFO 2026-01-15 10:38:08,127 llm_service 🤖 Using primary: gemma:2b
+INFO 2026-01-15 10:38:08,128 llm_service 📤 Sending to gemma:2b (timeout: 20s)
+INFO 2026-01-15 10:38:24,708 llm_service ✅ gemma:2b responded
+INFO 2026-01-15 10:38:24,728 views ✅ Message processed successfully. Model: gemma:2b
+INFO 2026-01-15 10:38:24,735 basehttp "POST /api/send-message/ HTTP/1.1" 200 487
+INFO 2026-01-15 10:38:24,779 basehttp "GET /api/conversations/ HTTP/1.1" 200 277
+INFO 2026-01-15 10:38:41,184 views 🚀 Sending message to LLM service
+INFO 2026-01-15 10:38:41,184 llm_service 🎯 Processing: i am depressed and lonely...
+INFO 2026-01-15 10:38:43,202 llm_service 🤖 Trying primary (MindLift)
+INFO 2026-01-15 10:38:43,203 llm_service 🤖 Using primary: gemma:2b
+INFO 2026-01-15 10:38:43,203 llm_service 📤 Sending to gemma:2b (timeout: 20s)
+ERROR 2026-01-15 10:39:05,244 llm_service ⏱️ gemma:2b timeout after 20s
+WARNING 2026-01-15 10:39:05,246 llm_service ⚠️ MindLift timeout, trying Phi
+INFO 2026-01-15 10:39:05,246 llm_service 🔄 Trying fallback (Phi)
+INFO 2026-01-15 10:39:05,246 llm_service 🔄 Using fallback: phi3:mini
+INFO 2026-01-15 10:39:05,246 llm_service 📤 Sending to phi3:mini (timeout: 15s)
+ERROR 2026-01-15 10:39:22,284 llm_service ⏱️ phi3:mini timeout after 15s
+WARNING 2026-01-15 10:39:22,286 llm_service ⚠️ Phi timeout, trying RASA
+INFO 2026-01-15 10:39:23,588 basehttp "GET /activities/ HTTP/1.1" 200 33651
+INFO 2026-01-15 10:39:24,341 llm_service 🤖 Using RASA
+INFO 2026-01-15 10:39:24,396 llm_service 📤 Sending to RASA
+INFO 2026-01-15 10:39:26,807 llm_service ✅ RASA: 1 messages
+INFO 2026-01-15 10:39:26,832 views ✅ Message processed successfully. Model: rasa
+INFO 2026-01-15 10:39:26,852 basehttp "POST /api/send-message/ HTTP/1.1" 200 483
+INFO 2026-01-15 10:39:33,348 basehttp "GET /chat/ HTTP/1.1" 200 12066
+INFO 2026-01-15 10:39:33,420 basehttp "GET /api/conversations/ HTTP/1.1" 200 277
+INFO 2026-01-15 10:39:35,421 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 661
+INFO 2026-01-15 10:39:35,906 basehttp "GET /quotes/ HTTP/1.1" 200 35290
+INFO 2026-01-15 10:39:40,172 basehttp "GET /chat/ HTTP/1.1" 200 12066
+INFO 2026-01-15 10:39:40,230 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 661
+INFO 2026-01-15 10:39:40,243 basehttp "GET /api/conversations/ HTTP/1.1" 200 277
+INFO 2026-01-15 10:39:41,821 basehttp "GET /doctor/ HTTP/1.1" 200 15978
+INFO 2026-01-15 10:39:41,868 basehttp "GET /static/js/doctor.js HTTP/1.1" 304 0
+INFO 2026-01-15 11:16:15,317 basehttp "GET /chat/ HTTP/1.1" 200 12066
+INFO 2026-01-15 11:16:15,360 basehttp "GET /static/js/chat.js HTTP/1.1" 304 0
+INFO 2026-01-15 11:16:15,401 basehttp "GET /api/conversations/ HTTP/1.1" 200 277
+INFO 2026-01-15 11:16:18,378 basehttp "GET /chat/?session_id=8c656ccc-4859-4b0f-a180-003b62dfb568 HTTP/1.1" 200 14223
+INFO 2026-01-15 11:16:18,434 basehttp "GET /api/conversations/ HTTP/1.1" 200 277
+INFO 2026-01-15 11:16:19,460 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 661
+INFO 2026-01-15 11:16:19,478 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 661
+INFO 2026-01-15 11:16:45,274 views 🚀 Sending message to LLM service
+INFO 2026-01-15 11:16:45,274 llm_service 🎯 Processing: give me some suggestions for it...
+INFO 2026-01-15 11:16:45,274 llm_service 🤖 Trying primary (MindLift)
+INFO 2026-01-15 11:16:45,275 llm_service 🤖 Using primary: gemma:2b
+INFO 2026-01-15 11:16:45,275 llm_service 📤 Sending to gemma:2b (timeout: 20s)
+ERROR 2026-01-15 11:17:07,316 llm_service ⏱️ gemma:2b timeout after 20s
+WARNING 2026-01-15 11:17:07,318 llm_service ⚠️ MindLift timeout, trying Phi
+INFO 2026-01-15 11:17:07,318 llm_service 🔄 Trying fallback (Phi)
+INFO 2026-01-15 11:17:07,318 llm_service 🔄 Using fallback: phi3:mini
+INFO 2026-01-15 11:17:07,319 llm_service 📤 Sending to phi3:mini (timeout: 15s)
+ERROR 2026-01-15 11:17:24,385 llm_service ⏱️ phi3:mini timeout after 15s
+WARNING 2026-01-15 11:17:24,387 llm_service ⚠️ Phi timeout, trying RASA
+INFO 2026-01-15 11:17:26,403 llm_service 🤖 Using RASA
+INFO 2026-01-15 11:17:26,403 llm_service 📤 Sending to RASA
+INFO 2026-01-15 11:17:30,961 llm_service ✅ RASA: 2 messages
+INFO 2026-01-15 11:17:30,983 views ✅ Message processed successfully. Model: rasa
+INFO 2026-01-15 11:17:30,999 basehttp "POST /api/send-message/ HTTP/1.1" 200 570
+INFO 2026-01-15 11:17:31,047 basehttp "GET /api/conversations/ HTTP/1.1" 200 278
+INFO 2026-01-15 11:22:24,560 basehttp "POST /api/generate-report/ HTTP/1.1" 200 920
+INFO 2026-01-15 14:11:22,993 basehttp "POST /api/generate-report/ HTTP/1.1" 200 920
+INFO 2026-01-15 14:11:34,409 basehttp "GET /activities/ HTTP/1.1" 200 33651
+INFO 2026-01-15 14:11:42,306 basehttp "GET /chat/ HTTP/1.1" 200 12067
+INFO 2026-01-15 14:11:42,402 basehttp "GET /static/js/chat.js HTTP/1.1" 304 0
+INFO 2026-01-15 14:11:42,529 basehttp "GET /api/conversations/ HTTP/1.1" 200 278
+INFO 2026-01-15 14:11:44,770 basehttp "GET /quotes/ HTTP/1.1" 200 35367
+INFO 2026-01-15 14:11:46,808 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 661
+INFO 2026-01-15 14:11:49,569 basehttp "GET /chat/ HTTP/1.1" 200 12067
+INFO 2026-01-15 14:11:49,664 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 661
+INFO 2026-01-15 14:11:49,672 basehttp "GET /api/conversations/ HTTP/1.1" 200 278
+INFO 2026-01-15 14:12:18,405 basehttp "GET /doctor/ HTTP/1.1" 200 15978
+INFO 2026-01-15 14:12:41,533 basehttp "GET /chat/ HTTP/1.1" 200 12067
+INFO 2026-01-15 14:12:42,170 basehttp "GET /api/conversations/ HTTP/1.1" 200 278
+INFO 2026-01-15 14:12:45,760 basehttp "GET /chat/?session_id=8c656ccc-4859-4b0f-a180-003b62dfb568 HTTP/1.1" 200 15495
+INFO 2026-01-15 14:12:45,938 basehttp "GET /api/conversations/ HTTP/1.1" 200 278
+INFO 2026-01-15 14:12:46,331 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 661
+INFO 2026-01-15 14:12:46,397 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 661
+INFO 2026-01-15 14:12:48,775 basehttp "POST /api/generate-report/ HTTP/1.1" 200 920
+INFO 2026-01-18 12:40:18,144 autoreload Watching for file changes with StatReloader
+INFO 2026-01-18 12:42:23,044 basehttp "GET / HTTP/1.1" 200 17636
+INFO 2026-01-18 12:42:23,299 basehttp "GET /static/css/style.css HTTP/1.1" 200 52132
+INFO 2026-01-18 12:42:46,425 basehttp "GET /login/ HTTP/1.1" 200 6992
+INFO 2026-01-18 12:44:06,398 basehttp "POST /login/ HTTP/1.1" 302 0
+INFO 2026-01-18 12:44:06,532 basehttp "GET /chat/ HTTP/1.1" 200 12675
+INFO 2026-01-18 12:44:06,583 basehttp "GET /static/js/chat.js HTTP/1.1" 304 0
+INFO 2026-01-18 12:44:06,762 basehttp "GET /api/conversations/ HTTP/1.1" 200 278
+INFO 2026-01-18 12:44:10,653 views ✅ New conversation created: 04efd45b-2379-4cf0-9693-b6ab9ec72806
+INFO 2026-01-18 12:44:10,653 basehttp "POST /api/new-conversation/ HTTP/1.1" 200 133
+INFO 2026-01-18 12:44:10,740 basehttp "GET /chat/?session_id=04efd45b-2379-4cf0-9693-b6ab9ec72806 HTTP/1.1" 200 12841
+INFO 2026-01-18 12:44:10,829 basehttp "GET /api/conversations/ HTTP/1.1" 200 517
+INFO 2026-01-18 12:44:10,988 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 661
+INFO 2026-01-18 12:44:11,005 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 661
+INFO 2026-01-18 12:44:12,895 basehttp "GET /chat/?session_id=8c656ccc-4859-4b0f-a180-003b62dfb568 HTTP/1.1" 200 16231
+INFO 2026-01-18 12:44:12,978 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 661
+INFO 2026-01-18 12:44:12,991 basehttp "GET /api/conversations/ HTTP/1.1" 200 517
+INFO 2026-01-18 12:44:14,935 basehttp "POST /api/generate-report/ HTTP/1.1" 200 920
+INFO 2026-01-18 12:44:18,068 basehttp "GET /chat/?session_id=04efd45b-2379-4cf0-9693-b6ab9ec72806 HTTP/1.1" 200 12841
+INFO 2026-01-18 12:44:18,149 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 661
+INFO 2026-01-18 12:44:18,160 basehttp "GET /api/conversations/ HTTP/1.1" 200 517
+INFO 2026-01-18 12:44:22,987 views 🚀 Sending message to LLM service
+INFO 2026-01-18 12:44:22,991 llm_service 🎯 Processing: hello...
+INFO 2026-01-18 12:44:22,991 llm_service 🤖 Trying primary (MindLift)
+INFO 2026-01-18 12:44:22,991 llm_service 🤖 Using primary: gemma:2b
+INFO 2026-01-18 12:44:23,002 llm_service 📤 Sending to gemma:2b (timeout: 20s)
+INFO 2026-01-18 12:44:42,794 llm_service ✅ gemma:2b responded
+INFO 2026-01-18 12:44:42,813 views ✅ Message processed successfully. Model: gemma:2b
+INFO 2026-01-18 12:44:42,822 basehttp "POST /api/send-message/ HTTP/1.1" 200 401
+INFO 2026-01-18 12:44:42,888 basehttp "GET /api/conversations/ HTTP/1.1" 200 506
+INFO 2026-01-18 12:44:56,914 views 🚀 Sending message to LLM service
+INFO 2026-01-18 12:44:56,916 llm_service 🎯 Processing: tell me about yourself...
+INFO 2026-01-18 12:44:58,936 llm_service 🤖 Trying primary (MindLift)
+INFO 2026-01-18 12:44:58,936 llm_service 🤖 Using primary: gemma:2b
+INFO 2026-01-18 12:44:58,936 llm_service 📤 Sending to gemma:2b (timeout: 20s)
+ERROR 2026-01-18 12:45:20,969 llm_service ⏱️ gemma:2b timeout after 20s
+WARNING 2026-01-18 12:45:20,972 llm_service ⚠️ MindLift timeout, trying Phi
+INFO 2026-01-18 12:45:20,972 llm_service 🔄 Trying fallback (Phi)
+INFO 2026-01-18 12:45:21,076 llm_service 🔄 Using fallback: phi3:mini
+INFO 2026-01-18 12:45:21,095 llm_service 📤 Sending to phi3:mini (timeout: 15s)
+ERROR 2026-01-18 12:45:38,562 llm_service ⏱️ phi3:mini timeout after 15s
+WARNING 2026-01-18 12:45:38,564 llm_service ⚠️ Phi timeout, trying RASA
+INFO 2026-01-18 12:45:40,578 llm_service 🤖 Using RASA
+INFO 2026-01-18 12:45:40,578 llm_service 📤 Sending to RASA
+INFO 2026-01-18 12:45:44,891 llm_service ✅ RASA: 2 messages
+INFO 2026-01-18 12:45:44,930 views ✅ Message processed successfully. Model: rasa
+INFO 2026-01-18 12:45:44,942 basehttp "POST /api/send-message/ HTTP/1.1" 200 558
+INFO 2026-01-18 12:45:45,026 basehttp "GET /api/conversations/ HTTP/1.1" 200 506
+INFO 2026-01-18 12:45:51,672 basehttp "POST /api/generate-report/ HTTP/1.1" 200 484
+INFO 2026-01-18 13:42:30,002 autoreload E:\mindlift\webapp\webapp\settings.py changed, reloading.
+INFO 2026-01-18 13:43:14,205 autoreload Watching for file changes with StatReloader
+INFO 2026-01-18 13:43:38,660 basehttp "GET / HTTP/1.1" 302 0
+INFO 2026-01-18 13:43:38,840 basehttp "GET /chat/ HTTP/1.1" 200 12792
+INFO 2026-01-18 13:43:39,154 basehttp "GET /api/conversations/ HTTP/1.1" 200 506
+INFO 2026-01-18 13:43:43,199 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 661
+INFO 2026-01-18 13:43:43,299 basehttp "GET /logout/ HTTP/1.1" 302 0
+INFO 2026-01-18 13:43:43,336 basehttp "GET / HTTP/1.1" 200 18263
+INFO 2026-01-18 13:45:51,844 basehttp "GET /login/ HTTP/1.1" 200 6992
+INFO 2026-01-18 13:45:58,977 basehttp "POST /login/ HTTP/1.1" 302 0
+INFO 2026-01-18 13:45:59,002 basehttp "GET /chat/ HTTP/1.1" 200 13400
+INFO 2026-01-18 13:45:59,089 basehttp "GET /api/conversations/ HTTP/1.1" 200 506
+INFO 2026-01-18 13:46:03,123 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 661
+INFO 2026-01-18 13:46:07,107 basehttp "GET /activities/ HTTP/1.1" 200 33651
+INFO 2026-01-18 13:46:13,415 basehttp "GET /chat/ HTTP/1.1" 200 12792
+INFO 2026-01-18 13:46:13,525 basehttp "GET /api/conversations/ HTTP/1.1" 200 506
+INFO 2026-01-18 13:46:13,525 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 661
+INFO 2026-01-18 13:46:17,401 basehttp "GET /doctor/ HTTP/1.1" 200 15978
+INFO 2026-01-18 13:46:17,456 basehttp "GET /static/js/doctor.js HTTP/1.1" 304 0
+INFO 2026-01-18 13:46:24,394 basehttp "GET /chat/ HTTP/1.1" 200 12792
+INFO 2026-01-18 13:46:24,484 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 661
+INFO 2026-01-18 13:46:24,500 basehttp "GET /api/conversations/ HTTP/1.1" 200 506
+INFO 2026-01-18 13:46:31,547 views ✅ New conversation created: 7f042b65-95de-4756-ae78-825099c1a2ac
+INFO 2026-01-18 13:46:31,547 basehttp "POST /api/new-conversation/ HTTP/1.1" 200 133
+INFO 2026-01-18 13:46:31,616 basehttp "GET /chat/?session_id=7f042b65-95de-4756-ae78-825099c1a2ac HTTP/1.1" 200 13566
+INFO 2026-01-18 13:46:31,709 basehttp "GET /api/conversations/ HTTP/1.1" 200 745
+INFO 2026-01-18 13:46:35,730 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 661
+INFO 2026-01-18 13:46:36,358 views 🚀 Sending message to LLM service
+INFO 2026-01-18 13:46:36,358 llm_service 🎯 Processing: hello...
+INFO 2026-01-18 13:46:36,358 llm_service 🤖 Trying primary (MindLift)
+INFO 2026-01-18 13:46:36,358 llm_service 🤖 Using primary: gemma:2b
+INFO 2026-01-18 13:46:36,358 llm_service 📤 Sending to gemma:2b (timeout: 20s)
+INFO 2026-01-18 13:46:54,426 llm_service ✅ gemma:2b responded
+INFO 2026-01-18 13:46:54,437 views ✅ Message processed successfully. Model: gemma:2b
+INFO 2026-01-18 13:46:54,452 basehttp "POST /api/send-message/ HTTP/1.1" 200 410
+INFO 2026-01-18 13:46:54,506 basehttp "GET /api/conversations/ HTTP/1.1" 200 734
+INFO 2026-01-18 13:47:15,379 views 🚀 Sending message to LLM service
+INFO 2026-01-18 13:47:15,379 llm_service 🎯 Processing: i am feeling depressed and lonely , can you help m...
+INFO 2026-01-18 13:47:17,398 llm_service 🤖 Trying primary (MindLift)
+INFO 2026-01-18 13:47:17,398 llm_service 🤖 Using primary: gemma:2b
+INFO 2026-01-18 13:47:17,398 llm_service 📤 Sending to gemma:2b (timeout: 20s)
+ERROR 2026-01-18 13:47:39,457 llm_service ⏱️ gemma:2b timeout after 20s
+WARNING 2026-01-18 13:47:39,461 llm_service ⚠️ MindLift timeout, trying Phi
+INFO 2026-01-18 13:47:39,462 llm_service 🔄 Trying fallback (Phi)
+INFO 2026-01-18 13:47:39,462 llm_service 🔄 Using fallback: phi3:mini
+INFO 2026-01-18 13:47:39,462 llm_service 📤 Sending to phi3:mini (timeout: 15s)
+ERROR 2026-01-18 13:47:56,532 llm_service ⏱️ phi3:mini timeout after 15s
+WARNING 2026-01-18 13:47:56,539 llm_service ⚠️ Phi timeout, trying RASA
+INFO 2026-01-18 13:47:58,544 llm_service 🤖 Using RASA
+INFO 2026-01-18 13:47:58,565 llm_service 📤 Sending to RASA
+INFO 2026-01-18 13:48:02,120 llm_service ✅ RASA: 1 messages
+INFO 2026-01-18 13:48:02,149 views ✅ Message processed successfully. Model: rasa
+INFO 2026-01-18 13:48:02,164 basehttp "POST /api/send-message/ HTTP/1.1" 200 486
+INFO 2026-01-18 13:48:03,445 basehttp "GET /api/conversations/ HTTP/1.1" 200 734
+INFO 2026-01-18 13:48:08,147 basehttp "POST /api/generate-report/ HTTP/1.1" 200 854
+INFO 2026-01-18 13:48:21,448 basehttp "POST /api/generate-report/ HTTP/1.1" 200 854
+INFO 2026-01-18 13:48:31,334 basehttp "GET /profile/ HTTP/1.1" 200 7439
+INFO 2026-01-18 13:55:13,309 basehttp "POST /api/delete-conversation/ HTTP/1.1" 200 65
+INFO 2026-01-18 13:55:13,376 basehttp "GET /chat/ HTTP/1.1" 200 12792
+INFO 2026-01-18 13:55:13,509 basehttp "GET /api/conversations/ HTTP/1.1" 200 506
+INFO 2026-01-18 13:55:17,564 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 661
+INFO 2026-01-18 13:55:17,712 basehttp "POST /api/delete-conversation/ HTTP/1.1" 200 65
+INFO 2026-01-18 13:55:17,736 basehttp "GET /api/conversations/ HTTP/1.1" 200 278
+INFO 2026-01-18 13:55:20,314 basehttp "POST /api/delete-conversation/ HTTP/1.1" 200 65
+INFO 2026-01-18 13:55:20,350 basehttp "GET /api/conversations/ HTTP/1.1" 200 38
+INFO 2026-01-18 13:57:10,730 autoreload E:\mindlift\webapp\webapp\settings.py changed, reloading.

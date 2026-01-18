@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 import json
+import uuid
 
 class UserProfile(models.Model):
     """Extended user profile for additional information"""
@@ -25,15 +26,29 @@ class UserProfile(models.Model):
 
 
 class Conversation(models.Model):
-    """Store conversation sessions"""
+    """Store conversation sessions with unique session IDs"""
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='conversations')
+    session_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False, db_index=True)
     title = models.CharField(max_length=200, default="New Conversation")
     started_at = models.DateTimeField(auto_now_add=True)
     last_message_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
+    is_deleted = models.BooleanField(default=False)  # Soft delete
+    deleted_at = models.DateTimeField(null=True, blank=True)
     
     def __str__(self):
-        return f"{self.user.username} - {self.title}"
+        return f"{self.user.username} - {self.title} ({self.session_id})"
+    
+    def soft_delete(self):
+        """Soft delete the conversation"""
+        self.is_deleted = True
+        self.deleted_at = timezone.now()
+        self.is_active = False
+        self.save()
+    
+    def message_count(self):
+        """Get total message count"""
+        return self.messages.count()
     
     class Meta:
         db_table = 'conversations'
@@ -60,6 +75,9 @@ class Message(models.Model):
     # Metadata
     has_video = models.BooleanField(default=False)
     video_url = models.URLField(null=True, blank=True)
+    
+    # LLM metadata
+    model_used = models.CharField(max_length=50, default='ollama', blank=True)  # 'ollama' or 'rasa'
     
     def __str__(self):
         return f"{self.sender}: {self.content[:50]}..."

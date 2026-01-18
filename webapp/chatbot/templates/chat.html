@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-<div class="chat-page">
+<div class="chat-page" data-session-id="{{ session_id }}">
     <!-- Sidebar -->
     <div class="chat-sidebar">
         <div class="sidebar-header">
@@ -22,11 +22,34 @@
             </div>
         </div>
         
-        <div class="sidebar-menu">
-            <a href="{% url 'chat' %}" class="sidebar-item active">
-                <i class="fas fa-comments"></i>
-                <span>Chat</span>
+        <!-- New Conversation Button -->
+        <div class="px-3 py-2">
+            <button class="btn btn-primary w-100" id="newConversationBtn">
+                <i class="fas fa-plus me-2"></i>New Chat
+            </button>
+        </div>
+        
+        <!-- Conversations List -->
+        <div class="sidebar-conversations" style="flex: 1; overflow-y: auto;">
+            <h6 class="px-3 py-2 text-muted small">CONVERSATIONS</h6>
+            {% for conv in all_conversations %}
+            <a href="?session_id={{ conv.session_id }}" 
+               class="sidebar-item conversation-item {% if conv.session_id|stringformat:'s' == session_id %}active{% endif %}">
+                <div class="flex-grow-1">
+                    <div class="conversation-title">{{ conv.title }}</div>
+                    <small class="text-muted">{{ conv.messages.count }} messages</small>
+                </div>
+                <button class="btn btn-sm btn-link text-danger delete-conversation" 
+                        data-session-id="{{ conv.session_id }}"
+                        onclick="event.preventDefault(); window.chatApp.deleteConversation('{{ conv.session_id }}');">
+                    <i class="fas fa-trash"></i>
+                </button>
             </a>
+            {% endfor %}
+        </div>
+        
+        <!-- Menu -->
+        <div class="sidebar-menu">
             <a href="{% url 'activities' %}" class="sidebar-item">
                 <i class="fas fa-dumbbell"></i>
                 <span>Activities</span>
@@ -35,7 +58,7 @@
                 <i class="fas fa-quote-right"></i>
                 <span>Quotes</span>
             </a>
-            <a href="{% url 'reports' %}" class="sidebar-item" id="showReportBtn">
+            <a href="{% url 'reports' %}" class="sidebar-item">
                 <i class="fas fa-chart-line"></i>
                 <span>My Reports</span>
             </a>
@@ -90,6 +113,33 @@
         
         <!-- Chat Messages -->
         <div class="chat-messages" id="chatMessages">
+            {% if recent_messages %}
+                {% for msg in recent_messages %}
+                <div class="message {{ msg.sender }}-message">
+                    <div class="message-avatar">
+                        <i class="fas fa-{% if msg.sender == 'user' %}user{% else %}robot{% endif %}"></i>
+                    </div>
+                    <div class="message-content">
+                        <div class="message-text">{{ msg.content }}</div>
+                        {% if msg.has_video and msg.video_url %}
+                        <div class="youtube-embed" style="margin-top: 15px; border-radius: 12px; overflow: hidden; background: #000;">
+                            <iframe 
+                                width="400" 
+                                height="300" 
+                                src="{{ msg.video_url }}"
+                                title="YouTube video player"
+                                frameborder="0" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                                referrerpolicy="strict-origin-when-cross-origin"
+                                allowfullscreen
+                                style="display: block; border: none;">
+                            </iframe>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
             <div class="welcome-message" data-aos="fade-up">
                 <div class="welcome-icon">
                     <i class="fas fa-brain"></i>
@@ -114,6 +164,7 @@
                     </button>
                 </div>
             </div>
+            {% endif %}
         </div>
         
         <!-- Typing Indicator -->
@@ -194,13 +245,50 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="downloadReportBtn">
-                    <i class="fas fa-download me-2"></i>Download PDF
-                </button>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+.conversation-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    margin: 0.25rem 0.5rem;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: white;
+}
+
+.conversation-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.conversation-item.active {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.conversation-title {
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+}
+
+.delete-conversation {
+    padding: 0.25rem 0.5rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.conversation-item:hover .delete-conversation {
+    opacity: 1;
+}
+</style>
 
 <script src="{% static 'js/chat.js' %}"></script>
 {% endblock %}

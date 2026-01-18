@@ -30,3 +30,5 @@ rasa/.rasa/cache/
 .DS_Store
 Thumbs.db
 .vscode/
+
+webapp/debug.log
