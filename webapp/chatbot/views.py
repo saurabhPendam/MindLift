@@ -15,12 +15,35 @@ import logging
 from .models import (
     UserProfile, Conversation, Message, SentimentReport,
     Activity, UserActivity, MotivationalQuote, UserQuoteFavorite,
-    DoctorAppointment
+    DoctorAppointment, AuditLog
 )
 from .sentiment_service import SentimentAnalyzer, ReportGenerator
-from .llm_service import llm_service
+from .groq_service import groq_service
 
 logger = logging.getLogger(__name__)
+
+
+# ============================================
+# HELPER FUNCTIONS
+# ============================================
+
+def log_audit(user, action, description, request=None, category='account'):
+    """Create audit log entry"""
+    ip_address = None
+    user_agent = ''
+    
+    if request:
+        ip_address = request.META.get('REMOTE_ADDR')
+        user_agent = request.META.get('HTTP_USER_AGENT', '')
+    
+    AuditLog.objects.create(
+        user=user,
+        action=action,
+        description=description,
+        ip_address=ip_address,
+        user_agent=user_agent,
+        category=category
+    )
 
 
 # ============================================
@@ -71,8 +94,10 @@ def register(request):
                 email=email, 
                 password=password
             )
-            # Create user profile
             UserProfile.objects.create(user=user)
+            
+            # Log registration
+            log_audit(user, 'account_created', f'New account registered: {username}', request, 'account')
             
             login(request, user)
             messages.success(request, f'Welcome to MindLift, {username}!')
@@ -101,10 +126,22 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         
         if user is not None:
+            # Check if account deletion is pending
+            try:
+                profile = user.profile
+                if profile.deletion_requested:
+                    messages.warning(request, 
+                        f'Your account deletion is scheduled for {profile.deletion_scheduled_for.strftime("%Y-%m-%d")}. '
+                        'You can cancel it from your profile settings.')
+            except UserProfile.DoesNotExist:
+                UserProfile.objects.create(user=user)
+            
             login(request, user)
+            log_audit(user, 'login', f'User logged in: {username}', request, 'security')
             messages.success(request, f'Welcome back, {username}!')
             return redirect('chat')
         else:
+            log_audit(None, 'failed_login', f'Failed login attempt for username: {username}', request, 'security')
             messages.error(request, 'Invalid username or password')
             return render(request, 'login.html')
     
@@ -113,6 +150,8 @@ def login_view(request):
 
 def logout_view(request):
     """User logout"""
+    if request.user.is_authenticated:
+        log_audit(request.user, 'logout', f'User logged out: {request.user.username}', request, 'security')
     logout(request)
     messages.success(request, 'You have been logged out successfully')
     return redirect('home')
@@ -120,14 +159,11 @@ def logout_view(request):
 
 @login_required
 def chat(request):
-    """Main chat interface with session management - FIXED"""
-    # Get session_id from query parameter
+    """Main chat interface"""
     session_id = request.GET.get('session_id')
-    
     conversation = None
     
     if session_id:
-        # Load existing conversation ONLY
         try:
             conversation = Conversation.objects.get(
                 session_id=session_id,
@@ -135,17 +171,14 @@ def chat(request):
                 is_deleted=False
             )
         except Conversation.DoesNotExist:
-            # If session_id is invalid, redirect to chat page without session_id
             return redirect('chat')
     
-    # Get recent messages if conversation exists
     recent_messages = []
     if conversation:
         recent_messages = Message.objects.filter(
             conversation=conversation
         ).order_by('timestamp')[:50]
     
-    # Get all user's conversations for sidebar
     all_conversations = Conversation.objects.filter(
         user=request.user,
         is_deleted=False
@@ -161,24 +194,268 @@ def chat(request):
 
 
 @login_required
-def activities(request):
-    """Activities page for mood improvement"""
-    categories = Activity.objects.values_list('category', flat=True).distinct()
+def profile(request):
+    """Profile page with account management"""
+    try:
+        profile = request.user.profile
+    except UserProfile.DoesNotExist:
+        profile = UserProfile.objects.create(user=request.user)
     
+    # Calculate statistics
+    total_conversations = Conversation.objects.filter(
+        user=request.user, 
+        is_deleted=False
+    ).count()
+    
+    total_messages = Message.objects.filter(
+        conversation__user=request.user,
+        conversation__is_deleted=False,
+        sender='user'
+    ).count()
+    
+    days_active = profile.days_active()
+    
+    # Get recent sentiment
+    recent_report = SentimentReport.objects.filter(
+        user=request.user,
+        is_deleted=False
+    ).order_by('-created_at').first()
+    
+    overall_mood = recent_report.overall_sentiment if recent_report else 'neutral'
+    
+    return render(request, 'profile.html', {
+        'username': request.user.username,
+        'email': request.user.email,
+        'profile': profile,
+        'days_active': days_active,
+        'total_conversations': total_conversations,
+        'total_messages': total_messages,
+        'overall_mood': overall_mood,
+        'deletion_pending': profile.deletion_requested,
+        'deletion_date': profile.deletion_scheduled_for
+    })
+
+
+@login_required
+def reports(request):
+    """Reports page - only show non-deleted reports"""
+    user_reports = SentimentReport.objects.filter(
+        user=request.user,
+        is_deleted=False
+    ).order_by('-created_at')[:10]
+    
+    return render(request, 'reports.html', {'reports': user_reports})
+
+
+# ============================================
+# ACCOUNT MANAGEMENT API
+# ============================================
+
+@login_required
+@require_http_methods(["POST"])
+def request_account_deletion(request):
+    """Request account deletion with grace period"""
+    try:
+        data = json.loads(request.body)
+        grace_period_days = data.get('grace_period_days', 30)
+        
+        profile = request.user.profile
+        profile.request_deletion(grace_period_days)
+        
+        log_audit(
+            request.user,
+            'account_deletion_requested',
+            f'User requested account deletion with {grace_period_days} days grace period',
+            request,
+            'deletion'
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Account deletion scheduled for {profile.deletion_scheduled_for.strftime("%Y-%m-%d")}',
+            'deletion_date': profile.deletion_scheduled_for.isoformat()
+        })
+        
+    except Exception as e:
+        logger.error(f"Account deletion request error: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+@require_http_methods(["POST"])
+def cancel_account_deletion(request):
+    """Cancel pending account deletion"""
+    try:
+        profile = request.user.profile
+        
+        if not profile.deletion_requested:
+            return JsonResponse({'error': 'No pending deletion request'}, status=400)
+        
+        profile.cancel_deletion()
+        
+        log_audit(
+            request.user,
+            'account_deletion_cancelled',
+            'User cancelled account deletion request',
+            request,
+            'account'
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Account deletion cancelled successfully'
+        })
+        
+    except Exception as e:
+        logger.error(f"Cancel deletion error: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+@require_http_methods(["POST"])
+def delete_account_now(request):
+    """Immediately delete account (skip grace period)"""
+    try:
+        data = json.loads(request.body)
+        password = data.get('password', '')
+        
+        # Verify password
+        if not request.user.check_password(password):
+            return JsonResponse({'error': 'Invalid password'}, status=400)
+        
+        username = request.user.username
+        user_id = request.user.id
+        
+        # Log deletion before deleting
+        log_audit(
+            request.user,
+            'account_deleted',
+            f'User {username} permanently deleted their account',
+            request,
+            'deletion'
+        )
+        
+        # Delete user (cascades to all related data)
+        request.user.delete()
+        
+        logger.info(f"Account deleted: {username} (ID: {user_id})")
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Account deleted successfully'
+        })
+        
+    except Exception as e:
+        logger.error(f"Account deletion error: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+# ============================================
+# REPORT MANAGEMENT API
+# ============================================
+
+@login_required
+@require_http_methods(["POST"])
+def delete_report(request):
+    """Soft delete a sentiment report"""
+    try:
+        data = json.loads(request.body)
+        report_id = data.get('report_id')
+        
+        if not report_id:
+            return JsonResponse({'error': 'report_id is required'}, status=400)
+        
+        report = get_object_or_404(
+            SentimentReport,
+            id=report_id,
+            user=request.user,
+            is_deleted=False
+        )
+        
+        report.soft_delete()
+        
+        log_audit(
+            request.user,
+            'report_deleted',
+            f'Sentiment report {report_id} deleted',
+            request,
+            'deletion'
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Report deleted successfully'
+        })
+        
+    except Exception as e:
+        logger.error(f"Report deletion error: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+@require_http_methods(["GET"])
+def get_user_stats(request):
+    """Get user statistics for profile"""
+    try:
+        profile = request.user.profile
+        
+        stats = {
+            'days_active': profile.days_active(),
+            'total_conversations': Conversation.objects.filter(
+                user=request.user,
+                is_deleted=False
+            ).count(),
+            'total_messages': Message.objects.filter(
+                conversation__user=request.user,
+                conversation__is_deleted=False,
+                sender='user'
+            ).count(),
+            'total_reports': SentimentReport.objects.filter(
+                user=request.user,
+                is_deleted=False
+            ).count(),
+            'completed_activities': UserActivity.objects.filter(
+                user=request.user
+            ).count(),
+            'favorite_quotes': UserQuoteFavorite.objects.filter(
+                user=request.user
+            ).count()
+        }
+        
+        # Get recent sentiment
+        recent_report = SentimentReport.objects.filter(
+            user=request.user,
+            is_deleted=False
+        ).order_by('-created_at').first()
+        
+        if recent_report:
+            stats['overall_mood'] = recent_report.overall_sentiment
+            stats['mood_score'] = round(recent_report.average_score, 2)
+        else:
+            stats['overall_mood'] = 'neutral'
+            stats['mood_score'] = 0.0
+        
+        return JsonResponse({
+            'success': True,
+            'stats': stats
+        })
+        
+    except Exception as e:
+        logger.error(f"Get user stats error: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)
+
+@login_required
+def activities(request):
+    """Activities page"""
+    categories = Activity.objects.values_list('category', flat=True).distinct()
     selected_category = request.GET.get('category', '')
     
     if selected_category:
-        activities_list = Activity.objects.filter(
-            is_active=True,
-            category=selected_category
-        )
+        activities_list = Activity.objects.filter(is_active=True, category=selected_category)
     else:
         activities_list = Activity.objects.filter(is_active=True)
     
-    # Get user's completed activities
-    completed = UserActivity.objects.filter(
-        user=request.user
-    ).values_list('activity_id', flat=True)
+    completed = UserActivity.objects.filter(user=request.user).values_list('activity_id', flat=True)
     
     return render(request, 'activities.html', {
         'activities': activities_list,
@@ -190,26 +467,17 @@ def activities(request):
 
 @login_required
 def quotes(request):
-    """Motivational quotes page"""
+    """Quotes page"""
     categories = MotivationalQuote.objects.values_list('category', flat=True).distinct()
-    
     selected_category = request.GET.get('category', '')
     
     if selected_category:
-        quotes_list = MotivationalQuote.objects.filter(
-            is_active=True,
-            category=selected_category
-        )
+        quotes_list = MotivationalQuote.objects.filter(is_active=True, category=selected_category)
     else:
         quotes_list = MotivationalQuote.objects.filter(is_active=True)
     
-    # Get random quote for display
     daily_quote = quotes_list.order_by('?').first()
-    
-    # Get user's favorite quotes
-    favorites = UserQuoteFavorite.objects.filter(
-        user=request.user
-    ).values_list('quote_id', flat=True)
+    favorites = UserQuoteFavorite.objects.filter(user=request.user).values_list('quote_id', flat=True)
     
     return render(request, 'quotes.html', {
         'quotes': quotes_list,
@@ -221,52 +489,32 @@ def quotes(request):
 
 
 @login_required
-def reports(request):
-    """Sentiment analysis reports page"""
-    user_reports = SentimentReport.objects.filter(user=request.user).order_by('-created_at')[:10]
-    
-    return render(request, 'reports.html', {
-        'reports': user_reports
-    })
-
-
-@login_required
 def doctor(request):
     """Doctor consultation page"""
-    return render(request, 'doctor.html', {
-        'username': request.user.username
-    })
-
-
-@login_required
-def profile(request):
-    """User profile page"""
-    return render(request, 'profile.html', {
-        'username': request.user.username,
-        'email': request.user.email
-    })
+    return render(request, 'doctor.html', {'username': request.user.username})
 
 
 # ============================================
-# API ENDPOINTS
+# CHAT API ENDPOINTS
 # ============================================
+# Replace the send_message function in views.py with this:
 
 @login_required
 @require_http_methods(["POST"])
 def send_message(request):
     """
-    API endpoint to send message and get LLM response
-    Uses Hybrid LLM (MindLift -> Phi -> RASA -> Rule-based fallback)
+    API endpoint to send message - Uses Hybrid RASA + Groq system
     """
     try:
         data = json.loads(request.body)
         user_message = data.get('message', '').strip()
         session_id = data.get('session_id')
+        use_rasa = data.get('use_rasa', True)  # Allow frontend to toggle
         
         if not user_message:
             return JsonResponse({'error': 'Message is required'}, status=400)
         
-        # Get or create conversation using session_id
+        # Get or create conversation
         conversation = None
         if session_id:
             try:
@@ -278,11 +526,10 @@ def send_message(request):
             except Conversation.DoesNotExist:
                 pass
         
-        # Create NEW conversation ONLY if none exists
         if not conversation:
             conversation = Conversation.objects.create(
                 user=request.user,
-                title=user_message[:50]  # Use first message as title
+                title=user_message[:50]
             )
             logger.info(f"✅ Created new conversation: {conversation.session_id}")
         
@@ -301,66 +548,78 @@ def send_message(request):
             logger.error(f"Sentiment analysis error: {str(e)}")
             sentiment_result = {'label': 'neutral', 'score': 0.0}
         
-        # Get conversation context (last 4 messages for speed)
+        # Get conversation context
         context_messages = Message.objects.filter(
             conversation=conversation
         ).order_by('-timestamp')[:4]
         
         context = [
-            {
-                'sender': msg.sender,
-                'content': msg.content
-            }
+            {'sender': msg.sender, 'content': msg.content}
             for msg in reversed(list(context_messages))
         ]
         
-        # Send to Hybrid LLM (MindLift -> Phi -> RASA -> Rule-based)
-        sender_id = f"user_{request.user.id}"
+        # === HYBRID SYSTEM: Use RASA + Groq ===
+        from .hybrid_service import hybrid_service
         
         try:
-            logger.info("🚀 Sending message to LLM service")
-            llm_responses = llm_service.send_message(user_message, sender_id, context)
-        except Exception as e:
-            logger.error(f"LLM service error: {str(e)}")
-            # Emergency fallback
-            llm_responses = [{
-                'text': "I'm here to listen and support you. Please tell me more about how you're feeling.",
-                'youtube_url': None,
-                'model': 'emergency_fallback',
-                'source': 'error_handler',
-                'success': True
-            }]
-        
-        # Save bot responses
-        bot_messages = []
-        for response in llm_responses:
-            bot_text = response.get('text', '')
-            youtube_url = response.get('youtube_url')
-            model_used = response.get('model', 'unknown')
+            logger.info("🚀 Processing message through Hybrid System")
             
-            if bot_text or youtube_url:
-                bot_msg = Message.objects.create(
-                    conversation=conversation,
-                    sender='bot',
-                    content=bot_text,
-                    has_video=bool(youtube_url),
-                    video_url=youtube_url,
-                    model_used=model_used
-                )
-                bot_messages.append({
-                    'id': bot_msg.id,
-                    'text': bot_text,
-                    'youtube_url': youtube_url,
-                    'timestamp': bot_msg.timestamp.isoformat(),
-                })
+            # Process through hybrid system
+            bot_response = hybrid_service.process_message(
+                message=user_message,
+                user_id=str(request.user.id),
+                context=context
+            )
+            
+            if not bot_response or not bot_response.get('success'):
+                raise Exception("Hybrid system returned unsuccessful response")
+            
+            # Extract response components
+            bot_text = bot_response.get('text', '')
+            video_info = bot_response.get('video')
+            response_source = bot_response.get('source', 'unknown')
+            intent = bot_response.get('intent')
+            confidence = bot_response.get('confidence')
+            
+            # Log which system was used
+            logger.info(f"✅ Response from: {response_source}")
+            if intent:
+                logger.info(f"📊 Intent: {intent} (confidence: {confidence:.2f})")
+            
+        except Exception as e:
+            logger.error(f"Hybrid system error: {str(e)}")
+            # Ultimate fallback
+            bot_text = "I'm here to listen and support you. Please tell me more about how you're feeling."
+            video_info = None
+            response_source = 'emergency_fallback'
         
-        # Update conversation timestamp and title if first message
+        # Prepare video data
+        video_embed_url = None
+        video_watch_url = None
+        video_title = None
+        
+        if video_info:
+            video_embed_url = video_info.get('embed_url')
+            video_watch_url = video_info.get('watch_url')
+            video_title = video_info.get('title', 'Recommended Video')
+        
+        # Save bot response
+        bot_msg = Message.objects.create(
+            conversation=conversation,
+            sender='bot',
+            content=bot_text,
+            has_video=bool(video_info),
+            video_url=video_embed_url,
+            model_used=response_source
+        )
+        
+        # Update conversation
         conversation.last_message_at = timezone.now()
-        if conversation.message_count() == 2:  # First user message + first bot response
+        if conversation.message_count() == 2:
             conversation.title = user_message[:50]
         conversation.save()
         
-        logger.info(f"✅ Message processed successfully. Model: {llm_responses[0].get('model', 'unknown')}")
+        logger.info(f"✅ Message processed. Source: {response_source}")
         
         return JsonResponse({
             'success': True,
@@ -371,7 +630,19 @@ def send_message(request):
                 'score': sentiment_result.get('score', 0.0),
                 'timestamp': user_msg.timestamp.isoformat()
             },
-            'bot_messages': bot_messages,
+            'bot_messages': [{
+                'id': bot_msg.id,
+                'text': bot_text,
+                'video': {
+                    'embed_url': video_embed_url,
+                    'watch_url': video_watch_url,
+                    'title': video_title,
+                    'has_video': bool(video_info)
+                } if video_info else None,
+                'timestamp': bot_msg.timestamp.isoformat(),
+                'source': response_source,
+                'intent': intent
+            }],
             'conversation_id': conversation.id,
             'session_id': str(conversation.session_id)
         })
@@ -381,8 +652,8 @@ def send_message(request):
     except Exception as e:
         logger.error(f"Send message error: {str(e)}", exc_info=True)
         return JsonResponse({'error': 'An error occurred. Please try again.'}, status=500)
-
-
+    
+    
 @login_required
 @require_http_methods(["POST"])
 def generate_report(request):
@@ -407,31 +678,83 @@ def generate_report(request):
         else:
             report = generator.generate_user_report(request.user, days=days)
         
-        return JsonResponse({
-            'success': True,
-            'report': report
-        })
+        log_audit(
+            request.user,
+            'report_generated',
+            f'Sentiment report generated for {days} days',
+            request,
+            'data'
+        )
+        
+        return JsonResponse({'success': True, 'report': report})
         
     except Exception as e:
         logger.error(f"Generate report error: {str(e)}", exc_info=True)
         return JsonResponse({'error': str(e)}, status=500)
+    
+# ADD THIS FUNCTION TO views.py
+
+@login_required
+@require_http_methods(["GET"])
+def get_report_detail(request):
+    """Get detailed report data for modal view"""
+    try:
+        report_id = request.GET.get('report_id')
+        
+        if not report_id:
+            return JsonResponse({'error': 'report_id is required'}, status=400)
+        
+        report = get_object_or_404(
+            SentimentReport,
+            id=report_id,
+            user=request.user,
+            is_deleted=False
+        )
+        
+        # Prepare recommendations as list
+        recommendations = report.recommendations.split('\n') if report.recommendations else []
+        recommendations = [r.strip() for r in recommendations if r.strip()]
+        
+        report_data = {
+            'id': report.id,
+            'overall_sentiment': report.overall_sentiment,
+            'average_score': round(report.average_score, 3),
+            'total_messages': report.total_messages,
+            'positive_count': report.positive_count,
+            'negative_count': report.negative_count,
+            'neutral_count': report.neutral_count,
+            'positive_percentage': round(report.positive_percentage, 1),
+            'negative_percentage': round(report.negative_percentage, 1),
+            'neutral_percentage': round(report.neutral_percentage, 1),
+            'dominant_emotions': report.dominant_emotions,
+            'recommendations': recommendations,
+            'start_date': report.start_date.strftime('%Y-%m-%d'),
+            'end_date': report.end_date.strftime('%Y-%m-%d'),
+            'created_at': report.created_at.strftime('%Y-%m-%d %H:%M')
+        }
+        
+        return JsonResponse({
+            'success': True,
+            'report': report_data
+        })
+        
+    except Exception as e:
+        logger.error(f"Get report detail error: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+
 
 
 @login_required
 @require_http_methods(["GET"])
 def get_sentiment_trend(request):
-    """Get sentiment trend over time"""
+    """Get sentiment trend"""
     try:
         days = int(request.GET.get('days', 30))
-        
         generator = ReportGenerator()
         trend = generator.get_user_sentiment_trend(request.user, days=days)
-        
-        return JsonResponse({
-            'success': True,
-            'trend': trend
-        })
-        
+        return JsonResponse({'success': True, 'trend': trend})
     except Exception as e:
         logger.error(f"Get sentiment trend error: {str(e)}")
         return JsonResponse({'error': str(e)}, status=500)
@@ -449,7 +772,7 @@ def complete_activity(request):
         
         activity = get_object_or_404(Activity, id=activity_id)
         
-        user_activity = UserActivity.objects.create(
+        UserActivity.objects.create(
             user=request.user,
             activity=activity,
             rating=rating,
@@ -461,7 +784,6 @@ def complete_activity(request):
             'message': 'Activity completed!',
             'activity_id': activity_id
         })
-        
     except Exception as e:
         logger.error(f"Complete activity error: {str(e)}")
         return JsonResponse({'error': str(e)}, status=500)
@@ -470,11 +792,10 @@ def complete_activity(request):
 @login_required
 @require_http_methods(["POST"])
 def toggle_quote_favorite(request):
-    """Add or remove quote from favorites"""
+    """Toggle quote favorite"""
     try:
         data = json.loads(request.body)
         quote_id = data.get('quote_id')
-        
         quote = get_object_or_404(MotivationalQuote, id=quote_id)
         
         favorite, created = UserQuoteFavorite.objects.get_or_create(
@@ -495,7 +816,6 @@ def toggle_quote_favorite(request):
                 'favorited': True,
                 'message': 'Quote added to favorites'
             })
-        
     except Exception as e:
         logger.error(f"Toggle quote favorite error: {str(e)}")
         return JsonResponse({'error': str(e)}, status=500)
@@ -536,11 +856,7 @@ def get_chat_history(request):
             'session_id': str(msg.conversation.session_id)
         } for msg in reversed(messages_list)]
         
-        return JsonResponse({
-            'success': True,
-            'messages': messages_data
-        })
-        
+        return JsonResponse({'success': True, 'messages': messages_data})
     except Exception as e:
         logger.error(f"Get chat history error: {str(e)}")
         return JsonResponse({'error': str(e)}, status=500)
@@ -549,7 +865,7 @@ def get_chat_history(request):
 @login_required
 @require_http_methods(["GET"])
 def get_conversations(request):
-    """Get all conversations for the user"""
+    """Get all non-deleted conversations"""
     try:
         conversations = Conversation.objects.filter(
             user=request.user,
@@ -566,11 +882,7 @@ def get_conversations(request):
             'is_active': conv.is_active
         } for conv in conversations]
         
-        return JsonResponse({
-            'success': True,
-            'conversations': conversations_data
-        })
-        
+        return JsonResponse({'success': True, 'conversations': conversations_data})
     except Exception as e:
         logger.error(f"Get conversations error: {str(e)}")
         return JsonResponse({'error': str(e)}, status=500)
@@ -579,7 +891,7 @@ def get_conversations(request):
 @login_required
 @require_http_methods(["POST"])
 def delete_conversation(request):
-    """Delete (soft delete) a conversation"""
+    """Soft delete conversation and associated reports"""
     try:
         data = json.loads(request.body)
         session_id = data.get('session_id')
@@ -587,20 +899,18 @@ def delete_conversation(request):
         if not session_id:
             return JsonResponse({'error': 'session_id is required'}, status=400)
         
-        conversation = get_object_or_404(
-            Conversation,
-            session_id=session_id,
-            user=request.user
-        )
-        
-        # Soft delete
+        conversation = get_object_or_404(Conversation, session_id=session_id, user=request.user)
         conversation.soft_delete()
         
-        return JsonResponse({
-            'success': True,
-            'message': 'Conversation deleted successfully'
-        })
+        log_audit(
+            request.user,
+            'conversation_deleted',
+            f'Conversation {session_id} and associated reports deleted',
+            request,
+            'deletion'
+        )
         
+        return JsonResponse({'success': True, 'message': 'Conversation deleted successfully'})
     except Exception as e:
         logger.error(f"Delete conversation error: {str(e)}")
         return JsonResponse({'error': str(e)}, status=500)
@@ -609,7 +919,7 @@ def delete_conversation(request):
 @login_required
 @require_http_methods(["POST"])
 def clear_conversation(request):
-    """Clear all messages in a conversation"""
+    """Clear conversation messages"""
     try:
         data = json.loads(request.body)
         session_id = data.get('session_id')
@@ -624,18 +934,11 @@ def clear_conversation(request):
             is_deleted=False
         )
         
-        # Delete all messages
         Message.objects.filter(conversation=conversation).delete()
-        
-        # Reset title
         conversation.title = "New Conversation"
         conversation.save()
         
-        return JsonResponse({
-            'success': True,
-            'message': 'Conversation cleared successfully'
-        })
-        
+        return JsonResponse({'success': True, 'message': 'Conversation cleared successfully'})
     except Exception as e:
         logger.error(f"Clear conversation error: {str(e)}")
         return JsonResponse({'error': str(e)}, status=500)
@@ -644,9 +947,8 @@ def clear_conversation(request):
 @login_required
 @require_http_methods(["POST"])
 def create_new_conversation(request):
-    """Create a new conversation session - FIXED"""
+    """Create new conversation"""
     try:
-        # Always create a fresh conversation
         conversation = Conversation.objects.create(
             user=request.user,
             title="New Conversation"
@@ -660,7 +962,6 @@ def create_new_conversation(request):
             'session_id': str(conversation.session_id),
             'message': 'New conversation created'
         })
-        
     except Exception as e:
         logger.error(f"Create new conversation error: {str(e)}")
         return JsonResponse({'error': str(e)}, status=500)
@@ -669,50 +970,23 @@ def create_new_conversation(request):
 @login_required
 @require_http_methods(["GET"])
 def check_llm_status(request):
-    """Check status of all LLM services (Ollama MindLift, Phi, RASA)"""
+    """Check Groq API status"""
     try:
-        status = llm_service.get_status()
+        status = groq_service.check_health()
         
-        ollama = status.get('ollama', {})
-        rasa = status.get('rasa', {})
-        
-        # Build user-friendly messages
         messages = []
-        
-        # Check primary model (MindLift)
-        if ollama.get('available') and ollama.get('primary_available'):
-            messages.append(f"✅ Primary model '{ollama.get('primary_model')}' is ready")
-        elif ollama.get('available'):
-            messages.append(f"⚠️ Primary model '{ollama.get('primary_model')}' not found")
+        if status.get('available'):
+            messages.append(f"✅ Groq API is ready")
+            messages.append(f"📦 Model: {status.get('model')}")
         else:
-            messages.append(f"❌ Ollama not available: {ollama.get('error', 'Unknown error')}")
-        
-        # Check fallback model (Phi)
-        if ollama.get('available') and ollama.get('fallback_available'):
-            messages.append(f"✅ Fallback model '{ollama.get('fallback_model')}' is ready")
-        elif ollama.get('available'):
-            messages.append(f"⚠️ Fallback model '{ollama.get('fallback_model')}' not found")
-        
-        # Check RASA
-        if rasa.get('available'):
-            messages.append("✅ RASA server is running")
-        else:
-            messages.append("⚠️ RASA server not available (using rule-based fallback)")
-        
-        # Show available models if Ollama is running
-        if ollama.get('available') and ollama.get('installed_models'):
-            messages.append(f"📦 Available models: {', '.join(ollama.get('installed_models', []))}")
+            messages.append(f"❌ Groq API unavailable: {status.get('error')}")
         
         return JsonResponse({
             'success': True,
             'status': status,
             'messages': messages,
-            'primary_service': status.get('primary_service'),
-            'primary_model_ready': ollama.get('available', False) and ollama.get('primary_available', False),
-            'fallback_model_ready': ollama.get('available', False) and ollama.get('fallback_available', False),
-            'rasa_ready': rasa.get('available', False)
+            'groq_ready': status.get('available', False)
         })
-        
     except Exception as e:
         logger.error(f"Check LLM status error: {str(e)}")
         return JsonResponse({

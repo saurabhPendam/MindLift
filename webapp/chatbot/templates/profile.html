@@ -2,13 +2,14 @@
 {% load static %}
 
 {% block navbar %}
-<nav class="navbar navbar-expand-lg navbar-dark" style="background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px);">
+<!-- FIXED: Dark navbar with visible back button -->
+<nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
     <div class="container">
-        <a class="navbar-brand fw-bold" href="{% url 'chat' %}">
+        <a class="navbar-brand fw-bold text-white" href="{% url 'chat' %}">
             <i class="fas fa-brain me-2"></i>MindLift
         </a>
         <div class="ms-auto">
-            <a href="{% url 'chat' %}" class="btn btn-outline-light">
+            <a href="{% url 'chat' %}" class="btn btn-light">
                 <i class="fas fa-arrow-left me-2"></i>Back to Chat
             </a>
         </div>
@@ -20,6 +21,7 @@
 <div class="profile-page">
     <div class="container py-5">
         <div class="row">
+            <!-- Profile Card -->
             <div class="col-lg-4 mb-4">
                 <div class="profile-card" data-aos="fade-up">
                     <div class="text-center mb-4">
@@ -28,53 +30,74 @@
                         </div>
                         <h4 class="fw-bold mb-1">{{ username }}</h4>
                         <p class="text-muted">{{ email }}</p>
+                        
+                        {% if deletion_pending %}
+                        <div class="alert alert-warning mt-3">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Account Deletion Scheduled</strong>
+                            <p class="mb-0 small">Your account will be deleted on {{ deletion_date|date:"M d, Y" }}</p>
+                        </div>
+                        {% endif %}
                     </div>
+                    
                     <div class="profile-stats">
                         <div class="stat-item">
                             <i class="fas fa-comments text-primary"></i>
                             <div>
-                                <h5 class="mb-0">127</h5>
+                                <h5 class="mb-0" id="totalConversations">{{ total_conversations }}</h5>
                                 <small class="text-muted">Conversations</small>
                             </div>
                         </div>
                         <div class="stat-item">
                             <i class="fas fa-calendar text-success"></i>
                             <div>
-                                <h5 class="mb-0">45</h5>
+                                <h5 class="mb-0">{{ days_active }}</h5>
                                 <small class="text-muted">Days Active</small>
                             </div>
                         </div>
                         <div class="stat-item">
                             <i class="fas fa-smile text-warning"></i>
                             <div>
-                                <h5 class="mb-0">Positive</h5>
+                                <h5 class="mb-0 text-capitalize">{{ overall_mood }}</h5>
                                 <small class="text-muted">Overall Mood</small>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-message text-info"></i>
+                            <div>
+                                <h5 class="mb-0" id="totalMessages">{{ total_messages }}</h5>
+                                <small class="text-muted">Messages Sent</small>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             
+            <!-- Settings Card -->
             <div class="col-lg-8">
                 <div class="profile-card" data-aos="fade-up" data-aos-delay="100">
                     <h5 class="fw-bold mb-4">Account Settings</h5>
-                    <form>
+                    
+                    <form id="profileForm">
                         <div class="mb-3">
                             <label class="form-label fw-bold">Username</label>
                             <input type="text" class="form-control" value="{{ username }}" readonly>
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-bold">Email</label>
-                            <input type="email" class="form-control" value="{{ email }}">
+                            <input type="email" class="form-control" value="{{ email }}" id="emailInput">
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-bold">Change Password</label>
-                            <input type="password" class="form-control" placeholder="New password">
+                            <input type="password" class="form-control" placeholder="New password" id="newPassword">
                         </div>
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <button type="button" class="btn btn-primary" onclick="saveProfileChanges()">
+                            <i class="fas fa-save me-2"></i>Save Changes
+                        </button>
                     </form>
                 </div>
                 
+                <!-- Preferences Card -->
                 <div class="profile-card mt-4" data-aos="fade-up" data-aos-delay="200">
                     <h5 class="fw-bold mb-4">Preferences</h5>
                     <div class="form-check form-switch mb-3">
@@ -96,6 +119,108 @@
                         </label>
                     </div>
                 </div>
+                
+                <!-- Data & Privacy Card -->
+                <div class="profile-card mt-4" data-aos="fade-up" data-aos-delay="300">
+                    <h5 class="fw-bold mb-4">
+                        <i class="fas fa-shield-alt me-2 text-primary"></i>Data & Privacy
+                    </h5>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Your Privacy Matters</strong>
+                        <p class="mb-0 small">Your conversations are encrypted and stored securely. We never share your data with third parties.</p>
+                    </div>
+                    
+                    <div class="d-grid gap-2 mb-3">
+                        <button class="btn btn-outline-primary" onclick="downloadMyData()">
+                            <i class="fas fa-download me-2"></i>Download My Data
+                        </button>
+                        <button class="btn btn-outline-secondary" onclick="viewPrivacyPolicy()">
+                            <i class="fas fa-file-alt me-2"></i>Privacy Policy
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Danger Zone -->
+                <div class="profile-card mt-4 border-danger" data-aos="fade-up" data-aos-delay="400">
+                    <h5 class="fw-bold mb-4 text-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Danger Zone
+                    </h5>
+                    
+                    {% if deletion_pending %}
+                    <div class="alert alert-warning">
+                        <h6 class="fw-bold">Account Deletion Pending</h6>
+                        <p class="mb-2">Your account is scheduled to be deleted on <strong>{{ deletion_date|date:"F d, Y" }}</strong></p>
+                        <p class="mb-3 small">All your data including conversations, reports, and activities will be permanently removed.</p>
+                        <button class="btn btn-success" onclick="cancelAccountDeletion()">
+                            <i class="fas fa-undo me-2"></i>Cancel Deletion
+                        </button>
+                    </div>
+                    {% else %}
+                    <p class="text-muted mb-3">Once you delete your account, there is no going back. All your data will be permanently removed.</p>
+                    
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-danger" onclick="showDeleteAccountModal()">
+                            <i class="fas fa-user-times me-2"></i>Delete My Account
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Account Modal -->
+<div class="modal fade" id="deleteAccountModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Delete Account
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger">
+                    <strong>⚠️ This action cannot be undone!</strong>
+                </div>
+                
+                <p class="mb-3">Deleting your account will:</p>
+                <ul class="mb-3">
+                    <li>Permanently delete all your conversations</li>
+                    <li>Remove all sentiment reports and analysis</li>
+                    <li>Delete your activity history</li>
+                    <li>Remove your profile and preferences</li>
+                </ul>
+                
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="radio" name="deleteOption" id="gracePeriod" value="grace" checked>
+                    <label class="form-check-label" for="gracePeriod">
+                        <strong>Schedule deletion</strong> (30-day grace period)
+                        <small class="d-block text-muted">You can cancel anytime within 30 days</small>
+                    </label>
+                </div>
+                
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="radio" name="deleteOption" id="immediate" value="immediate">
+                    <label class="form-check-label" for="immediate">
+                        <strong>Delete immediately</strong>
+                        <small class="d-block text-muted">Permanent deletion with no recovery</small>
+                    </label>
+                </div>
+                
+                <div id="passwordConfirmation" style="display: none;">
+                    <label class="form-label fw-bold">Confirm your password:</label>
+                    <input type="password" class="form-control" id="deletePassword" placeholder="Enter your password">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn" onclick="confirmAccountDeletion()">
+                    Delete Account
+                </button>
             </div>
         </div>
     </div>
@@ -114,6 +239,10 @@
     border-radius: 20px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
     color: var(--dark);
+}
+
+.profile-card.border-danger {
+    border: 2px solid var(--danger);
 }
 
 .profile-avatar {
@@ -147,4 +276,159 @@
     font-size: 2rem;
 }
 </style>
+
+<script>
+// Show password confirmation when immediate deletion is selected
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('input[name="deleteOption"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            const passwordDiv = document.getElementById('passwordConfirmation');
+            if (this.value === 'immediate') {
+                passwordDiv.style.display = 'block';
+            } else {
+                passwordDiv.style.display = 'none';
+            }
+        });
+    });
+    
+    loadUserStats();
+});
+
+async function loadUserStats() {
+    try {
+        const response = await fetch('/api/user-stats/');
+        const data = await response.json();
+        
+        if (data.success) {
+            document.getElementById('totalConversations').textContent = data.stats.total_conversations;
+            document.getElementById('totalMessages').textContent = data.stats.total_messages;
+        }
+    } catch (error) {
+        console.error('Error loading stats:', error);
+    }
+}
+
+function showDeleteAccountModal() {
+    const modal = new bootstrap.Modal(document.getElementById('deleteAccountModal'));
+    modal.show();
+}
+
+async function confirmAccountDeletion() {
+    const deleteOption = document.querySelector('input[name="deleteOption"]:checked').value;
+    
+    if (deleteOption === 'immediate') {
+        const password = document.getElementById('deletePassword').value;
+        
+        if (!password) {
+            alert('Please enter your password to confirm deletion');
+            return;
+        }
+        
+        if (!confirm('Are you absolutely sure? This cannot be undone!')) {
+            return;
+        }
+        
+        try {
+            const response = await fetch('/api/delete-account-now/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({ password: password })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok && data.success) {
+                alert('Your account has been deleted. You will now be logged out.');
+                window.location.href = '/';
+            } else {
+                alert(data.error || 'Failed to delete account');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+        }
+    } else {
+        try {
+            const response = await fetch('/api/request-account-deletion/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({ grace_period_days: 30 })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok && data.success) {
+                alert(data.message);
+                location.reload();
+            } else {
+                alert(data.error || 'Failed to schedule deletion');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+        }
+    }
+}
+
+async function cancelAccountDeletion() {
+    if (!confirm('Cancel account deletion?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/cancel-account-deletion/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok && data.success) {
+            alert(data.message);
+            location.reload();
+        } else {
+            alert(data.error || 'Failed to cancel deletion');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+    }
+}
+
+function downloadMyData() {
+    alert('Data export feature will be implemented. This will generate a ZIP file with all your data.');
+}
+
+function viewPrivacyPolicy() {
+    window.open('/privacy-policy/', '_blank');
+}
+
+function saveProfileChanges() {
+    alert('Profile update functionality will be implemented.');
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
 {% endblock %}

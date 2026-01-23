@@ -46,6 +46,13 @@
             {% for report in reports %}
             <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
                 <div class="report-card" data-report-id="{{ report.id }}">
+                    <button class="btn btn-sm btn-danger delete-report-btn" 
+                            data-report-id="{{ report.id }}"
+                            title="Delete Report"
+                            style="position: absolute; top: 1rem; right: 1rem; z-index: 10;">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    
                     <div class="report-header">
                         <div class="report-date">
                             <i class="fas fa-calendar me-2"></i>
@@ -88,9 +95,14 @@
                         </p>
                     </div>
                     
-                    <button class="btn btn-outline-primary w-100 mt-3 view-report-btn" data-report-id="{{ report.id }}">
-                        <i class="fas fa-eye me-2"></i>View Details
-                    </button>
+                    <div class="d-grid gap-2 mt-3">
+                        <button class="btn btn-primary view-report-btn" data-report-id="{{ report.id }}">
+                            <i class="fas fa-eye me-2"></i>View Full Report
+                        </button>
+                        <button class="btn btn-outline-primary download-report-btn" data-report-id="{{ report.id }}">
+                            <i class="fas fa-download me-2"></i>Download PDF
+                        </button>
+                    </div>
                 </div>
             </div>
             {% endfor %}
@@ -110,13 +122,13 @@
     </div>
 </div>
 
-<!-- Report Detail Modal -->
+<!-- FULL Report Detail Modal -->
 <div class="modal fade" id="reportDetailModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title fw-bold">
-                    <i class="fas fa-chart-line me-2"></i>Report Details
+                    <i class="fas fa-chart-line me-2"></i>Detailed Sentiment Report
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
@@ -125,11 +137,12 @@
                     <div class="spinner-border text-primary" role="status">
                         <span class="visually-hidden">Loading...</span>
                     </div>
+                    <p class="mt-3">Loading report...</p>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="downloadReportBtn">
+                <button type="button" class="btn btn-primary" id="downloadModalReportBtn">
                     <i class="fas fa-download me-2"></i>Download PDF
                 </button>
             </div>
@@ -158,11 +171,21 @@
     box-shadow: 0 2px 10px rgba(124, 156, 191, 0.1);
     transition: all 0.3s ease;
     height: 100%;
+    position: relative;
 }
 
 .report-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 5px 20px rgba(124, 156, 191, 0.15);
+}
+
+.delete-report-btn {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.report-card:hover .delete-report-btn {
+    opacity: 1;
 }
 
 .report-header {
@@ -266,18 +289,51 @@
 .empty-state {
     padding: 3rem 2rem;
 }
+
+/* Detail Modal Styling */
+.report-detail-section {
+    margin-bottom: 2rem;
+}
+
+.report-detail-section h6 {
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--primary);
+}
+
+.emotion-badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    margin: 0.25rem;
+    border-radius: 20px;
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.recommendation-item {
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    background: #f8fafc;
+    border-left: 3px solid var(--primary);
+    border-radius: 5px;
+}
 </style>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 <script>
+let currentReportId = null;
+
 document.addEventListener('DOMContentLoaded', function() {
     
-    // Handle generate report button
+    // Generate report
     const generateBtn = document.getElementById('generateReportBtn');
     if (generateBtn) {
         generateBtn.addEventListener('click', generateNewReport);
     }
 
-    // Handle view report buttons using event delegation
+    // View report buttons
     document.addEventListener('click', function(e) {
         if (e.target.classList.contains('view-report-btn') || e.target.closest('.view-report-btn')) {
             const btn = e.target.classList.contains('view-report-btn') ? e.target : e.target.closest('.view-report-btn');
@@ -285,97 +341,362 @@ document.addEventListener('DOMContentLoaded', function() {
             viewReportDetail(reportId);
         }
     });
+    
+    // Delete report
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('delete-report-btn') || e.target.closest('.delete-report-btn')) {
+            e.stopPropagation();
+            const btn = e.target.classList.contains('delete-report-btn') ? e.target : e.target.closest('.delete-report-btn');
+            const reportId = btn.getAttribute('data-report-id');
+            deleteReport(reportId);
+        }
+    });
 
-    // Handle download button
-    const downloadBtn = document.getElementById('downloadReportBtn');
-    if (downloadBtn) {
-        downloadBtn.addEventListener('click', downloadReport);
-    }
+    // Download from card
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('download-report-btn') || e.target.closest('.download-report-btn')) {
+            const btn = e.target.classList.contains('download-report-btn') ? e.target : e.target.closest('.download-report-btn');
+            const reportId = btn.getAttribute('data-report-id');
+            downloadReportPDF(reportId);
+        }
+    });
 
-    async function generateNewReport() {
-        // Show loading state
-        const btn = document.getElementById('generateReportBtn');
-        const originalText = btn.innerHTML;
-        btn.disabled = true;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Generating...';
-        
-        try {
-            const response = await fetch('/api/generate-report/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken')
-                },
-                body: JSON.stringify({ days: 7 })
-            });
-            
-            const data = await response.json();
-            
-            if (data.success) {
-                showNotification('Report generated successfully!', 'success');
-                setTimeout(() => {
-                    location.reload();
-                }, 1500);
-            } else {
-                showNotification('Failed to generate report: ' + (data.error || 'Unknown error'), 'danger');
-                btn.disabled = false;
-                btn.innerHTML = originalText;
+    // Download from modal
+    const downloadModalBtn = document.getElementById('downloadModalReportBtn');
+    if (downloadModalBtn) {
+        downloadModalBtn.addEventListener('click', () => {
+            if (currentReportId) {
+                downloadReportPDF(currentReportId);
             }
-        } catch (error) {
-            console.error('Error:', error);
-            showNotification('An error occurred while generating the report.', 'danger');
+        });
+    }
+});
+
+async function generateNewReport() {
+    const btn = document.getElementById('generateReportBtn');
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Generating...';
+    
+    try {
+        const response = await fetch('/api/generate-report/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ days: 7 })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showNotification('Report generated successfully!', 'success');
+            setTimeout(() => {
+                location.reload();
+            }, 1500);
+        } else {
+            showNotification('Failed to generate report: ' + (data.error || 'Unknown error'), 'danger');
             btn.disabled = false;
             btn.innerHTML = originalText;
         }
+    } catch (error) {
+        console.error('Error:', error);
+        showNotification('An error occurred while generating the report.', 'danger');
+        btn.disabled = false;
+        btn.innerHTML = originalText;
     }
+}
 
-    function viewReportDetail(reportId) {
-        const modal = new bootstrap.Modal(document.getElementById('reportDetailModal'));
-        modal.show();
+async function viewReportDetail(reportId) {
+    currentReportId = reportId;
+    const modal = new bootstrap.Modal(document.getElementById('reportDetailModal'));
+    modal.show();
+    
+    const content = document.getElementById('reportDetailContent');
+    
+    try {
+        // Fetch full report data
+        const response = await fetch(`/api/get-report-detail/?report_id=${reportId}`);
+        const data = await response.json();
         
-        // In a real implementation, you would fetch report details from the API
-        setTimeout(() => {
-            const content = document.getElementById('reportDetailContent');
+        if (data.success) {
+            const report = data.report;
+            
             content.innerHTML = `
-                <div class="alert alert-info">
-                    <h5>Report ID: ${reportId}</h5>
-                    <p>Detailed report view would be implemented here with full sentiment analysis, emotion breakdown, and recommendations.</p>
-                    <p>This would fetch data from an API endpoint that returns the complete report details.</p>
+                <div class="report-detail-section">
+                    <h4 class="fw-bold mb-4">📊 Sentiment Analysis Overview</h4>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="card text-center border-success">
+                                <div class="card-body">
+                                    <h2 class="text-success">${report.positive_percentage.toFixed(1)}%</h2>
+                                    <p class="mb-0">Positive Messages</p>
+                                    <small class="text-muted">${report.positive_count} messages</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card text-center border-secondary">
+                                <div class="card-body">
+                                    <h2 class="text-secondary">${report.neutral_percentage.toFixed(1)}%</h2>
+                                    <p class="mb-0">Neutral Messages</p>
+                                    <small class="text-muted">${report.neutral_count} messages</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card text-center border-danger">
+                                <div class="card-body">
+                                    <h2 class="text-danger">${report.negative_percentage.toFixed(1)}%</h2>
+                                    <p class="mb-0">Negative Messages</p>
+                                    <small class="text-muted">${report.negative_count} messages</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <strong>Overall Sentiment:</strong> 
+                        <span class="badge bg-${report.overall_sentiment === 'positive' ? 'success' : report.overall_sentiment === 'negative' ? 'danger' : 'warning'}">
+                            ${report.overall_sentiment.toUpperCase()}
+                        </span>
+                        <br>
+                        <strong>Average Score:</strong> ${report.average_score.toFixed(3)}
+                        <br>
+                        <strong>Period:</strong> ${report.start_date} to ${report.end_date}
+                        <br>
+                        <strong>Total Messages:</strong> ${report.total_messages}
+                    </div>
+                </div>
+                
+                <div class="report-detail-section">
+                    <h6>🎭 Detected Emotions</h6>
+                    <p class="text-muted">Top emotions identified in your conversations:</p>
+                    <div>
+                        ${Object.entries(report.dominant_emotions || {}).map(([emotion, score]) => 
+                            `<span class="emotion-badge">${emotion}: ${score.toFixed(2)}</span>`
+                        ).join('')}
+                    </div>
+                </div>
+                
+                <div class="report-detail-section">
+                    <h6>💡 Personalized Recommendations</h6>
+                    <p class="text-muted">Based on your emotional patterns, we recommend:</p>
+                    ${(report.recommendations || []).map(rec => 
+                        `<div class="recommendation-item">
+                            <i class="fas fa-check-circle text-success me-2"></i>${rec}
+                        </div>`
+                    ).join('')}
+                </div>
+                
+                <div class="report-detail-section">
+                    <h6>📈 What This Means</h6>
+                    <div class="card">
+                        <div class="card-body">
+                            ${getInterpretation(report)}
+                        </div>
+                    </div>
                 </div>
             `;
-        }, 1000);
+        } else {
+            content.innerHTML = `
+                <div class="alert alert-danger">
+                    <strong>Error:</strong> ${data.error || 'Failed to load report'}
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        content.innerHTML = `
+            <div class="alert alert-danger">
+                <strong>Error:</strong> Failed to load report details
+            </div>
+        `;
     }
+}
 
-    function downloadReport() {
-        showNotification('Download PDF functionality would be implemented here using a library like jsPDF or a backend PDF generator', 'info');
+function getInterpretation(report) {
+    if (report.overall_sentiment === 'positive') {
+        return `
+            <p><strong>✅ Great news!</strong> Your sentiment analysis shows predominantly positive emotional patterns.</p>
+            <p>This suggests you're experiencing a healthy emotional state. Continue your current wellness practices and consider:</p>
+            <ul>
+                <li>Maintaining your self-care routines</li>
+                <li>Sharing your positive strategies with others</li>
+                <li>Celebrating your emotional wellness journey</li>
+            </ul>
+        `;
+    } else if (report.overall_sentiment === 'negative') {
+        return `
+            <p><strong>⚠️ We've noticed challenging emotional patterns.</strong></p>
+            <p>Your analysis indicates you may be experiencing difficult emotions. This is completely normal, and there are resources available:</p>
+            <ul>
+                <li><strong>Immediate Support:</strong> National Suicide Prevention Lifeline: 988</li>
+                <li><strong>Professional Help:</strong> Consider booking a session through our Doctor Consultation page</li>
+                <li><strong>Self-Care:</strong> Try breathing exercises and meditation from our Activities page</li>
+                <li><strong>Support:</strong> Reach out to trusted friends or family members</li>
+            </ul>
+            <p class="mb-0">Remember: Seeking help is a sign of strength, not weakness.</p>
+        `;
+    } else {
+        return `
+            <p><strong>ℹ️ Your emotional patterns show a balanced state.</strong></p>
+            <p>You're experiencing a mix of emotions, which is completely normal. Consider:</p>
+            <ul>
+                <li>Continuing to monitor your emotional well-being</li>
+                <li>Exploring activities that boost positive emotions</li>
+                <li>Maintaining regular check-ins with yourself</li>
+            </ul>
+        `;
     }
+}
 
-    function showNotification(message, type = 'success') {
-        const notification = document.createElement('div');
-        notification.className = `alert alert-${type} position-fixed top-0 start-50 translate-middle-x mt-3`;
-        notification.style.zIndex = '9999';
-        notification.textContent = message;
-        document.body.appendChild(notification);
+async function deleteReport(reportId) {
+    if (!confirm('Are you sure you want to delete this report? This action cannot be undone.')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/delete-report/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ report_id: reportId })
+        });
         
-        setTimeout(() => {
-            notification.remove();
-        }, 3000);
+        const data = await response.json();
+        
+        if (response.ok && data.success) {
+            showNotification('Report deleted successfully!', 'success');
+            
+            const reportCard = document.querySelector(`[data-report-id="${reportId}"]`).closest('.col-md-6');
+            if (reportCard) {
+                reportCard.remove();
+            }
+            
+            const remainingReports = document.querySelectorAll('.report-card').length;
+            if (remainingReports === 0) {
+                location.reload();
+            }
+        } else {
+            showNotification('Failed to delete report: ' + (data.error || 'Unknown error'), 'danger');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showNotification('An error occurred while deleting the report.', 'danger');
     }
+}
 
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
+async function downloadReportPDF(reportId) {
+    showNotification('Preparing PDF download...', 'info');
+    
+    try {
+        const response = await fetch(`/api/get-report-detail/?report_id=${reportId}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            const report = data.report;
+            
+            // Create PDF
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Title
+            doc.setFontSize(20);
+            doc.text('MindLift Sentiment Report', 105, 20, { align: 'center' });
+            
+            // Date
+            doc.setFontSize(12);
+            doc.text(`Generated: ${new Date().toLocaleDateString()}`, 105, 30, { align: 'center' });
+            doc.text(`Period: ${report.start_date} to ${report.end_date}`, 105, 37, { align: 'center' });
+            
+            // Overall Sentiment
+            doc.setFontSize(16);
+            doc.text('Overall Sentiment Analysis', 20, 50);
+            doc.setFontSize(12);
+            doc.text(`Overall Sentiment: ${report.overall_sentiment.toUpperCase()}`, 20, 60);
+            doc.text(`Average Score: ${report.average_score.toFixed(3)}`, 20, 67);
+            doc.text(`Total Messages Analyzed: ${report.total_messages}`, 20, 74);
+            
+            // Sentiment Breakdown
+            doc.setFontSize(14);
+            doc.text('Sentiment Breakdown', 20, 90);
+            doc.setFontSize(12);
+            doc.text(`Positive: ${report.positive_percentage.toFixed(1)}% (${report.positive_count} messages)`, 25, 100);
+            doc.text(`Neutral: ${report.neutral_percentage.toFixed(1)}% (${report.neutral_count} messages)`, 25, 107);
+            doc.text(`Negative: ${report.negative_percentage.toFixed(1)}% (${report.negative_count} messages)`, 25, 114);
+            
+            // Emotions
+            if (report.dominant_emotions && Object.keys(report.dominant_emotions).length > 0) {
+                doc.setFontSize(14);
+                doc.text('Detected Emotions', 20, 130);
+                doc.setFontSize(12);
+                let y = 140;
+                Object.entries(report.dominant_emotions).forEach(([emotion, score]) => {
+                    doc.text(`${emotion}: ${score.toFixed(2)}`, 25, y);
+                    y += 7;
+                });
+            }
+            
+            // Recommendations
+            if (report.recommendations && report.recommendations.length > 0) {
+                doc.addPage();
+                doc.setFontSize(14);
+                doc.text('Recommendations', 20, 20);
+                doc.setFontSize(11);
+                let y = 30;
+                report.recommendations.forEach((rec, index) => {
+                    const lines = doc.splitTextToSize(`${index + 1}. ${rec}`, 170);
+                    doc.text(lines, 20, y);
+                    y += lines.length * 7 + 3;
+                    if (y > 270) {
+                        doc.addPage();
+                        y = 20;
+                    }
+                });
+            }
+            
+            // Save PDF
+            doc.save(`MindLift_Report_${new Date().toISOString().split('T')[0]}.pdf`);
+            showNotification('PDF downloaded successfully!', 'success');
+        } else {
+            throw new Error(data.error || 'Failed to fetch report');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showNotification('Failed to download PDF: ' + error.message, 'danger');
+    }
+}
+
+function showNotification(message, type = 'success') {
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type} position-fixed top-0 start-50 translate-middle-x mt-3`;
+    notification.style.zIndex = '9999';
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
             }
         }
-        return cookieValue;
     }
-});
+    return cookieValue;
+}
 </script>
 {% endblock %}

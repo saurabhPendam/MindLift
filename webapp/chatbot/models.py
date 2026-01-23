@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.db.models import Count
+from datetime import timedelta
 import json
 import uuid
 
@@ -17,9 +19,33 @@ class UserProfile(models.Model):
     ], blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
+    # Account deletion tracking
+    deletion_requested = models.BooleanField(default=False)
+    deletion_requested_at = models.DateTimeField(null=True, blank=True)
+    deletion_scheduled_for = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.user.username}'s Profile"
+    
+    def request_deletion(self, grace_period_days=30):
+        """Request account deletion with grace period"""
+        self.deletion_requested = True
+        self.deletion_requested_at = timezone.now()
+        self.deletion_scheduled_for = timezone.now() + timedelta(days=grace_period_days)
+        self.save()
+    
+    def cancel_deletion(self):
+        """Cancel pending account deletion"""
+        self.deletion_requested = False
+        self.deletion_requested_at = None
+        self.deletion_scheduled_for = None
+        self.save()
+    
+    def days_active(self):
+        """Calculate days since account creation"""
+        delta = timezone.now() - self.created_at
+        return delta.days
 
     class Meta:
         db_table = 'user_profiles'
@@ -33,18 +59,24 @@ class Conversation(models.Model):
     started_at = models.DateTimeField(auto_now_add=True)
     last_message_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
-    is_deleted = models.BooleanField(default=False)  # Soft delete
+    is_deleted = models.BooleanField(default=False)
     deleted_at = models.DateTimeField(null=True, blank=True)
     
     def __str__(self):
         return f"{self.user.username} - {self.title} ({self.session_id})"
     
     def soft_delete(self):
-        """Soft delete the conversation"""
+        """Soft delete the conversation and associated reports"""
         self.is_deleted = True
         self.deleted_at = timezone.now()
         self.is_active = False
         self.save()
+        
+        # Also mark associated sentiment reports as deleted
+        SentimentReport.objects.filter(conversation=self).update(
+            is_deleted=True,
+            deleted_at=timezone.now()
+        )
     
     def message_count(self):
         """Get total message count"""
@@ -66,18 +98,22 @@ class Message(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     
     # Sentiment Analysis Fields
-    sentiment_score = models.FloatField(null=True, blank=True)  # VADER compound score
-    sentiment_label = models.CharField(max_length=20, null=True, blank=True)  # positive, negative, neutral
+    sentiment_score = models.FloatField(null=True, blank=True)
+    sentiment_label = models.CharField(max_length=20, null=True, blank=True)
     
     # NRC Emotions
-    emotions = models.JSONField(default=dict, blank=True)  # Store NRC emotion scores
+    emotions = models.JSONField(default=dict, blank=True)
     
     # Metadata
     has_video = models.BooleanField(default=False)
     video_url = models.URLField(null=True, blank=True)
     
     # LLM metadata
-    model_used = models.CharField(max_length=50, default='ollama', blank=True)  # 'ollama' or 'rasa'
+    model_used = models.CharField(max_length=50, default='groq', blank=True)
+    
+    # AI Safety flags
+    contains_crisis_keywords = models.BooleanField(default=False)
+    requires_professional_referral = models.BooleanField(default=False)
     
     def __str__(self):
         return f"{self.sender}: {self.content[:50]}..."
@@ -97,7 +133,7 @@ class SentimentReport(models.Model):
     end_date = models.DateTimeField()
     
     # Overall sentiment
-    overall_sentiment = models.CharField(max_length=20)  # positive, negative, neutral
+    overall_sentiment = models.CharField(max_length=20)
     average_score = models.FloatField()
     
     # Sentiment breakdown
@@ -117,10 +153,20 @@ class SentimentReport(models.Model):
     # Recommendations
     recommendations = models.TextField(blank=True)
     
+    # Deletion tracking
+    is_deleted = models.BooleanField(default=False)
+    deleted_at = models.DateTimeField(null=True, blank=True)
+    
     created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
         return f"{self.user.username} - Report {self.created_at.strftime('%Y-%m-%d')}"
+    
+    def soft_delete(self):
+        """Soft delete the report"""
+        self.is_deleted = True
+        self.deleted_at = timezone.now()
+        self.save()
     
     class Meta:
         db_table = 'sentiment_reports'
@@ -242,3 +288,30 @@ class DoctorAppointment(models.Model):
     class Meta:
         db_table = 'doctor_appointments'
         ordering = ['-appointment_date']
+
+
+class AuditLog(models.Model):
+    """Track important user actions for security and compliance"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='audit_logs', null=True, blank=True)
+    action = models.CharField(max_length=100)
+    description = models.TextField()
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.TextField(blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    
+    # Security categorization
+    category = models.CharField(max_length=50, choices=[
+        ('account', 'Account Management'),
+        ('data', 'Data Access'),
+        ('security', 'Security Event'),
+        ('crisis', 'Crisis Detection'),
+        ('deletion', 'Data Deletion')
+    ], default='account')
+    
+    def __str__(self):
+        username = self.user.username if self.user else 'Anonymous'
+        return f"{username} - {self.action} - {self.timestamp}"
+    
+    class Meta:
+        db_table = 'audit_logs'
+        ordering = ['-timestamp']
