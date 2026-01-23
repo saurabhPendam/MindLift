@@ -1,5 +1,6 @@
 """
-Sentiment Analysis Service using VADER and NRCLex
+Sentiment Analysis Service using VADER and NRCLex - FIXED VERSION
+File: chatbot/sentiment_service.py
 """
 
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
@@ -41,11 +42,16 @@ class SentimentAnalyzer:
             label = 'neutral'
         
         # NRCLex Emotion Analysis
-        emotion_obj = NRCLex(text)
-        emotions = emotion_obj.raw_emotion_scores
-        
-        # Get top emotions
-        top_emotions = emotion_obj.top_emotions
+        try:
+            emotion_obj = NRCLex(text)
+            emotions = emotion_obj.raw_emotion_scores
+            top_emotions = emotion_obj.top_emotions
+            affect_frequencies = emotion_obj.affect_frequencies
+        except Exception as e:
+            print(f"NRCLex error: {e}")
+            emotions = {}
+            top_emotions = []
+            affect_frequencies = {}
         
         return {
             'vader': vader_scores,
@@ -53,7 +59,7 @@ class SentimentAnalyzer:
             'score': compound,
             'emotions': emotions,
             'top_emotions': top_emotions,
-            'affect_frequencies': emotion_obj.affect_frequencies
+            'affect_frequencies': affect_frequencies
         }
     
     def analyze_message(self, message_obj) -> Dict:
@@ -100,13 +106,14 @@ class ReportGenerator:
         messages = Message.objects.filter(
             conversation__user=user,
             sender='user',
-            timestamp__gte=start_date
+            timestamp__gte=start_date,
+            conversation__is_deleted=False  # Only include non-deleted conversations
         )
         
         return self._calculate_metrics(messages, user, days=days)
     
     def _calculate_metrics(self, messages, user, conversation=None, days=None) -> Dict:
-        """Calculate sentiment metrics from messages"""
+        """Calculate sentiment metrics from messages - FIXED VERSION"""
         if not messages.exists():
             return {
                 'error': 'No messages found',
@@ -124,8 +131,20 @@ class ReportGenerator:
         neg_pct = (negative / total * 100) if total > 0 else 0
         neu_pct = (neutral / total * 100) if total > 0 else 0
         
-        # Average sentiment score
-        avg_score = messages.aggregate(Avg('sentiment_score'))['sentiment_score__avg'] or 0
+        # Average sentiment score - FIXED: Handle None values
+        avg_score_result = messages.aggregate(Avg('sentiment_score'))
+        avg_score = avg_score_result['sentiment_score__avg']
+        
+        # FIX: If avg_score is None (all messages have no sentiment), default to 0
+        if avg_score is None:
+            avg_score = 0.0
+            # Try to analyze messages that don't have sentiment yet
+            for msg in messages.filter(sentiment_score__isnull=True):
+                self.analyzer.analyze_message(msg)
+            
+            # Recalculate after analysis
+            avg_score_result = messages.aggregate(Avg('sentiment_score'))
+            avg_score = avg_score_result['sentiment_score__avg'] or 0.0
         
         # Determine overall sentiment
         if avg_score >= 0.05:
@@ -144,7 +163,7 @@ class ReportGenerator:
         
         # Get top 5 emotions
         sorted_emotions = sorted(all_emotions.items(), key=lambda x: x[1], reverse=True)
-        top_emotions = dict(sorted_emotions[:5])
+        top_emotions = dict(sorted_emotions[:5]) if sorted_emotions else {}
         
         # Generate recommendations
         recommendations = self._generate_recommendations(overall, avg_score, top_emotions)
@@ -163,7 +182,7 @@ class ReportGenerator:
             start_date=start_date,
             end_date=end_date,
             overall_sentiment=overall,
-            average_score=avg_score,
+            average_score=float(avg_score),  # Ensure it's a float
             positive_percentage=pos_pct,
             negative_percentage=neg_pct,
             neutral_percentage=neu_pct,
@@ -178,7 +197,7 @@ class ReportGenerator:
         return {
             'report_id': report.id,
             'overall_sentiment': overall,
-            'average_score': round(avg_score, 3),
+            'average_score': round(float(avg_score), 3),  # Ensure float conversion
             'total_messages': total,
             'positive': {
                 'count': positive,
@@ -239,6 +258,7 @@ class ReportGenerator:
         messages = Message.objects.filter(
             conversation__user=user,
             sender='user',
+            conversation__is_deleted=False,
             timestamp__gte=datetime.now() - timedelta(days=days)
         ).order_by('timestamp')
         
@@ -248,12 +268,14 @@ class ReportGenerator:
             day = msg.timestamp.date()
             if day not in daily_sentiments:
                 daily_sentiments[day] = []
-            daily_sentiments[day].append(msg.sentiment_score or 0)
+            # Handle None sentiment scores
+            score = msg.sentiment_score if msg.sentiment_score is not None else 0.0
+            daily_sentiments[day].append(score)
         
         # Calculate daily averages
         trend = []
         for day, scores in sorted(daily_sentiments.items()):
-            avg_score = sum(scores) / len(scores)
+            avg_score = sum(scores) / len(scores) if scores else 0.0
             trend.append({
                 'date': day.strftime('%Y-%m-%d'),
                 'score': round(avg_score, 3),
@@ -266,7 +288,6 @@ class ReportGenerator:
 
 def extract_youtube_url(text: str) -> str:
     """Extract YouTube URL from text"""
-    # Patterns for YouTube URLs
     patterns = [
         r'(https?://)?(www\.)?(youtube\.com/watch\?v=|youtu\.be/)([a-zA-Z0-9_-]{11})',
         r'(https?://)?(www\.)?youtube\.com/embed/([a-zA-Z0-9_-]{11})',

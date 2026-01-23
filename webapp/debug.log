@@ -2405,3 +2405,142 @@ WARNING 2026-01-23 13:42:49,679 basehttp "POST /api/send-message/ HTTP/1.1" 403 
 INFO 2026-01-23 13:46:43,188 autoreload E:\mindlift\webapp\webapp\settings.py changed, reloading.
 INFO 2026-01-23 13:46:49,511 autoreload Watching for file changes with StatReloader
 INFO 2026-01-23 13:46:55,863 groq_service ✅ AI service initialized
+INFO 2026-01-23 13:49:41,013 basehttp "GET / HTTP/1.1" 302 0
+INFO 2026-01-23 13:49:41,153 basehttp "GET /chat/ HTTP/1.1" 200 12109
+INFO 2026-01-23 13:49:41,415 basehttp "GET /static/js/chat.js HTTP/1.1" 200 18542
+INFO 2026-01-23 13:49:41,521 basehttp "GET /api/conversations/ HTTP/1.1" 200 38
+INFO 2026-01-23 13:49:41,536 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-23 13:49:46,244 views ✅ New conversation created: 6df3aa3f-1546-4de9-981c-7aaed996bce4
+INFO 2026-01-23 13:49:46,244 basehttp "POST /api/new-conversation/ HTTP/1.1" 200 132
+INFO 2026-01-23 13:49:46,313 basehttp "GET /chat/?session_id=6df3aa3f-1546-4de9-981c-7aaed996bce4 HTTP/1.1" 200 13383
+INFO 2026-01-23 13:49:46,371 basehttp "GET /static/js/chat.js HTTP/1.1" 304 0
+INFO 2026-01-23 13:49:46,431 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-23 13:49:46,431 basehttp "GET /api/conversations/ HTTP/1.1" 200 274
+INFO 2026-01-23 13:49:53,416 views 🚀 Processing message through Hybrid System
+INFO 2026-01-23 13:50:01,820 hybrid_service ✅ RASA processed: intent=greet, video=False
+INFO 2026-01-23 13:50:01,836 hybrid_service ✅ RASA Intent: greet (confidence: 1.00)
+INFO 2026-01-23 13:50:01,836 hybrid_service 📊 Using RASA response (high confidence)
+INFO 2026-01-23 13:50:01,836 views ✅ Response from: rasa
+INFO 2026-01-23 13:50:01,836 views 📊 Intent: greet (confidence: 1.00)
+INFO 2026-01-23 13:50:01,857 views ✅ Message processed. Source: rasa
+INFO 2026-01-23 13:50:01,868 basehttp "POST /api/send-message/ HTTP/1.1" 200 434
+INFO 2026-01-23 13:50:01,914 basehttp "GET /api/conversations/ HTTP/1.1" 200 263
+INFO 2026-01-23 13:50:29,378 views 🚀 Processing message through Hybrid System
+INFO 2026-01-23 13:50:38,450 hybrid_service ✅ RASA processed: intent=ask_quote, video=False
+INFO 2026-01-23 13:50:38,465 hybrid_service ✅ RASA Intent: ask_quote (confidence: 1.00)
+INFO 2026-01-23 13:50:38,465 hybrid_service 📊 Using RASA response (high confidence)
+INFO 2026-01-23 13:50:38,465 groq_service 📤 Sending to AI: 2 messages
+INFO 2026-01-23 13:50:39,683 groq_service ✅ Response received (338 chars)
+INFO 2026-01-23 13:50:39,684 hybrid_service ✅ Enhanced response with video: False
+INFO 2026-01-23 13:50:39,684 views ✅ Response from: assistant
+INFO 2026-01-23 13:50:39,685 views 📊 Intent: ask_quote (confidence: 1.00)
+INFO 2026-01-23 13:50:39,705 views ✅ Message processed. Source: assistant
+INFO 2026-01-23 13:50:39,717 basehttp "POST /api/send-message/ HTTP/1.1" 200 727
+INFO 2026-01-23 13:50:39,781 basehttp "GET /api/conversations/ HTTP/1.1" 200 263
+INFO 2026-01-23 13:50:56,263 views 🚀 Processing message through Hybrid System
+INFO 2026-01-23 13:51:00,362 hybrid_service 🎬 Creating video object from URL: https://www.youtube.com/watch?v=tybOi4hjZFQ
+INFO 2026-01-23 13:51:00,376 hybrid_service ✅ Created video object for ID: tybOi4hjZFQ
+INFO 2026-01-23 13:51:00,377 hybrid_service 📦 Video object created: {'video_id': 'tybOi4hjZFQ', 'embed_url': 'https://www.youtube-nocookie.com/embed/tybOi4hjZFQ', 'watch_url': 'https://www.youtube.com/watch?v=tybOi4hjZFQ', 'title': 'Recommended Video', 'has_video': True, 'source': 'rasa'}
+INFO 2026-01-23 13:51:00,377 hybrid_service ✅ Created video from text URL: https://www.youtube.com/watch?v=tybOi4hjZFQ
+INFO 2026-01-23 13:51:02,455 hybrid_service ✅ RASA processed: intent=ask_breathing, video=True
+INFO 2026-01-23 13:51:02,469 hybrid_service 🎥 RASA video data: {'video_id': 'tybOi4hjZFQ', 'embed_url': 'https://www.youtube-nocookie.com/embed/tybOi4hjZFQ', 'watch_url': 'https://www.youtube.com/watch?v=tybOi4hjZFQ', 'title': 'Recommended Video', 'has_video': True, 'source': 'rasa'}
+INFO 2026-01-23 13:51:02,470 hybrid_service ✅ RASA Intent: ask_breathing (confidence: 0.99)
+INFO 2026-01-23 13:51:02,471 hybrid_service 📊 Using RASA response (high confidence)
+INFO 2026-01-23 13:51:02,471 groq_service 📤 Sending to AI: 2 messages
+INFO 2026-01-23 13:51:03,528 groq_service ✅ Found YouTube video for topic: breathing
+INFO 2026-01-23 13:51:03,541 groq_service 🎥 Video suggested for: breathing
+INFO 2026-01-23 13:51:03,551 groq_service ✅ Response received (299 chars)
+INFO 2026-01-23 13:51:03,552 hybrid_service ✅ Enhanced response with video: True
+INFO 2026-01-23 13:51:03,553 hybrid_service 🎥 Final video data: {'video_id': 'tybOi4hjZFQ', 'embed_url': 'https://www.youtube-nocookie.com/embed/tybOi4hjZFQ', 'watch_url': 'https://www.youtube.com/watch?v=tybOi4hjZFQ', 'title': 'Recommended Video', 'has_video': True, 'source': 'rasa'}
+INFO 2026-01-23 13:51:03,554 views ✅ Response from: assistant
+INFO 2026-01-23 13:51:03,567 views 📊 Intent: ask_breathing (confidence: 0.99)
+INFO 2026-01-23 13:51:03,594 views ✅ Message processed. Source: assistant
+INFO 2026-01-23 13:51:03,606 basehttp "POST /api/send-message/ HTTP/1.1" 200 879
+INFO 2026-01-23 13:51:03,682 basehttp "GET /api/conversations/ HTTP/1.1" 200 263
+WARNING 2026-01-23 13:51:06,361 basehttp "GET /static/favicon.ico HTTP/1.1" 404 1960
+INFO 2026-01-23 13:51:11,828 basehttp "POST /api/generate-report/ HTTP/1.1" 200 549
+INFO 2026-01-23 13:51:12,939 basehttp "GET /reports/ HTTP/1.1" 200 27284
+INFO 2026-01-23 13:51:20,281 basehttp "GET /api/get-report-detail/?report_id=8 HTTP/1.1" 200 586
+INFO 2026-01-23 13:51:43,316 basehttp "GET /api/get-report-detail/?report_id=8 HTTP/1.1" 200 586
+INFO 2026-01-23 13:51:59,102 basehttp "GET /chat/ HTTP/1.1" 200 13334
+INFO 2026-01-23 13:51:59,147 basehttp "GET /static/js/chat.js HTTP/1.1" 304 0
+INFO 2026-01-23 13:51:59,206 basehttp "GET /api/conversations/ HTTP/1.1" 200 263
+INFO 2026-01-23 13:51:59,211 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-23 13:52:00,508 basehttp "GET /chat/?session_id=6df3aa3f-1546-4de9-981c-7aaed996bce4 HTTP/1.1" 200 15854
+INFO 2026-01-23 13:52:00,627 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-23 13:52:00,638 basehttp "GET /api/conversations/ HTTP/1.1" 200 263
+INFO 2026-01-23 13:52:25,587 views 🚀 Processing message through Hybrid System
+INFO 2026-01-23 13:52:31,789 hybrid_service ✅ RASA processed: intent=nlu_fallback, video=False
+INFO 2026-01-23 13:52:31,791 hybrid_service ✅ RASA Intent: nlu_fallback (confidence: 0.30)
+INFO 2026-01-23 13:52:31,791 hybrid_service ⚠️ Low RASA confidence, using AI
+INFO 2026-01-23 13:52:31,792 groq_service 📤 Sending to AI: 6 messages
+INFO 2026-01-23 13:52:32,394 groq_service ✅ Response received (652 chars)
+INFO 2026-01-23 13:52:32,394 views ✅ Response from: assistant
+INFO 2026-01-23 13:52:32,425 views ✅ Message processed. Source: assistant
+INFO 2026-01-23 13:52:32,439 basehttp "POST /api/send-message/ HTTP/1.1" 200 1096
+INFO 2026-01-23 13:52:32,506 basehttp "GET /api/conversations/ HTTP/1.1" 200 263
+INFO 2026-01-23 13:52:47,855 basehttp "GET /doctor/ HTTP/1.1" 200 15953
+INFO 2026-01-23 13:52:47,903 basehttp "GET /static/js/doctor.js HTTP/1.1" 304 0
+INFO 2026-01-23 13:52:59,593 basehttp "GET /chat/ HTTP/1.1" 200 13334
+INFO 2026-01-23 13:52:59,648 basehttp "GET /static/js/chat.js HTTP/1.1" 304 0
+INFO 2026-01-23 13:52:59,708 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-23 13:52:59,724 basehttp "GET /api/conversations/ HTTP/1.1" 200 263
+INFO 2026-01-23 13:53:01,956 basehttp "GET /chat/?session_id=6df3aa3f-1546-4de9-981c-7aaed996bce4 HTTP/1.1" 200 17352
+INFO 2026-01-23 13:53:02,029 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-23 13:53:02,053 basehttp "GET /api/conversations/ HTTP/1.1" 200 263
+INFO 2026-01-23 16:35:59,676 views 🚀 Processing message through Hybrid System
+INFO 2026-01-23 16:36:03,836 hybrid_service 🎬 Creating video object from URL: https://www.youtube.com/watch?v=1ZYbU82GVz4
+INFO 2026-01-23 16:36:03,836 hybrid_service ✅ Created video object for ID: 1ZYbU82GVz4
+INFO 2026-01-23 16:36:03,836 hybrid_service 📦 Video object created: {'video_id': '1ZYbU82GVz4', 'embed_url': 'https://www.youtube-nocookie.com/embed/1ZYbU82GVz4', 'watch_url': 'https://www.youtube.com/watch?v=1ZYbU82GVz4', 'title': 'Recommended Video', 'has_video': True, 'source': 'rasa'}
+INFO 2026-01-23 16:36:03,836 hybrid_service ✅ Created video from text URL: https://www.youtube.com/watch?v=1ZYbU82GVz4
+INFO 2026-01-23 16:36:06,032 hybrid_service ✅ RASA processed: intent=nlu_fallback, video=True
+INFO 2026-01-23 16:36:06,032 hybrid_service 🎥 RASA video data: {'video_id': '1ZYbU82GVz4', 'embed_url': 'https://www.youtube-nocookie.com/embed/1ZYbU82GVz4', 'watch_url': 'https://www.youtube.com/watch?v=1ZYbU82GVz4', 'title': 'Recommended Video', 'has_video': True, 'source': 'rasa'}
+INFO 2026-01-23 16:36:06,041 hybrid_service ✅ RASA Intent: nlu_fallback (confidence: 0.30)
+INFO 2026-01-23 16:36:06,049 hybrid_service ⚠️ Low RASA confidence, using AI
+INFO 2026-01-23 16:36:06,049 groq_service 📤 Sending to AI: 6 messages
+INFO 2026-01-23 16:36:06,546 groq_service ✅ Response received (500 chars)
+INFO 2026-01-23 16:36:06,546 views ✅ Response from: assistant
+INFO 2026-01-23 16:36:06,571 views ✅ Message processed. Source: assistant
+INFO 2026-01-23 16:36:06,587 basehttp "POST /api/send-message/ HTTP/1.1" 200 1066
+INFO 2026-01-23 16:36:06,721 basehttp "GET /api/conversations/ HTTP/1.1" 200 264
+INFO 2026-01-23 16:36:33,732 basehttp "GET /reports/ HTTP/1.1" 200 27284
+INFO 2026-01-23 16:36:33,843 basehttp "GET /static/css/style.css HTTP/1.1" 304 0
+INFO 2026-01-23 16:36:36,585 basehttp "GET /api/get-report-detail/?report_id=8 HTTP/1.1" 200 586
+INFO 2026-01-23 16:54:32,754 basehttp "GET /chat/ HTTP/1.1" 200 13335
+INFO 2026-01-23 16:54:32,847 basehttp "GET /static/js/chat.js HTTP/1.1" 304 0
+INFO 2026-01-23 16:54:33,082 basehttp "GET /api/conversations/ HTTP/1.1" 200 264
+INFO 2026-01-23 16:54:33,111 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-23 16:54:37,257 basehttp "GET /activities/ HTTP/1.1" 200 33626
+INFO 2026-01-23 16:54:56,477 basehttp "GET /chat/ HTTP/1.1" 200 13335
+INFO 2026-01-23 16:54:56,735 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-23 16:54:56,756 basehttp "GET /api/conversations/ HTTP/1.1" 200 264
+INFO 2026-01-23 16:54:59,099 basehttp "GET /chat/?session_id=6df3aa3f-1546-4de9-981c-7aaed996bce4 HTTP/1.1" 200 19430
+INFO 2026-01-23 16:54:59,356 basehttp "GET /api/conversations/ HTTP/1.1" 200 264
+INFO 2026-01-23 16:54:59,386 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-23 16:55:03,610 basehttp "POST /api/delete-conversation/ HTTP/1.1" 200 65
+INFO 2026-01-23 16:55:03,794 basehttp "GET /chat/ HTTP/1.1" 200 12109
+INFO 2026-01-23 16:55:04,000 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-23 16:55:04,003 basehttp "GET /api/conversations/ HTTP/1.1" 200 38
+INFO 2026-01-23 16:55:06,853 views ✅ New conversation created: 9902805f-300b-4add-88cf-bbb3a1e1cf9a
+INFO 2026-01-23 16:55:06,877 basehttp "POST /api/new-conversation/ HTTP/1.1" 200 132
+INFO 2026-01-23 16:55:06,979 basehttp "GET /chat/?session_id=9902805f-300b-4add-88cf-bbb3a1e1cf9a HTTP/1.1" 200 13383
+INFO 2026-01-23 16:55:07,162 basehttp "GET /api/conversations/ HTTP/1.1" 200 274
+INFO 2026-01-23 16:55:07,186 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-23 16:55:09,345 views 🚀 Processing message through Hybrid System
+INFO 2026-01-23 16:55:15,950 hybrid_service ✅ RASA processed: intent=ask_help, video=False
+INFO 2026-01-23 16:55:15,950 hybrid_service ✅ RASA Intent: ask_help (confidence: 0.99)
+INFO 2026-01-23 16:55:15,950 hybrid_service 📊 Using RASA response (high confidence)
+INFO 2026-01-23 16:55:15,966 groq_service 📤 Sending to AI: 2 messages
+INFO 2026-01-23 16:55:17,730 groq_service ✅ Response received (284 chars)
+INFO 2026-01-23 16:55:17,730 hybrid_service ✅ Enhanced response with video: False
+INFO 2026-01-23 16:55:17,730 views ✅ Response from: assistant
+INFO 2026-01-23 16:55:17,730 views 📊 Intent: ask_help (confidence: 0.99)
+INFO 2026-01-23 16:55:17,801 views ✅ Message processed. Source: assistant
+INFO 2026-01-23 16:55:17,818 basehttp "POST /api/send-message/ HTTP/1.1" 200 680
+INFO 2026-01-23 16:55:17,900 basehttp "GET /api/conversations/ HTTP/1.1" 200 283
+INFO 2026-01-23 16:55:40,166 basehttp "GET /reports/ HTTP/1.1" 200 24781
+INFO 2026-01-23 17:05:14,661 autoreload E:\mindlift\webapp\chatbot\sentiment_service.py changed, reloading.
+INFO 2026-01-23 17:05:24,239 autoreload Watching for file changes with StatReloader
+INFO 2026-01-23 17:05:36,060 groq_service ✅ AI service initialized
+INFO 2026-01-23 17:08:37,292 autoreload Watching for file changes with StatReloader
+INFO 2026-01-23 17:08:43,017 groq_service ✅ AI service initialized

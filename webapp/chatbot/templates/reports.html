@@ -150,175 +150,95 @@
     </div>
 </div>
 
+<!-- ADD THIS STYLE TO reports.html AFTER THE EXISTING <style> SECTION -->
 <style>
-.reports-page {
-    min-height: 100vh;
-    background: var(--gradient-soft);
-    padding-top: 80px;
-}
-
-.generate-report-card {
-    background: white;
-    padding: 2rem;
-    border-radius: 20px;
-    box-shadow: 0 2px 10px rgba(124, 156, 191, 0.1);
-}
-
-.report-card {
-    background: white;
-    border-radius: 20px;
-    padding: 2rem;
-    box-shadow: 0 2px 10px rgba(124, 156, 191, 0.1);
-    transition: all 0.3s ease;
-    height: 100%;
-    position: relative;
-}
-
-.report-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 20px rgba(124, 156, 191, 0.15);
-}
-
-.delete-report-btn {
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.report-card:hover .delete-report-btn {
-    opacity: 1;
-}
-
-.report-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-}
-
-.report-date {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-}
-
-.report-sentiment-badge {
-    padding: 0.25rem 0.75rem;
-    border-radius: 15px;
-    font-size: 0.85rem;
-    font-weight: 600;
-}
-
-.report-sentiment-badge.positive {
-    background: rgba(16, 185, 129, 0.1);
-    color: var(--success);
-}
-
-.report-sentiment-badge.neutral {
-    background: rgba(245, 158, 11, 0.1);
-    color: var(--warning);
-}
-
-.report-sentiment-badge.negative {
-    background: rgba(239, 68, 68, 0.1);
-    color: var(--danger);
-}
-
+/* CRITICAL FIX: Report Score Display */
 .report-score {
     text-align: center;
     margin-bottom: 1.5rem;
+    position: relative;
+    z-index: 1;  /* Ensure score is above other elements */
 }
 
 .score-circle {
-    width: 100px;
-    height: 100px;
+    width: 120px;
+    height: 120px;
     border-radius: 50%;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.8rem;
+    font-size: 2.2rem;
     font-weight: bold;
     margin: 0 auto;
+    position: relative;
+}
+
+.score-circle .score-value {
+    position: relative;
+    z-index: 10;  /* Ensure score is visible */
 }
 
 .score-circle.positive {
     background: rgba(16, 185, 129, 0.1);
-    color: var(--success);
-    border: 3px solid var(--success);
+    color: #10b981;
+    border: 3px solid #10b981;
 }
 
 .score-circle.neutral {
     background: rgba(245, 158, 11, 0.1);
-    color: var(--warning);
-    border: 3px solid var(--warning);
+    color: #f59e0b;
+    border: 3px solid #f59e0b;
 }
 
 .score-circle.negative {
     background: rgba(239, 68, 68, 0.1);
-    color: var(--danger);
-    border: 3px solid var(--danger);
+    color: #ef4444;
+    border: 3px solid #ef4444;
 }
 
-.report-stats {
-    margin-bottom: 1.5rem;
+/* Fix: Ensure badge doesn't overlap score */
+.report-sentiment-badge {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.35rem 0.85rem;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    z-index: 5;  /* Below the score */
 }
 
-.stat-row {
+/* Fix: Report header positioning */
+.report-header {
     display: flex;
     justify-content: space-between;
-    padding: 0.5rem 0;
-    border-bottom: 1px solid var(--bg-soft);
+    align-items: flex-start;  /* Changed from center */
+    margin-bottom: 1.5rem;
+    position: relative;
 }
 
-.stat-row:last-child {
-    border-bottom: none;
+/* ADDITIONAL FIX: Make sure score is properly formatted */
+.report-card .score-circle::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    height: 90%;
+    border-radius: 50%;
+    opacity: 0.1;
 }
 
-.stat-label {
-    color: var(--text-secondary);
-}
-
-.stat-value {
-    font-weight: 600;
-}
-
-.report-info {
-    background: var(--bg-soft);
-    padding: 1rem;
-    border-radius: 10px;
-}
-
-.empty-state {
-    padding: 3rem 2rem;
-}
-
-/* Detail Modal Styling */
-.report-detail-section {
-    margin-bottom: 2rem;
-}
-
-.report-detail-section h6 {
-    font-weight: 700;
-    margin-bottom: 1rem;
-    color: var(--primary);
-}
-
-.emotion-badge {
-    display: inline-block;
-    padding: 0.5rem 1rem;
-    margin: 0.25rem;
-    border-radius: 20px;
-    background: rgba(99, 102, 241, 0.1);
-    color: var(--primary);
-    font-weight: 600;
-}
-
-.recommendation-item {
-    padding: 0.75rem;
-    margin-bottom: 0.5rem;
-    background: #f8fafc;
-    border-left: 3px solid var(--primary);
-    border-radius: 5px;
+/* Debug: If score is still not showing, add this temporary rule */
+.score-value {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    font-weight: 700 !important;
 }
 </style>
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 

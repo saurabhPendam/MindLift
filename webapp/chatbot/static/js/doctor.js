@@ -1,12 +1,22 @@
-// Doctor Consultation JavaScript with Jitsi Meet Integration - COMPLETE WORKING VERSION
+// Doctor Consultation JavaScript with Jitsi Meet Integration - COMPLETE FIXED VERSION
 // File: chatbot/static/js/doctor.js
 
 let jitsiApi = null;
 let currentRoomName = null;
 
 function startVideoCall(doctorName) {
+    console.log('Starting video call with:', doctorName);
+    
+    // Check if Jitsi API is loaded
+    if (typeof JitsiMeetExternalAPI === 'undefined') {
+        showNotification('Jitsi Meet is not loaded. Please refresh the page and try again.', 'danger');
+        console.error('JitsiMeetExternalAPI is not defined');
+        return;
+    }
+    
     // Generate a unique room name
     currentRoomName = `mindlift-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+    console.log('Room name:', currentRoomName);
     
     // Show modal
     const modal = new bootstrap.Modal(document.getElementById('videoCallModal'));
@@ -23,9 +33,14 @@ function initializeJitsiMeet(roomName, doctorName) {
     const domain = 'meet.jit.si';
     const container = document.getElementById('jitsiContainer');
     
+    console.log('Initializing Jitsi Meet...');
+    console.log('Domain:', domain);
+    console.log('Room:', roomName);
+    
     // Clear any existing instance
     if (jitsiApi) {
         try {
+            console.log('Disposing previous Jitsi instance');
             jitsiApi.dispose();
         } catch (e) {
             console.log('Error disposing previous Jitsi instance:', e);
@@ -45,9 +60,9 @@ function initializeJitsiMeet(roomName, doctorName) {
             startWithAudioMuted: false,
             startWithVideoMuted: false,
             enableWelcomePage: false,
-            prejoinPageEnabled: true,
+            prejoinPageEnabled: true,  // Show pre-join screen for device selection
             disableDeepLinking: true,
-            enableNoisyMicDetection: false,
+            enableNoisyMicDetection: true,
             resolution: 720,
             constraints: {
                 video: {
@@ -57,6 +72,12 @@ function initializeJitsiMeet(roomName, doctorName) {
                         min: 240
                     }
                 }
+            },
+            // CRITICAL: Disable features that might cause issues
+            disableThirdPartyRequests: false,
+            enableP2P: true,
+            p2p: {
+                enabled: true
             }
         },
         interfaceConfigOverwrite: {
@@ -72,7 +93,8 @@ function initializeJitsiMeet(roomName, doctorName) {
             DEFAULT_BACKGROUND: '#f5f7fa',
             DISABLE_JOIN_LEAVE_NOTIFICATIONS: true,
             SHOW_BRAND_WATERMARK: false,
-            SHOW_CHROME_EXTENSION_BANNER: false
+            SHOW_CHROME_EXTENSION_BANNER: false,
+            MOBILE_APP_PROMO: false,
         },
         userInfo: {
             displayName: 'Patient',
@@ -81,6 +103,7 @@ function initializeJitsiMeet(roomName, doctorName) {
     };
     
     try {
+        console.log('Creating JitsiMeetExternalAPI instance...');
         jitsiApi = new JitsiMeetExternalAPI(domain, options);
         
         // Event listeners
@@ -115,6 +138,17 @@ function initializeJitsiMeet(roomName, doctorName) {
             console.log('👋 Participant left:', participant);
         });
         
+        // Error handling
+        jitsiApi.addEventListener('errorOccurred', (error) => {
+            console.error('❌ Jitsi error:', error);
+            showNotification('An error occurred during the call. Please try again.', 'danger');
+        });
+        
+        // Device list changed (useful for debugging)
+        jitsiApi.addEventListener('deviceListChanged', (devices) => {
+            console.log('📱 Device list changed:', devices);
+        });
+        
         console.log('✅ Jitsi Meet initialized successfully');
         
     } catch (error) {
@@ -124,18 +158,72 @@ function initializeJitsiMeet(roomName, doctorName) {
         // Show fallback message
         container.innerHTML = `
             <div class="alert alert-danger m-4">
-                <h5>Could not start video call</h5>
-                <p>Please ensure:</p>
+                <h5><i class="fas fa-exclamation-triangle me-2"></i>Could not start video call</h5>
+                <p class="mb-3">Please ensure:</p>
                 <ul>
                     <li>You have a stable internet connection</li>
                     <li>Camera and microphone permissions are granted</li>
                     <li>Your browser supports WebRTC (Chrome, Firefox, Safari, Edge)</li>
+                    <li>Pop-ups are not blocked</li>
+                    <li>You're using HTTPS (required for camera/microphone access)</li>
                 </ul>
                 <button class="btn btn-primary" onclick="initializeJitsiMeet('${roomName}', '${doctorName}')">
-                    Try Again
+                    <i class="fas fa-redo me-2"></i>Try Again
+                </button>
+                <button class="btn btn-secondary ms-2" onclick="checkPermissions()">
+                    <i class="fas fa-check me-2"></i>Check Permissions
                 </button>
             </div>
         `;
+    }
+}
+
+// Check camera and microphone permissions
+async function checkPermissions() {
+    console.log('Checking camera and microphone permissions...');
+    
+    try {
+        // Request permissions
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+            video: true, 
+            audio: true 
+        });
+        
+        console.log('✅ Permissions granted');
+        showNotification('Camera and microphone permissions are granted!', 'success');
+        
+        // Stop the stream
+        stream.getTracks().forEach(track => track.stop());
+        
+        // Show available devices
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter(d => d.kind === 'videoinput');
+        const audioDevices = devices.filter(d => d.kind === 'audioinput');
+        
+        console.log('Video devices:', videoDevices);
+        console.log('Audio devices:', audioDevices);
+        
+        showNotification(
+            `Found ${videoDevices.length} camera(s) and ${audioDevices.length} microphone(s). You're ready for video calls!`,
+            'success'
+        );
+        
+    } catch (error) {
+        console.error('❌ Permission error:', error);
+        
+        let errorMessage = 'Could not access camera/microphone. ';
+        
+        if (error.name === 'NotAllowedError') {
+            errorMessage += 'Please allow camera and microphone access in your browser settings.';
+        } else if (error.name === 'NotFoundError') {
+            errorMessage += 'No camera or microphone found. Please connect a device.';
+        } else if (error.name === 'NotReadableError') {
+            errorMessage += 'Camera/microphone is already in use by another application.';
+        } else {
+            errorMessage += error.message;
+        }
+        
+        showNotification(errorMessage, 'danger');
     }
 }
 
@@ -379,7 +467,7 @@ function showNotification(message, type = 'success') {
     notification.style.zIndex = '10000';
     notification.style.minWidth = '300px';
     notification.style.maxWidth = '500px';
-    notification.textContent = message;
+    notification.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'danger' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>${message}`;
     document.body.appendChild(notification);
     
     setTimeout(() => {
@@ -389,14 +477,26 @@ function showNotification(message, type = 'success') {
 
 // Cleanup on modal close
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('Doctor page loaded');
+    
+    // Check if Jitsi API script is loaded
+    if (typeof JitsiMeetExternalAPI === 'undefined') {
+        console.warn('⚠️ Jitsi Meet API not loaded yet');
+    } else {
+        console.log('✅ Jitsi Meet API is ready');
+    }
+    
     const videoModal = document.getElementById('videoCallModal');
     
     if (videoModal) {
         videoModal.addEventListener('hidden.bs.modal', () => {
+            console.log('Video modal closed');
+            
             // Cleanup Jitsi
             if (jitsiApi) {
                 try {
                     jitsiApi.dispose();
+                    console.log('Jitsi API disposed');
                 } catch (e) {
                     console.log('Error disposing Jitsi:', e);
                 }
@@ -409,7 +509,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 container.innerHTML = '';
             }
             
-            console.log('Video call modal closed - cleanup complete');
+            console.log('Video call cleanup complete');
         });
     }
 });
