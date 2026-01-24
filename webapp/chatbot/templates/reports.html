@@ -45,7 +45,7 @@
         <div class="row g-4">
             {% for report in reports %}
             <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
-                <div class="report-card" data-report-id="{{ report.id }}">
+                <div class="report-card sentiment-{{ report.overall_sentiment }}" data-report-id="{{ report.id }}">
                     <button class="btn btn-sm btn-danger delete-report-btn" 
                             data-report-id="{{ report.id }}"
                             title="Delete Report"
@@ -71,16 +71,28 @@
                     
                     <div class="report-stats">
                         <div class="stat-row">
-                            <span class="stat-label">Positive:</span>
-                            <span class="stat-value text-success">{{ report.positive_percentage|floatformat:0 }}%</span>
+                            <span class="stat-label">
+                                <i class="fas fa-smile text-success"></i> Positive:
+                            </span>
+                            <span class="stat-value text-success">
+                                {{ report.positive_count }} ({{ report.positive_percentage|floatformat:0 }}%)
+                            </span>
                         </div>
                         <div class="stat-row">
-                            <span class="stat-label">Neutral:</span>
-                            <span class="stat-value text-secondary">{{ report.neutral_percentage|floatformat:0 }}%</span>
+                            <span class="stat-label">
+                                <i class="fas fa-meh text-secondary"></i> Neutral:
+                            </span>
+                            <span class="stat-value text-secondary">
+                                {{ report.neutral_count }} ({{ report.neutral_percentage|floatformat:0 }}%)
+                            </span>
                         </div>
                         <div class="stat-row">
-                            <span class="stat-label">Negative:</span>
-                            <span class="stat-value text-danger">{{ report.negative_percentage|floatformat:0 }}%</span>
+                            <span class="stat-label">
+                                <i class="fas fa-frown text-danger"></i> Negative:
+                            </span>
+                            <span class="stat-value text-danger">
+                                {{ report.negative_count }} ({{ report.negative_percentage|floatformat:0 }}%)
+                            </span>
                         </div>
                     </div>
                     
@@ -122,15 +134,15 @@
     </div>
 </div>
 
-<!-- FULL Report Detail Modal -->
+<!-- Report Detail Modal -->
 <div class="modal fade" id="reportDetailModal" tabindex="-1">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header bg-primary text-white">
                 <h5 class="modal-title fw-bold">
                     <i class="fas fa-chart-line me-2"></i>Detailed Sentiment Report
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body" id="reportDetailContent">
                 <div class="text-center py-5">
@@ -150,14 +162,84 @@
     </div>
 </div>
 
-<!-- ADD THIS STYLE TO reports.html AFTER THE EXISTING <style> SECTION -->
 <style>
-/* CRITICAL FIX: Report Score Display */
+.reports-page {
+    min-height: 100vh;
+    background: var(--gradient-soft);
+    padding-top: 80px;
+}
+
+.generate-report-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.report-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    position: relative;
+}
+
+.report-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+
+.report-card.sentiment-positive {
+    border-color: #10b981;
+}
+
+.report-card.sentiment-negative {
+    border-color: #ef4444;
+}
+
+.report-card.sentiment-neutral {
+    border-color: #f59e0b;
+}
+
+.report-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.report-date {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.report-sentiment-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.report-sentiment-badge.positive {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+}
+
+.report-sentiment-badge.negative {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+.report-sentiment-badge.neutral {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+}
+
 .report-score {
     text-align: center;
     margin-bottom: 1.5rem;
-    position: relative;
-    z-index: 1;  /* Ensure score is above other elements */
 }
 
 .score-circle {
@@ -169,76 +251,83 @@
     justify-content: center;
     font-size: 2.2rem;
     font-weight: bold;
-    margin: 0 auto;
-    position: relative;
-}
-
-.score-circle .score-value {
-    position: relative;
-    z-index: 10;  /* Ensure score is visible */
+    border: 4px solid;
 }
 
 .score-circle.positive {
     background: rgba(16, 185, 129, 0.1);
     color: #10b981;
-    border: 3px solid #10b981;
+    border-color: #10b981;
 }
 
 .score-circle.neutral {
     background: rgba(245, 158, 11, 0.1);
     color: #f59e0b;
-    border: 3px solid #f59e0b;
+    border-color: #f59e0b;
 }
 
 .score-circle.negative {
     background: rgba(239, 68, 68, 0.1);
     color: #ef4444;
-    border: 3px solid #ef4444;
+    border-color: #ef4444;
 }
 
-/* Fix: Ensure badge doesn't overlap score */
-.report-sentiment-badge {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    padding: 0.35rem 0.85rem;
-    border-radius: 15px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    z-index: 5;  /* Below the score */
+.report-stats {
+    background: var(--bg-soft);
+    padding: 1rem;
+    border-radius: 12px;
+    margin-bottom: 1rem;
 }
 
-/* Fix: Report header positioning */
-.report-header {
+.stat-row {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;  /* Changed from center */
-    margin-bottom: 1.5rem;
-    position: relative;
+    align-items: center;
+    padding: 0.5rem 0;
 }
 
-/* ADDITIONAL FIX: Make sure score is properly formatted */
-.report-card .score-circle::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 90%;
-    height: 90%;
-    border-radius: 50%;
-    opacity: 0.1;
+.stat-label {
+    font-weight: 500;
+    color: var(--text-secondary);
 }
 
-/* Debug: If score is still not showing, add this temporary rule */
-.score-value {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    font-weight: 700 !important;
+.stat-value {
+    font-weight: 600;
+}
+
+.report-info {
+    padding: 1rem 0;
+    border-top: 1px solid #e2e8f0;
+    margin-top: 1rem;
+}
+
+/* Modal Styles */
+.report-detail-section {
+    padding: 1.5rem 0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.report-detail-section:last-child {
+    border-bottom: none;
+}
+
+.emotion-badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--primary);
+    border-radius: 20px;
+    margin: 0.25rem;
+    font-size: 0.875rem;
+}
+
+.recommendation-item {
+    padding: 0.75rem;
+    background: var(--bg-soft);
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
 }
 </style>
-
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -336,7 +425,6 @@ async function viewReportDetail(reportId) {
     const content = document.getElementById('reportDetailContent');
     
     try {
-        // Fetch full report data
         const response = await fetch(`/api/get-report-detail/?report_id=${reportId}`);
         const data = await response.json();
         
@@ -351,8 +439,11 @@ async function viewReportDetail(reportId) {
                         <div class="col-md-4">
                             <div class="card text-center border-success">
                                 <div class="card-body">
-                                    <h2 class="text-success">${report.positive_percentage.toFixed(1)}%</h2>
-                                    <p class="mb-0">Positive Messages</p>
+                                    <div class="mb-2">
+                                        <i class="fas fa-smile fa-3x text-success"></i>
+                                    </div>
+                                    <h2 class="text-success mb-1">${report.positive_percentage.toFixed(1)}%</h2>
+                                    <p class="mb-0 fw-bold">Positive Messages</p>
                                     <small class="text-muted">${report.positive_count} messages</small>
                                 </div>
                             </div>
@@ -360,8 +451,11 @@ async function viewReportDetail(reportId) {
                         <div class="col-md-4">
                             <div class="card text-center border-secondary">
                                 <div class="card-body">
-                                    <h2 class="text-secondary">${report.neutral_percentage.toFixed(1)}%</h2>
-                                    <p class="mb-0">Neutral Messages</p>
+                                    <div class="mb-2">
+                                        <i class="fas fa-meh fa-3x text-secondary"></i>
+                                    </div>
+                                    <h2 class="text-secondary mb-1">${report.neutral_percentage.toFixed(1)}%</h2>
+                                    <p class="mb-0 fw-bold">Neutral Messages</p>
                                     <small class="text-muted">${report.neutral_count} messages</small>
                                 </div>
                             </div>
@@ -369,56 +463,67 @@ async function viewReportDetail(reportId) {
                         <div class="col-md-4">
                             <div class="card text-center border-danger">
                                 <div class="card-body">
-                                    <h2 class="text-danger">${report.negative_percentage.toFixed(1)}%</h2>
-                                    <p class="mb-0">Negative Messages</p>
+                                    <div class="mb-2">
+                                        <i class="fas fa-frown fa-3x text-danger"></i>
+                                    </div>
+                                    <h2 class="text-danger mb-1">${report.negative_percentage.toFixed(1)}%</h2>
+                                    <p class="mb-0 fw-bold">Negative Messages</p>
                                     <small class="text-muted">${report.negative_count} messages</small>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="alert alert-info">
-                        <strong>Overall Sentiment:</strong> 
-                        <span class="badge bg-${report.overall_sentiment === 'positive' ? 'success' : report.overall_sentiment === 'negative' ? 'danger' : 'warning'}">
-                            ${report.overall_sentiment.toUpperCase()}
-                        </span>
-                        <br>
-                        <strong>Average Score:</strong> ${report.average_score.toFixed(3)}
-                        <br>
-                        <strong>Period:</strong> ${report.start_date} to ${report.end_date}
-                        <br>
-                        <strong>Total Messages:</strong> ${report.total_messages}
+                    <div class="alert alert-${report.overall_sentiment === 'positive' ? 'success' : report.overall_sentiment === 'negative' ? 'danger' : 'warning'}">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-chart-line fa-2x me-3"></i>
+                            <div>
+                                <h5 class="mb-0">Overall Sentiment: ${report.overall_sentiment.toUpperCase()}</h5>
+                                <p class="mb-0">Average Score: <strong>${report.average_score.toFixed(3)}</strong></p>
+                            </div>
+                        </div>
+                        <hr>
+                        <p class="mb-0">
+                            <i class="fas fa-calendar me-2"></i><strong>Period:</strong> ${report.start_date} to ${report.end_date}<br>
+                            <i class="fas fa-message me-2"></i><strong>Total Messages:</strong> ${report.total_messages}
+                        </p>
                     </div>
                 </div>
                 
+                ${report.summary ? `
                 <div class="report-detail-section">
-                    <h6>🎭 Detected Emotions</h6>
-                    <p class="text-muted">Top emotions identified in your conversations:</p>
+                    <h5 class="fw-bold mb-3">📝 Detailed Summary</h5>
+                    <div class="card">
+                        <div class="card-body">
+                            <p style="white-space: pre-line;">${report.summary}</p>
+                        </div>
+                    </div>
+                </div>
+                ` : ''}
+                
+                ${Object.keys(report.dominant_emotions || {}).length > 0 ? `
+                <div class="report-detail-section">
+                    <h5 class="fw-bold mb-3">🎭 Detected Emotions</h5>
+                    <p class="text-muted mb-3">Top emotions identified in your conversations:</p>
                     <div>
-                        ${Object.entries(report.dominant_emotions || {}).map(([emotion, score]) => 
+                        ${Object.entries(report.dominant_emotions).map(([emotion, score]) => 
                             `<span class="emotion-badge">${emotion}: ${score.toFixed(2)}</span>`
                         ).join('')}
                     </div>
                 </div>
+                ` : ''}
                 
+                ${report.recommendations && report.recommendations.length > 0 ? `
                 <div class="report-detail-section">
-                    <h6>💡 Personalized Recommendations</h6>
-                    <p class="text-muted">Based on your emotional patterns, we recommend:</p>
-                    ${(report.recommendations || []).map(rec => 
+                    <h5 class="fw-bold mb-3">💡 Personalized Recommendations</h5>
+                    <p class="text-muted mb-3">Based on your emotional patterns, we recommend:</p>
+                    ${report.recommendations.map(rec => 
                         `<div class="recommendation-item">
                             <i class="fas fa-check-circle text-success me-2"></i>${rec}
                         </div>`
                     ).join('')}
                 </div>
-                
-                <div class="report-detail-section">
-                    <h6>📈 What This Means</h6>
-                    <div class="card">
-                        <div class="card-body">
-                            ${getInterpretation(report)}
-                        </div>
-                    </div>
-                </div>
+                ` : ''}
             `;
         } else {
             content.innerHTML = `
@@ -433,42 +538,6 @@ async function viewReportDetail(reportId) {
             <div class="alert alert-danger">
                 <strong>Error:</strong> Failed to load report details
             </div>
-        `;
-    }
-}
-
-function getInterpretation(report) {
-    if (report.overall_sentiment === 'positive') {
-        return `
-            <p><strong>✅ Great news!</strong> Your sentiment analysis shows predominantly positive emotional patterns.</p>
-            <p>This suggests you're experiencing a healthy emotional state. Continue your current wellness practices and consider:</p>
-            <ul>
-                <li>Maintaining your self-care routines</li>
-                <li>Sharing your positive strategies with others</li>
-                <li>Celebrating your emotional wellness journey</li>
-            </ul>
-        `;
-    } else if (report.overall_sentiment === 'negative') {
-        return `
-            <p><strong>⚠️ We've noticed challenging emotional patterns.</strong></p>
-            <p>Your analysis indicates you may be experiencing difficult emotions. This is completely normal, and there are resources available:</p>
-            <ul>
-                <li><strong>Immediate Support:</strong> National Suicide Prevention Lifeline: 988</li>
-                <li><strong>Professional Help:</strong> Consider booking a session through our Doctor Consultation page</li>
-                <li><strong>Self-Care:</strong> Try breathing exercises and meditation from our Activities page</li>
-                <li><strong>Support:</strong> Reach out to trusted friends or family members</li>
-            </ul>
-            <p class="mb-0">Remember: Seeking help is a sign of strength, not weakness.</p>
-        `;
-    } else {
-        return `
-            <p><strong>ℹ️ Your emotional patterns show a balanced state.</strong></p>
-            <p>You're experiencing a mix of emotions, which is completely normal. Consider:</p>
-            <ul>
-                <li>Continuing to monitor your emotional well-being</li>
-                <li>Exploring activities that boost positive emotions</li>
-                <li>Maintaining regular check-ins with yourself</li>
-            </ul>
         `;
     }
 }
@@ -520,59 +589,107 @@ async function downloadReportPDF(reportId) {
         
         if (data.success) {
             const report = data.report;
-            
-            // Create PDF
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             
+            let y = 20;
+            
             // Title
             doc.setFontSize(20);
-            doc.text('MindLift Sentiment Report', 105, 20, { align: 'center' });
+            doc.setFont('helvetica', 'bold');
+            doc.text('MindLift Sentiment Report', 105, y, { align: 'center' });
+            y += 15;
             
             // Date
-            doc.setFontSize(12);
-            doc.text(`Generated: ${new Date().toLocaleDateString()}`, 105, 30, { align: 'center' });
-            doc.text(`Period: ${report.start_date} to ${report.end_date}`, 105, 37, { align: 'center' });
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`Generated: ${new Date().toLocaleDateString()}`, 105, y, { align: 'center' });
+            y += 7;
+            doc.text(`Period: ${report.start_date} to ${report.end_date}`, 105, y, { align: 'center' });
+            y += 15;
             
             // Overall Sentiment
-            doc.setFontSize(16);
-            doc.text('Overall Sentiment Analysis', 20, 50);
-            doc.setFontSize(12);
-            doc.text(`Overall Sentiment: ${report.overall_sentiment.toUpperCase()}`, 20, 60);
-            doc.text(`Average Score: ${report.average_score.toFixed(3)}`, 20, 67);
-            doc.text(`Total Messages Analyzed: ${report.total_messages}`, 20, 74);
-            
-            // Sentiment Breakdown
             doc.setFontSize(14);
-            doc.text('Sentiment Breakdown', 20, 90);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Overall Sentiment Analysis', 20, y);
+            y += 10;
+            
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`Overall Sentiment: ${report.overall_sentiment.toUpperCase()}`, 25, y);
+            y += 7;
+            doc.text(`Average Score: ${report.average_score.toFixed(3)}`, 25, y);
+            y += 7;
+            doc.text(`Total Messages: ${report.total_messages}`, 25, y);
+            y += 15;
+            
+            // Sentiment Distribution
             doc.setFontSize(12);
-            doc.text(`Positive: ${report.positive_percentage.toFixed(1)}% (${report.positive_count} messages)`, 25, 100);
-            doc.text(`Neutral: ${report.neutral_percentage.toFixed(1)}% (${report.neutral_count} messages)`, 25, 107);
-            doc.text(`Negative: ${report.negative_percentage.toFixed(1)}% (${report.negative_count} messages)`, 25, 114);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Sentiment Distribution', 20, y);
+            y += 8;
+            
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`Positive: ${report.positive_percentage.toFixed(1)}% (${report.positive_count} messages)`, 25, y);
+            y += 6;
+            doc.text(`Neutral: ${report.neutral_percentage.toFixed(1)}% (${report.neutral_count} messages)`, 25, y);
+            y += 6;
+            doc.text(`Negative: ${report.negative_percentage.toFixed(1)}% (${report.negative_count} messages)`, 25, y);
+            y += 12;
+            
+            // Summary
+            if (report.summary) {
+                doc.addPage();
+                y = 20;
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Detailed Summary', 20, y);
+                y += 10;
+                
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+                const summaryLines = doc.splitTextToSize(report.summary, 170);
+                doc.text(summaryLines, 20, y);
+                y += summaryLines.length * 5 + 10;
+            }
             
             // Emotions
             if (report.dominant_emotions && Object.keys(report.dominant_emotions).length > 0) {
-                doc.setFontSize(14);
-                doc.text('Detected Emotions', 20, 130);
+                if (y > 250) {
+                    doc.addPage();
+                    y = 20;
+                }
                 doc.setFontSize(12);
-                let y = 140;
+                doc.setFont('helvetica', 'bold');
+                doc.text('Detected Emotions', 20, y);
+                y += 10;
+                
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
                 Object.entries(report.dominant_emotions).forEach(([emotion, score]) => {
                     doc.text(`${emotion}: ${score.toFixed(2)}`, 25, y);
-                    y += 7;
+                    y += 6;
                 });
+                y += 10;
             }
             
             // Recommendations
             if (report.recommendations && report.recommendations.length > 0) {
                 doc.addPage();
-                doc.setFontSize(14);
-                doc.text('Recommendations', 20, 20);
-                doc.setFontSize(11);
-                let y = 30;
-                report.recommendations.forEach((rec, index) => {
-                    const lines = doc.splitTextToSize(`${index + 1}. ${rec}`, 170);
+                y = 20;
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Recommendations', 20, y);
+                y += 10;
+                
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+                report.recommendations.forEach((rec) => {
+                    const lines = doc.splitTextToSize(rec, 170);
                     doc.text(lines, 20, y);
-                    y += lines.length * 7 + 3;
+                    y += lines.length * 5 + 5;
+                    
                     if (y > 270) {
                         doc.addPage();
                         y = 20;
@@ -580,7 +697,6 @@ async function downloadReportPDF(reportId) {
                 });
             }
             
-            // Save PDF
             doc.save(`MindLift_Report_${new Date().toISOString().split('T')[0]}.pdf`);
             showNotification('PDF downloaded successfully!', 'success');
         } else {

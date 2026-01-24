@@ -2544,3 +2544,278 @@ INFO 2026-01-23 17:05:24,239 autoreload Watching for file changes with StatReloa
 INFO 2026-01-23 17:05:36,060 groq_service ✅ AI service initialized
 INFO 2026-01-23 17:08:37,292 autoreload Watching for file changes with StatReloader
 INFO 2026-01-23 17:08:43,017 groq_service ✅ AI service initialized
+INFO 2026-01-23 17:08:46,387 basehttp "GET / HTTP/1.1" 302 0
+INFO 2026-01-23 17:08:46,493 basehttp "GET /chat/ HTTP/1.1" 200 13355
+INFO 2026-01-23 17:08:46,887 basehttp "GET /api/conversations/ HTTP/1.1" 200 283
+INFO 2026-01-23 17:08:46,962 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+WARNING 2026-01-23 17:08:47,008 basehttp "GET /static/favicon.ico HTTP/1.1" 404 1960
+INFO 2026-01-23 17:08:48,664 basehttp "GET /chat/?session_id=9902805f-300b-4add-88cf-bbb3a1e1cf9a HTTP/1.1" 200 13095
+INFO 2026-01-23 17:08:48,815 basehttp "GET /api/conversations/ HTTP/1.1" 200 283
+INFO 2026-01-23 17:08:48,830 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-23 17:08:56,487 basehttp "POST /api/delete-conversation/ HTTP/1.1" 200 65
+INFO 2026-01-23 17:08:56,608 basehttp "GET /chat/ HTTP/1.1" 200 12109
+INFO 2026-01-23 17:08:56,772 basehttp "GET /api/conversations/ HTTP/1.1" 200 38
+INFO 2026-01-23 17:08:56,793 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-23 17:09:00,663 views ✅ New conversation created: 935f29c6-b686-48e0-8547-4eac1b0a9e07
+INFO 2026-01-23 17:09:00,681 basehttp "POST /api/new-conversation/ HTTP/1.1" 200 133
+INFO 2026-01-23 17:09:00,783 basehttp "GET /chat/?session_id=935f29c6-b686-48e0-8547-4eac1b0a9e07 HTTP/1.1" 200 13383
+INFO 2026-01-23 17:09:00,963 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-23 17:09:00,974 basehttp "GET /api/conversations/ HTTP/1.1" 200 275
+INFO 2026-01-23 17:09:08,186 views 🚀 Processing message through Hybrid System
+INFO 2026-01-23 17:09:14,437 hybrid_service ✅ RASA processed: intent=greet, video=False
+INFO 2026-01-23 17:09:14,437 hybrid_service ✅ RASA Intent: greet (confidence: 1.00)
+INFO 2026-01-23 17:09:14,437 hybrid_service 📊 Using RASA response (high confidence)
+INFO 2026-01-23 17:09:14,437 views ✅ Response from: rasa
+INFO 2026-01-23 17:09:14,437 views 📊 Intent: greet (confidence: 1.00)
+INFO 2026-01-23 17:09:14,478 views ✅ Message processed. Source: rasa
+INFO 2026-01-23 17:09:14,506 basehttp "POST /api/send-message/ HTTP/1.1" 200 435
+INFO 2026-01-23 17:09:14,592 basehttp "GET /api/conversations/ HTTP/1.1" 200 264
+INFO 2026-01-23 17:09:31,746 views 🚀 Processing message through Hybrid System
+INFO 2026-01-23 17:09:35,942 hybrid_service 🎬 Creating video object from URL: https://www.youtube.com/watch?v=tybOi4hjZFQ
+INFO 2026-01-23 17:09:35,942 hybrid_service ✅ Created video object for ID: tybOi4hjZFQ
+INFO 2026-01-23 17:09:35,942 hybrid_service 📦 Video object created: {'video_id': 'tybOi4hjZFQ', 'embed_url': 'https://www.youtube-nocookie.com/embed/tybOi4hjZFQ', 'watch_url': 'https://www.youtube.com/watch?v=tybOi4hjZFQ', 'title': 'Recommended Video', 'has_video': True, 'source': 'rasa'}
+INFO 2026-01-23 17:09:35,942 hybrid_service ✅ Created video from text URL: https://www.youtube.com/watch?v=tybOi4hjZFQ
+INFO 2026-01-23 17:09:38,037 hybrid_service ✅ RASA processed: intent=ask_breathing, video=True
+INFO 2026-01-23 17:09:38,037 hybrid_service 🎥 RASA video data: {'video_id': 'tybOi4hjZFQ', 'embed_url': 'https://www.youtube-nocookie.com/embed/tybOi4hjZFQ', 'watch_url': 'https://www.youtube.com/watch?v=tybOi4hjZFQ', 'title': 'Recommended Video', 'has_video': True, 'source': 'rasa'}
+INFO 2026-01-23 17:09:38,037 hybrid_service ✅ RASA Intent: ask_breathing (confidence: 0.99)
+INFO 2026-01-23 17:09:38,037 hybrid_service 📊 Using RASA response (high confidence)
+INFO 2026-01-23 17:09:38,037 groq_service 📤 Sending to AI: 2 messages
+INFO 2026-01-23 17:09:39,492 groq_service ✅ Found YouTube video for topic: breathing
+INFO 2026-01-23 17:09:39,492 groq_service 🎥 Video suggested for: breathing
+INFO 2026-01-23 17:09:39,500 groq_service ✅ Response received (251 chars)
+INFO 2026-01-23 17:09:39,503 hybrid_service ✅ Enhanced response with video: True
+INFO 2026-01-23 17:09:39,503 hybrid_service 🎥 Final video data: {'video_id': 'tybOi4hjZFQ', 'embed_url': 'https://www.youtube-nocookie.com/embed/tybOi4hjZFQ', 'watch_url': 'https://www.youtube.com/watch?v=tybOi4hjZFQ', 'title': 'Recommended Video', 'has_video': True, 'source': 'rasa'}
+INFO 2026-01-23 17:09:39,506 views ✅ Response from: assistant
+INFO 2026-01-23 17:09:39,506 views 📊 Intent: ask_breathing (confidence: 0.99)
+INFO 2026-01-23 17:09:39,534 views ✅ Message processed. Source: assistant
+INFO 2026-01-23 17:09:39,568 basehttp "POST /api/send-message/ HTTP/1.1" 200 832
+INFO 2026-01-23 17:09:39,686 basehttp "GET /api/conversations/ HTTP/1.1" 200 264
+INFO 2026-01-23 17:11:41,336 views 🚀 Processing message through Hybrid System
+INFO 2026-01-23 17:11:47,610 hybrid_service ✅ RASA processed: intent=lonely, video=False
+INFO 2026-01-23 17:11:47,618 hybrid_service ✅ RASA Intent: lonely (confidence: 0.98)
+INFO 2026-01-23 17:11:47,618 hybrid_service 📊 Using RASA response (high confidence)
+INFO 2026-01-23 17:11:47,618 groq_service 📤 Sending to AI: 2 messages
+INFO 2026-01-23 17:11:47,931 groq_service ✅ Response received (224 chars)
+INFO 2026-01-23 17:11:47,939 hybrid_service ✅ Enhanced response with video: False
+INFO 2026-01-23 17:11:47,954 views ✅ Response from: assistant
+INFO 2026-01-23 17:11:47,954 views 📊 Intent: lonely (confidence: 0.98)
+INFO 2026-01-23 17:11:47,988 views ✅ Message processed. Source: assistant
+INFO 2026-01-23 17:11:48,013 basehttp "POST /api/send-message/ HTTP/1.1" 200 633
+INFO 2026-01-23 17:11:48,100 basehttp "GET /api/conversations/ HTTP/1.1" 200 264
+INFO 2026-01-23 17:11:58,010 basehttp "POST /api/generate-report/ HTTP/1.1" 200 855
+INFO 2026-01-23 17:11:59,307 basehttp "GET /reports/ HTTP/1.1" 200 26193
+INFO 2026-01-23 17:11:59,400 basehttp "GET /static/css/style.css HTTP/1.1" 304 0
+INFO 2026-01-23 17:12:06,321 basehttp "GET /api/get-report-detail/?report_id=9 HTTP/1.1" 200 892
+INFO 2026-01-23 17:12:37,705 basehttp "GET /api/get-report-detail/?report_id=9 HTTP/1.1" 200 892
+INFO 2026-01-23 17:12:58,456 views 🚀 Processing message through Hybrid System
+INFO 2026-01-23 17:13:04,724 hybrid_service ✅ RASA processed: intent=mood_great, video=False
+INFO 2026-01-23 17:13:04,724 hybrid_service ✅ RASA Intent: mood_great (confidence: 0.49)
+INFO 2026-01-23 17:13:04,724 hybrid_service ⚠️ Low RASA confidence, using AI
+INFO 2026-01-23 17:13:04,724 groq_service 📤 Sending to AI: 6 messages
+INFO 2026-01-23 17:13:05,428 groq_service ✅ Response received (178 chars)
+INFO 2026-01-23 17:13:05,428 views ✅ Response from: assistant
+INFO 2026-01-23 17:13:05,475 views ✅ Message processed. Source: assistant
+INFO 2026-01-23 17:13:05,492 basehttp "POST /api/send-message/ HTTP/1.1" 200 588
+INFO 2026-01-23 17:13:05,571 basehttp "GET /api/conversations/ HTTP/1.1" 200 264
+INFO 2026-01-23 17:13:09,699 basehttp "POST /api/generate-report/ HTTP/1.1" 200 721
+INFO 2026-01-23 17:13:10,814 basehttp "GET /reports/ HTTP/1.1" 200 29199
+INFO 2026-01-23 17:13:16,861 basehttp "POST /api/delete-report/ HTTP/1.1" 200 59
+INFO 2026-01-23 17:13:19,540 basehttp "POST /api/delete-report/ HTTP/1.1" 200 59
+INFO 2026-01-23 17:13:19,622 basehttp "GET /reports/ HTTP/1.1" 200 23685
+INFO 2026-01-23 17:13:22,652 basehttp "GET /chat/ HTTP/1.1" 200 13334
+INFO 2026-01-23 17:13:22,720 basehttp "GET /static/js/chat.js HTTP/1.1" 304 0
+INFO 2026-01-23 17:13:22,853 basehttp "GET /api/conversations/ HTTP/1.1" 200 264
+INFO 2026-01-23 17:13:22,871 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-23 17:13:24,617 basehttp "GET /chat/?session_id=935f29c6-b686-48e0-8547-4eac1b0a9e07 HTTP/1.1" 200 16680
+INFO 2026-01-23 17:13:24,755 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-23 17:13:24,758 basehttp "GET /api/conversations/ HTTP/1.1" 200 264
+INFO 2026-01-23 17:13:32,857 basehttp "GET /reports/ HTTP/1.1" 200 23685
+INFO 2026-01-23 17:13:35,698 basehttp "GET /chat/ HTTP/1.1" 200 13334
+INFO 2026-01-23 17:13:35,893 basehttp "GET /api/conversations/ HTTP/1.1" 200 264
+INFO 2026-01-23 17:13:35,910 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-23 17:13:37,045 basehttp "GET /profile/ HTTP/1.1" 200 18186
+INFO 2026-01-23 17:13:37,197 basehttp "GET /api/user-stats/ HTTP/1.1" 200 208
+WARNING 2026-01-23 17:13:43,901 log Not Found: /privacy-policy/
+WARNING 2026-01-23 17:13:43,901 basehttp "GET /privacy-policy/ HTTP/1.1" 404 10317
+INFO 2026-01-23 17:14:01,274 basehttp "GET /chat/ HTTP/1.1" 200 13334
+INFO 2026-01-23 17:14:01,508 basehttp "GET /api/conversations/ HTTP/1.1" 200 264
+INFO 2026-01-23 17:14:01,525 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-23 17:14:21,331 basehttp "GET /doctor/ HTTP/1.1" 200 15953
+INFO 2026-01-23 17:14:21,556 basehttp "GET /static/js/doctor.js HTTP/1.1" 200 23767
+INFO 2026-01-23 17:15:12,448 basehttp "GET /chat/ HTTP/1.1" 200 13334
+INFO 2026-01-23 17:15:12,563 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-23 17:15:12,563 basehttp "GET /api/conversations/ HTTP/1.1" 200 264
+INFO 2026-01-23 17:15:22,046 basehttp "GET /profile/ HTTP/1.1" 200 18186
+INFO 2026-01-23 17:15:22,210 basehttp "GET /api/user-stats/ HTTP/1.1" 200 208
+INFO 2026-01-23 17:15:31,815 basehttp "GET /chat/ HTTP/1.1" 200 13334
+INFO 2026-01-23 17:15:31,944 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-23 17:15:31,956 basehttp "GET /api/conversations/ HTTP/1.1" 200 264
+INFO 2026-01-23 17:15:34,042 basehttp "GET /chat/?session_id=935f29c6-b686-48e0-8547-4eac1b0a9e07 HTTP/1.1" 200 16680
+INFO 2026-01-23 17:15:34,167 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-23 17:15:34,167 basehttp "GET /api/conversations/ HTTP/1.1" 200 264
+INFO 2026-01-23 18:26:58,870 basehttp "GET /doctor/ HTTP/1.1" 200 15953
+INFO 2026-01-23 18:26:58,966 basehttp "GET /static/css/style.css HTTP/1.1" 304 0
+INFO 2026-01-23 18:26:58,975 basehttp "GET /static/js/doctor.js HTTP/1.1" 304 0
+INFO 2026-01-23 18:27:02,925 basehttp "GET /chat/ HTTP/1.1" 200 13344
+INFO 2026-01-23 18:27:03,009 basehttp "GET /static/js/chat.js HTTP/1.1" 304 0
+INFO 2026-01-23 18:27:03,146 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-23 18:27:03,162 basehttp "GET /api/conversations/ HTTP/1.1" 200 264
+INFO 2026-01-23 18:27:05,172 basehttp "GET /reports/ HTTP/1.1" 200 23685
+INFO 2026-01-23 18:27:09,506 basehttp "POST /api/generate-report/ HTTP/1.1" 200 721
+INFO 2026-01-23 18:27:11,112 basehttp "GET /reports/ HTTP/1.1" 200 26196
+INFO 2026-01-23 18:27:13,643 basehttp "GET /api/get-report-detail/?report_id=11 HTTP/1.1" 200 758
+INFO 2026-01-23 18:27:24,293 basehttp "GET /chat/ HTTP/1.1" 200 13344
+INFO 2026-01-23 18:27:24,465 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-23 18:27:24,480 basehttp "GET /api/conversations/ HTTP/1.1" 200 264
+INFO 2026-01-23 18:27:26,246 basehttp "GET /chat/?session_id=935f29c6-b686-48e0-8547-4eac1b0a9e07 HTTP/1.1" 200 16690
+INFO 2026-01-23 18:27:26,406 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-23 18:27:26,436 basehttp "GET /api/conversations/ HTTP/1.1" 200 264
+INFO 2026-01-23 18:27:31,158 basehttp "POST /api/generate-report/ HTTP/1.1" 200 721
+INFO 2026-01-23 18:27:32,278 basehttp "GET /reports/ HTTP/1.1" 200 29202
+INFO 2026-01-23 18:27:36,922 basehttp "POST /api/delete-report/ HTTP/1.1" 200 59
+INFO 2026-01-23 18:27:39,334 basehttp "POST /api/delete-report/ HTTP/1.1" 200 59
+INFO 2026-01-23 18:27:39,435 basehttp "GET /reports/ HTTP/1.1" 200 23685
+INFO 2026-01-24 10:33:47,479 autoreload Watching for file changes with StatReloader
+INFO 2026-01-24 10:34:01,921 groq_service ✅ AI service initialized
+INFO 2026-01-24 10:34:12,509 autoreload E:\mindlift\webapp\webapp\settings.py changed, reloading.
+INFO 2026-01-24 10:34:15,051 autoreload Watching for file changes with StatReloader
+INFO 2026-01-24 10:34:17,613 groq_service ✅ AI service initialized
+INFO 2026-01-24 10:34:23,424 basehttp "GET / HTTP/1.1" 302 0
+INFO 2026-01-24 10:34:23,753 basehttp "GET /chat/ HTTP/1.1" 200 13346
+INFO 2026-01-24 10:34:23,812 basehttp "GET /static/css/style.css HTTP/1.1" 304 0
+INFO 2026-01-24 10:34:23,821 basehttp "GET /static/js/chat.js HTTP/1.1" 304 0
+INFO 2026-01-24 10:34:24,057 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-24 10:34:24,111 basehttp "GET /api/conversations/ HTTP/1.1" 200 264
+WARNING 2026-01-24 10:34:24,354 basehttp "GET /static/favicon.ico HTTP/1.1" 404 1960
+INFO 2026-01-24 10:34:26,616 basehttp "GET /chat/?session_id=935f29c6-b686-48e0-8547-4eac1b0a9e07 HTTP/1.1" 200 16692
+INFO 2026-01-24 10:34:26,773 basehttp "GET /api/conversations/ HTTP/1.1" 200 264
+INFO 2026-01-24 10:34:26,853 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-24 10:34:58,286 views 🚀 Processing message through Hybrid System
+WARNING 2026-01-24 10:35:02,882 hybrid_service RASA returned empty response
+INFO 2026-01-24 10:35:02,885 hybrid_service ℹ️ RASA unavailable, using AI only
+INFO 2026-01-24 10:35:02,885 groq_service 📤 Sending to AI: 6 messages
+INFO 2026-01-24 10:35:03,962 groq_service ✅ Response received (488 chars)
+INFO 2026-01-24 10:35:03,965 views ✅ Response from: assistant
+INFO 2026-01-24 10:35:03,996 views ✅ Message processed. Source: assistant
+INFO 2026-01-24 10:35:04,018 basehttp "POST /api/send-message/ HTTP/1.1" 200 929
+INFO 2026-01-24 10:35:04,106 basehttp "GET /api/conversations/ HTTP/1.1" 200 265
+INFO 2026-01-24 10:35:45,018 views 🚀 Processing message through Hybrid System
+WARNING 2026-01-24 10:35:49,094 hybrid_service RASA returned empty response
+INFO 2026-01-24 10:35:49,094 hybrid_service ℹ️ RASA unavailable, using AI only
+INFO 2026-01-24 10:35:49,094 groq_service 📤 Sending to AI: 6 messages
+INFO 2026-01-24 10:35:50,433 groq_service ✅ Found YouTube video for topic: stress
+INFO 2026-01-24 10:35:50,441 groq_service 🎥 Video suggested for: stress
+INFO 2026-01-24 10:35:50,441 groq_service ✅ Response received (534 chars)
+INFO 2026-01-24 10:35:50,442 hybrid_service 🎥 AI video data: {'video_id': '8LQ2wZZicUA', 'embed_url': 'https://www.youtube.com/embed/8LQ2wZZicUA', 'watch_url': 'https://www.youtube.com/watch?v=8LQ2wZZicUA', 'title': 'How to Escape the Cycle of Stress, Anxiety and Misery? - Sadhguru', 'description': 'Sadhguru is asked why so many people today are trapped in a vicious cycle of frustration, misery and rage. He reminds us that the ...', 'thumbnail': 'https://i.ytimg.com/vi/8LQ2wZZicUA/mqdefault.jpg', 'has_video': True}
+INFO 2026-01-24 10:35:50,443 views ✅ Response from: assistant
+INFO 2026-01-24 10:35:50,473 views ✅ Message processed. Source: assistant
+INFO 2026-01-24 10:35:50,495 basehttp "POST /api/send-message/ HTTP/1.1" 200 1168
+INFO 2026-01-24 10:35:50,563 basehttp "GET /api/conversations/ HTTP/1.1" 200 265
+WARNING 2026-01-24 10:36:00,433 basehttp "GET /static/favicon.ico HTTP/1.1" 404 1960
+INFO 2026-01-24 10:37:37,763 basehttp "POST /api/generate-report/ HTTP/1.1" 200 632
+INFO 2026-01-24 10:37:39,520 basehttp "GET /reports/ HTTP/1.1" 200 26193
+INFO 2026-01-24 10:37:45,264 basehttp "GET /api/get-report-detail/?report_id=13 HTTP/1.1" 200 669
+INFO 2026-01-24 10:49:31,316 basehttp "GET /chat/ HTTP/1.1" 200 13335
+INFO 2026-01-24 10:49:31,449 basehttp "GET /api/conversations/ HTTP/1.1" 200 265
+INFO 2026-01-24 10:49:31,465 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-24 10:49:43,630 views ✅ New conversation created: 37597c2e-931d-42d5-b67b-41863cfd6534
+INFO 2026-01-24 10:49:43,646 basehttp "POST /api/new-conversation/ HTTP/1.1" 200 133
+INFO 2026-01-24 10:49:43,724 basehttp "GET /chat/?session_id=37597c2e-931d-42d5-b67b-41863cfd6534 HTTP/1.1" 200 14640
+INFO 2026-01-24 10:49:43,833 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-24 10:49:43,846 basehttp "GET /api/conversations/ HTTP/1.1" 200 504
+INFO 2026-01-24 10:49:44,278 views ✅ New conversation created: ffc3aae6-f5d5-495f-b571-d444f3927e57
+INFO 2026-01-24 10:49:44,278 basehttp "POST /api/new-conversation/ HTTP/1.1" 200 133
+INFO 2026-01-24 10:49:44,357 basehttp "GET /chat/?session_id=ffc3aae6-f5d5-495f-b571-d444f3927e57 HTTP/1.1" 200 15907
+INFO 2026-01-24 10:49:44,448 basehttp "GET /api/conversations/ HTTP/1.1" 200 743
+INFO 2026-01-24 10:49:44,457 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-24 10:49:44,859 views ✅ New conversation created: 7b897418-7b78-4c3b-b5d3-d5796bb0d6b4
+INFO 2026-01-24 10:49:44,872 basehttp "POST /api/new-conversation/ HTTP/1.1" 200 133
+INFO 2026-01-24 10:49:44,946 basehttp "GET /chat/?session_id=7b897418-7b78-4c3b-b5d3-d5796bb0d6b4 HTTP/1.1" 200 17174
+INFO 2026-01-24 10:49:45,044 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-24 10:49:45,054 basehttp "GET /api/conversations/ HTTP/1.1" 200 982
+INFO 2026-01-24 10:49:45,378 views ✅ New conversation created: d4f4bf02-8375-4019-a7b9-3d956aa2e74c
+INFO 2026-01-24 10:49:45,394 basehttp "POST /api/new-conversation/ HTTP/1.1" 200 133
+INFO 2026-01-24 10:49:45,470 basehttp "GET /chat/?session_id=d4f4bf02-8375-4019-a7b9-3d956aa2e74c HTTP/1.1" 200 18441
+INFO 2026-01-24 10:49:45,553 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-24 10:49:45,565 basehttp "GET /api/conversations/ HTTP/1.1" 200 1221
+INFO 2026-01-24 10:49:45,927 views ✅ New conversation created: 23914fea-036f-4682-8a67-86f89f9ee561
+INFO 2026-01-24 10:49:45,943 basehttp "POST /api/new-conversation/ HTTP/1.1" 200 133
+INFO 2026-01-24 10:49:46,012 basehttp "GET /chat/?session_id=23914fea-036f-4682-8a67-86f89f9ee561 HTTP/1.1" 200 19708
+INFO 2026-01-24 10:49:46,116 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-24 10:49:46,116 basehttp "GET /api/conversations/ HTTP/1.1" 200 1460
+INFO 2026-01-24 10:49:51,435 basehttp "POST /api/delete-conversation/ HTTP/1.1" 200 65
+INFO 2026-01-24 10:49:51,500 basehttp "GET /chat/ HTTP/1.1" 200 18403
+INFO 2026-01-24 10:49:51,634 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-24 10:49:51,647 basehttp "GET /api/conversations/ HTTP/1.1" 200 1221
+INFO 2026-01-24 10:49:52,679 basehttp "GET /chat/?session_id=d4f4bf02-8375-4019-a7b9-3d956aa2e74c HTTP/1.1" 200 18441
+INFO 2026-01-24 10:49:52,785 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-24 10:49:52,785 basehttp "GET /api/conversations/ HTTP/1.1" 200 1221
+INFO 2026-01-24 10:49:56,081 basehttp "POST /api/delete-conversation/ HTTP/1.1" 200 65
+INFO 2026-01-24 10:49:56,164 basehttp "GET /chat/ HTTP/1.1" 200 17136
+INFO 2026-01-24 10:49:56,260 basehttp "GET /api/conversations/ HTTP/1.1" 200 982
+INFO 2026-01-24 10:49:56,287 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-24 10:50:00,620 basehttp "POST /api/delete-conversation/ HTTP/1.1" 200 65
+INFO 2026-01-24 10:50:00,689 basehttp "GET /chat/ HTTP/1.1" 200 15869
+INFO 2026-01-24 10:50:00,765 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-24 10:50:00,770 basehttp "GET /api/conversations/ HTTP/1.1" 200 743
+INFO 2026-01-24 10:50:03,400 basehttp "POST /api/delete-conversation/ HTTP/1.1" 200 65
+INFO 2026-01-24 10:50:03,451 basehttp "GET /chat/ HTTP/1.1" 200 14602
+INFO 2026-01-24 10:50:03,534 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-24 10:50:03,537 basehttp "GET /api/conversations/ HTTP/1.1" 200 504
+INFO 2026-01-24 10:50:06,622 basehttp "POST /api/delete-conversation/ HTTP/1.1" 200 65
+INFO 2026-01-24 10:50:06,662 basehttp "GET /chat/ HTTP/1.1" 200 13335
+INFO 2026-01-24 10:50:06,762 basehttp "GET /api/conversations/ HTTP/1.1" 200 265
+INFO 2026-01-24 10:50:06,776 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-24 10:51:36,265 autoreload E:\mindlift\webapp\webapp\settings.py changed, reloading.
+INFO 2026-01-24 10:51:46,777 autoreload Watching for file changes with StatReloader
+INFO 2026-01-24 10:51:55,807 groq_service ✅ AI service initialized
+INFO 2026-01-24 10:52:06,397 autoreload E:\mindlift\webapp\webapp\settings.py changed, reloading.
+INFO 2026-01-24 10:52:10,616 autoreload Watching for file changes with StatReloader
+INFO 2026-01-24 10:52:14,890 groq_service ✅ AI service initialized
+INFO 2026-01-24 10:53:21,116 autoreload E:\mindlift\webapp\chatbot\sentiment_service.py changed, reloading.
+INFO 2026-01-24 10:53:24,276 autoreload Watching for file changes with StatReloader
+INFO 2026-01-24 10:53:28,906 groq_service ✅ AI service initialized
+INFO 2026-01-24 10:57:09,127 autoreload E:\mindlift\webapp\chatbot\views.py changed, reloading.
+INFO 2026-01-24 10:57:11,657 autoreload Watching for file changes with StatReloader
+INFO 2026-01-24 10:57:17,459 groq_service ✅ AI service initialized
+INFO 2026-01-24 10:57:36,736 autoreload E:\mindlift\webapp\chatbot\views.py changed, reloading.
+INFO 2026-01-24 10:57:39,636 autoreload Watching for file changes with StatReloader
+INFO 2026-01-24 10:57:44,207 groq_service ✅ AI service initialized
+INFO 2026-01-24 10:57:50,231 autoreload E:\mindlift\webapp\chatbot\views.py changed, reloading.
+INFO 2026-01-24 10:57:52,092 autoreload Watching for file changes with StatReloader
+INFO 2026-01-24 10:57:55,184 groq_service ✅ AI service initialized
+INFO 2026-01-24 10:58:13,903 basehttp "GET / HTTP/1.1" 302 0
+INFO 2026-01-24 10:58:14,024 basehttp "GET /chat/ HTTP/1.1" 200 13335
+INFO 2026-01-24 10:58:14,176 basehttp "GET /api/conversations/ HTTP/1.1" 200 265
+INFO 2026-01-24 10:58:14,221 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-24 10:58:16,333 basehttp "GET /chat/?session_id=935f29c6-b686-48e0-8547-4eac1b0a9e07 HTTP/1.1" 200 20163
+INFO 2026-01-24 10:58:16,449 basehttp "GET /api/conversations/ HTTP/1.1" 200 265
+INFO 2026-01-24 10:58:16,457 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+ERROR 2026-01-24 10:58:20,017 views Generate report error: 'list' object has no attribute 'aggregate'
+Traceback (most recent call last):
+  File "E:\mindlift\webapp\chatbot\views.py", line 675, in generate_report
+    report = generator.generate_conversation_report(conversation, request.user)
+  File "E:\mindlift\webapp\chatbot\sentiment_service.py", line 134, in generate_conversation_report
+    return self._calculate_detailed_metrics(
+  File "E:\mindlift\webapp\chatbot\sentiment_service.py", line 223, in _calculate_detailed_metrics
+    sentiment_trend = self._calculate_sentiment_trend(messages)
+  File "E:\mindlift\webapp\chatbot\sentiment_service.py", line 316, in _calculate_sentiment_trend
+    first_avg = first_half.aggregate(Avg('sentiment_score'))['sentiment_score__avg'] or 0
+AttributeError: 'list' object has no attribute 'aggregate'
+ERROR 2026-01-24 10:58:20,027 log Internal Server Error: /api/generate-report/
+ERROR 2026-01-24 10:58:20,028 basehttp "POST /api/generate-report/ HTTP/1.1" 500 55
+INFO 2026-01-24 10:58:25,514 basehttp "GET /reports/ HTTP/1.1" 200 28433
+INFO 2026-01-24 10:58:32,195 basehttp "GET /api/get-report-detail/?report_id=13 HTTP/1.1" 200 1082
+INFO 2026-01-24 10:58:52,831 basehttp "GET /api/get-report-detail/?report_id=13 HTTP/1.1" 200 1082
+INFO 2026-01-24 10:59:06,159 basehttp "GET /chat/ HTTP/1.1" 200 13335
+INFO 2026-01-24 10:59:06,274 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-24 10:59:06,274 basehttp "GET /api/conversations/ HTTP/1.1" 200 265
+INFO 2026-01-24 11:01:06,216 basehttp "GET /reports/ HTTP/1.1" 200 28433
+INFO 2026-01-24 11:05:46,843 basehttp "GET /api/get-report-detail/?report_id=13 HTTP/1.1" 200 1082
+INFO 2026-01-24 11:12:44,573 autoreload E:\mindlift\webapp\chatbot\views.py changed, reloading.
+INFO 2026-01-24 11:12:51,288 autoreload Watching for file changes with StatReloader
+INFO 2026-01-24 11:12:55,253 groq_service ✅ AI service initialized
+INFO 2026-01-24 11:19:31,158 basehttp "GET /api/get-report-detail/?report_id=13 HTTP/1.1" 200 1082
+INFO 2026-01-24 11:19:36,998 basehttp "GET /chat/ HTTP/1.1" 200 13335
+INFO 2026-01-24 11:19:37,148 basehttp "GET /api/conversations/ HTTP/1.1" 200 265
+INFO 2026-01-24 11:19:37,156 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226

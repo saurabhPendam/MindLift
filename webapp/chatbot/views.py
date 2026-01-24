@@ -653,17 +653,29 @@ def send_message(request):
         logger.error(f"Send message error: {str(e)}", exc_info=True)
         return JsonResponse({'error': 'An error occurred. Please try again.'}, status=500)
     
-    
 @login_required
 @require_http_methods(["POST"])
 def generate_report(request):
-    """Generate sentiment analysis report"""
+    """Generate sentiment analysis report - FIXED VERSION"""
     try:
         data = json.loads(request.body)
         days = data.get('days', 7)
         session_id = data.get('session_id')
         
         generator = ReportGenerator()
+        
+        # Check if user has any messages first
+        total_messages = Message.objects.filter(
+            conversation__user=request.user,
+            sender='user',
+            conversation__is_deleted=False
+        ).count()
+        
+        if total_messages == 0:
+            return JsonResponse({
+                'success': False,
+                'error': 'No messages found. Start chatting to generate a report!'
+            }, status=400)
         
         if session_id:
             try:
@@ -672,11 +684,31 @@ def generate_report(request):
                     user=request.user,
                     is_deleted=False
                 )
+                
+                # Check if conversation has user messages
+                conv_messages = Message.objects.filter(
+                    conversation=conversation,
+                    sender='user'
+                ).count()
+                
+                if conv_messages == 0:
+                    return JsonResponse({
+                        'success': False,
+                        'error': 'This conversation has no messages to analyze.'
+                    }, status=400)
+                
                 report = generator.generate_conversation_report(conversation, request.user)
             except Conversation.DoesNotExist:
                 return JsonResponse({'error': 'Conversation not found'}, status=404)
         else:
             report = generator.generate_user_report(request.user, days=days)
+        
+        # Check if report generation was successful
+        if 'error' in report:
+            return JsonResponse({
+                'success': False,
+                'error': report['error']
+            }, status=400)
         
         log_audit(
             request.user,
@@ -690,14 +722,19 @@ def generate_report(request):
         
     except Exception as e:
         logger.error(f"Generate report error: {str(e)}", exc_info=True)
-        return JsonResponse({'error': str(e)}, status=500)
+        return JsonResponse({
+            'success': False,
+            'error': 'Failed to generate report. Please try again.'
+        }, status=500)
     
-# ADD THIS FUNCTION TO views.py
 
 @login_required
 @require_http_methods(["GET"])
 def get_report_detail(request):
-    """Get detailed report data for modal view"""
+    """
+    Get detailed report data for modal view - COMPLETE FIXED VERSION
+    Returns comprehensive report including summary, emotions, and recommendations
+    """
     try:
         report_id = request.GET.get('report_id')
         
@@ -712,9 +749,29 @@ def get_report_detail(request):
         )
         
         # Prepare recommendations as list
-        recommendations = report.recommendations.split('\n') if report.recommendations else []
-        recommendations = [r.strip() for r in recommendations if r.strip()]
+        recommendations = []
+        if report.recommendations:
+            recommendations = [r.strip() for r in report.recommendations.split('\n') if r.strip()]
         
+        # Generate summary if not present (for old reports)
+        summary = ""
+        if hasattr(report, 'summary') and report.summary:
+            summary = report.summary
+        else:
+            # Generate summary from existing data
+            summary = f"""Your emotional state shows {report.overall_sentiment} sentiment with an average score of {report.average_score:.2f}.
+
+Sentiment Distribution:
+• Positive messages: {report.positive_count} ({report.positive_percentage:.1f}%)
+• Neutral messages: {report.neutral_count} ({report.neutral_percentage:.1f}%)
+• Negative messages: {report.negative_count} ({report.negative_percentage:.1f}%)
+
+Out of {report.total_messages} messages analyzed during {report.start_date.strftime('%B %d')} to {report.end_date.strftime('%B %d, %Y')}, the analysis provides insights into your emotional patterns."""
+        
+        # Prepare emotion data
+        dominant_emotions = report.dominant_emotions if report.dominant_emotions else {}
+        
+        # Build comprehensive report data
         report_data = {
             'id': report.id,
             'overall_sentiment': report.overall_sentiment,
@@ -726,11 +783,13 @@ def get_report_detail(request):
             'positive_percentage': round(report.positive_percentage, 1),
             'negative_percentage': round(report.negative_percentage, 1),
             'neutral_percentage': round(report.neutral_percentage, 1),
-            'dominant_emotions': report.dominant_emotions,
+            'dominant_emotions': dominant_emotions,
             'recommendations': recommendations,
+            'summary': summary,
             'start_date': report.start_date.strftime('%Y-%m-%d'),
             'end_date': report.end_date.strftime('%Y-%m-%d'),
-            'created_at': report.created_at.strftime('%Y-%m-%d %H:%M')
+            'created_at': report.created_at.strftime('%Y-%m-%d %H:%M'),
+            'date_range_display': f"{report.start_date.strftime('%B %d')} - {report.end_date.strftime('%B %d, %Y')}"
         }
         
         return JsonResponse({
@@ -741,10 +800,6 @@ def get_report_detail(request):
     except Exception as e:
         logger.error(f"Get report detail error: {str(e)}")
         return JsonResponse({'error': str(e)}, status=500)
-
-
-
-
 
 @login_required
 @require_http_methods(["GET"])
