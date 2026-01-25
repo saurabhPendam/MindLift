@@ -653,14 +653,18 @@ def send_message(request):
         logger.error(f"Send message error: {str(e)}", exc_info=True)
         return JsonResponse({'error': 'An error occurred. Please try again.'}, status=500)
     
+
+
 @login_required
 @require_http_methods(["POST"])
 def generate_report(request):
-    """Generate sentiment analysis report - FIXED VERSION"""
+    """Generate sentiment analysis report - FIXED VERSION with proper score calculation"""
     try:
         data = json.loads(request.body)
         days = data.get('days', 7)
         session_id = data.get('session_id')
+        
+        logger.info(f"Generating report for user {request.user.username}, days={days}, session_id={session_id}")
         
         generator = ReportGenerator()
         
@@ -671,7 +675,10 @@ def generate_report(request):
             conversation__is_deleted=False
         ).count()
         
+        logger.info(f"Total user messages: {total_messages}")
+        
         if total_messages == 0:
+            logger.warning("No messages found for user")
             return JsonResponse({
                 'success': False,
                 'error': 'No messages found. Start chatting to generate a report!'
@@ -691,24 +698,41 @@ def generate_report(request):
                     sender='user'
                 ).count()
                 
+                logger.info(f"Conversation {session_id} has {conv_messages} user messages")
+                
                 if conv_messages == 0:
                     return JsonResponse({
                         'success': False,
                         'error': 'This conversation has no messages to analyze.'
                     }, status=400)
                 
+                logger.info(f"Generating conversation report for {conversation.id}")
                 report = generator.generate_conversation_report(conversation, request.user)
+                
             except Conversation.DoesNotExist:
+                logger.error(f"Conversation {session_id} not found")
                 return JsonResponse({'error': 'Conversation not found'}, status=404)
         else:
+            logger.info(f"Generating user report for last {days} days")
             report = generator.generate_user_report(request.user, days=days)
         
         # Check if report generation was successful
         if 'error' in report:
+            logger.error(f"Report generation error: {report['error']}")
             return JsonResponse({
                 'success': False,
                 'error': report['error']
             }, status=400)
+        
+        # Log the generated report details
+        logger.info(f"Report generated successfully:")
+        logger.info(f"  - Report ID: {report.get('report_id')}")
+        logger.info(f"  - Average Score: {report.get('average_score')}")
+        logger.info(f"  - Overall Sentiment: {report.get('overall_sentiment')}")
+        logger.info(f"  - Total Messages: {report.get('total_messages')}")
+        logger.info(f"  - Positive: {report.get('positive', {}).get('count')} ({report.get('positive', {}).get('percentage')}%)")
+        logger.info(f"  - Neutral: {report.get('neutral', {}).get('count')} ({report.get('neutral', {}).get('percentage')}%)")
+        logger.info(f"  - Negative: {report.get('negative', {}).get('count')} ({report.get('negative', {}).get('percentage')}%)")
         
         log_audit(
             request.user,
@@ -720,13 +744,18 @@ def generate_report(request):
         
         return JsonResponse({'success': True, 'report': report})
         
+    except json.JSONDecodeError:
+        logger.error("Invalid JSON in request body")
+        return JsonResponse({
+            'success': False,
+            'error': 'Invalid request format'
+        }, status=400)
     except Exception as e:
         logger.error(f"Generate report error: {str(e)}", exc_info=True)
         return JsonResponse({
             'success': False,
             'error': 'Failed to generate report. Please try again.'
-        }, status=500)
-    
+        }, status=500)  
 
 @login_required
 @require_http_methods(["GET"])

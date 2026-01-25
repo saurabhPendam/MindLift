@@ -100,6 +100,8 @@ class SentimentAnalyzer:
         
         message_obj.save()
         
+        logger.info(f"Message analyzed: score={result['score']:.3f}, label={result['label']}")
+        
         return result
     
     def get_sentiment_label_from_score(self, score: float) -> str:
@@ -131,6 +133,8 @@ class ReportGenerator:
                 'total_messages': 0
             }
         
+        logger.info(f"Generating conversation report for conversation {conversation.id}, {messages.count()} messages")
+        
         return self._calculate_detailed_metrics(
             messages, 
             user, 
@@ -154,6 +158,8 @@ class ReportGenerator:
                 'total_messages': 0
             }
         
+        logger.info(f"Generating user report for {user.username}, {messages.count()} messages")
+        
         return self._calculate_detailed_metrics(
             messages, 
             user, 
@@ -163,7 +169,7 @@ class ReportGenerator:
     def _calculate_detailed_metrics(self, messages, user, conversation=None, days=None) -> Dict:
         """
         Calculate comprehensive sentiment metrics from messages
-        FIXED VERSION with proper analysis and summary generation
+        FIXED VERSION with PROPER SCORE CALCULATION
         """
         if not messages.exists():
             return {
@@ -171,11 +177,22 @@ class ReportGenerator:
                 'total_messages': 0
             }
         
-        # Analyze any messages that don't have sentiment yet
-        for msg in messages.filter(Q(sentiment_score__isnull=True) | Q(sentiment_label__isnull=True)):
-            self.analyzer.analyze_message(msg)
+        logger.info(f"Calculating metrics for {messages.count()} messages")
         
-        # Refresh queryset after analysis
+        # Analyze any messages that don't have sentiment yet
+        messages_to_analyze = messages.filter(
+            Q(sentiment_score__isnull=True) | Q(sentiment_label__isnull=True)
+        )
+        
+        analyzed_count = 0
+        for msg in messages_to_analyze:
+            self.analyzer.analyze_message(msg)
+            analyzed_count += 1
+        
+        if analyzed_count > 0:
+            logger.info(f"Analyzed {analyzed_count} new messages")
+        
+        # Refresh queryset to get updated sentiment data
         messages = messages.filter(sentiment_score__isnull=False)
         
         if not messages.exists():
@@ -185,28 +202,54 @@ class ReportGenerator:
             }
         
         total = messages.count()
+        logger.info(f"Total messages with sentiment: {total}")
         
         # Count sentiments
         positive = messages.filter(sentiment_label='positive').count()
         negative = messages.filter(sentiment_label='negative').count()
         neutral = messages.filter(sentiment_label='neutral').count()
         
+        logger.info(f"Sentiment counts - Positive: {positive}, Neutral: {neutral}, Negative: {negative}")
+        
         # Calculate percentages
         pos_pct = (positive / total * 100) if total > 0 else 0
         neg_pct = (negative / total * 100) if total > 0 else 0
         neu_pct = (neutral / total * 100) if total > 0 else 0
         
-        # Average sentiment score
-        avg_score_result = messages.aggregate(Avg('sentiment_score'))
-        avg_score = avg_score_result['sentiment_score__avg'] or 0.0
+        # CRITICAL FIX: Calculate average sentiment score correctly
+        # Get all sentiment scores
+        sentiment_scores = list(messages.values_list('sentiment_score', flat=True))
         
-        # Determine overall sentiment
-        if avg_score >= 0.05:
+        # Log individual scores for debugging
+        logger.info(f"Sentiment scores: {sentiment_scores}")
+        
+        # Calculate average manually to ensure correctness
+        if sentiment_scores:
+            avg_score = sum(sentiment_scores) / len(sentiment_scores)
+        else:
+            avg_score = 0.0
+        
+        logger.info(f"Calculated average score: {avg_score:.3f}")
+        
+        # Double-check with Django's Avg (for verification)
+        db_avg = messages.aggregate(Avg('sentiment_score'))['sentiment_score__avg']
+        if db_avg is not None:
+            logger.info(f"Database average score: {db_avg:.3f}")
+        else:
+            logger.warning("Database average is None")
+        
+        # Use the manually calculated average as it's more reliable
+        final_avg_score = float(avg_score)
+        
+        # Determine overall sentiment based on average score
+        if final_avg_score >= 0.05:
             overall = 'positive'
-        elif avg_score <= -0.05:
+        elif final_avg_score <= -0.05:
             overall = 'negative'
         else:
             overall = 'neutral'
+        
+        logger.info(f"Overall sentiment: {overall} (score: {final_avg_score:.3f})")
         
         # Aggregate emotions
         all_emotions = {}
@@ -229,7 +272,7 @@ class ReportGenerator:
         # Generate detailed summary
         summary = self._generate_detailed_summary(
             overall=overall,
-            avg_score=avg_score,
+            avg_score=final_avg_score,
             positive=positive,
             negative=negative,
             neutral=neutral,
@@ -242,7 +285,7 @@ class ReportGenerator:
         
         # Generate personalized recommendations
         recommendations = self._generate_recommendations(
-            overall, avg_score, top_emotions, sentiment_trend
+            overall, final_avg_score, top_emotions, sentiment_trend
         )
         
         # Determine date range
@@ -253,14 +296,14 @@ class ReportGenerator:
             start_date = messages.first().timestamp
             end_date = messages.last().timestamp
         
-        # Create report object
+        # Create report object with CORRECT average score
         report = SentimentReport.objects.create(
             user=user,
             conversation=conversation,
             start_date=start_date,
             end_date=end_date,
             overall_sentiment=overall,
-            average_score=float(avg_score),
+            average_score=final_avg_score,  # FIXED: Use the correctly calculated average
             positive_percentage=pos_pct,
             negative_percentage=neg_pct,
             neutral_percentage=neu_pct,
@@ -272,10 +315,12 @@ class ReportGenerator:
             recommendations=recommendations
         )
         
+        logger.info(f"Report created with ID: {report.id}, average_score: {report.average_score:.3f}")
+        
         return {
             'report_id': report.id,
             'overall_sentiment': overall,
-            'average_score': round(float(avg_score), 3),
+            'average_score': round(final_avg_score, 3),  # FIXED: Return the correct score
             'total_messages': total,
             'positive': {
                 'count': positive,
@@ -313,10 +358,16 @@ class ReportGenerator:
         first_half = messages[:mid_point]
         second_half = messages[mid_point:]
         
-        first_avg = first_half.aggregate(Avg('sentiment_score'))['sentiment_score__avg'] or 0
-        second_avg = second_half.aggregate(Avg('sentiment_score'))['sentiment_score__avg'] or 0
+        # Calculate averages for each half
+        first_scores = list(first_half.values_list('sentiment_score', flat=True))
+        second_scores = list(second_half.values_list('sentiment_score', flat=True))
+        
+        first_avg = sum(first_scores) / len(first_scores) if first_scores else 0
+        second_avg = sum(second_scores) / len(second_scores) if second_scores else 0
         
         diff = second_avg - first_avg
+        
+        logger.info(f"Trend calculation - First half avg: {first_avg:.3f}, Second half avg: {second_avg:.3f}, Diff: {diff:.3f}")
         
         if diff > 0.1:
             return 'improving'
@@ -332,18 +383,23 @@ class ReportGenerator:
         
         summary_parts = []
         
+        # Calculate percentages safely
+        pos_pct = (positive / total * 100) if total > 0 else 0
+        neg_pct = (negative / total * 100) if total > 0 else 0
+        neu_pct = (neutral / total * 100) if total > 0 else 0
+        
         # Overall sentiment introduction
         if overall == 'positive':
             summary_parts.append(
                 f"Your emotional state appears predominantly positive with an average "
                 f"sentiment score of {avg_score:.2f}. Out of {total} messages analyzed, "
-                f"{positive} ({(positive/total*100):.1f}%) showed positive sentiment."
+                f"{positive} ({pos_pct:.1f}%) showed positive sentiment."
             )
         elif overall == 'negative':
             summary_parts.append(
                 f"The analysis indicates you've been experiencing challenging emotions, "
                 f"with an average sentiment score of {avg_score:.2f}. Out of {total} messages "
-                f"analyzed, {negative} ({(negative/total*100):.1f}%) showed negative sentiment."
+                f"analyzed, {negative} ({neg_pct:.1f}%) showed negative sentiment."
             )
         else:
             summary_parts.append(
@@ -355,9 +411,9 @@ class ReportGenerator:
         # Sentiment distribution
         summary_parts.append(
             f"\n\nSentiment Distribution:\n"
-            f"• Positive messages: {positive} ({(positive/total*100):.1f}%)\n"
-            f"• Neutral messages: {neutral} ({(neutral/total*100):.1f}%)\n"
-            f"• Negative messages: {negative} ({(negative/total*100):.1f}%)"
+            f"• Positive messages: {positive} ({pos_pct:.1f}%)\n"
+            f"• Neutral messages: {neutral} ({neu_pct:.1f}%)\n"
+            f"• Negative messages: {negative} ({neg_pct:.1f}%)"
         )
         
         # Emotional patterns
@@ -534,6 +590,7 @@ class ReportGenerator:
         # Calculate daily averages and additional metrics
         trend = []
         for day, scores in sorted(daily_sentiments.items()):
+            # Calculate average manually
             avg_score = sum(scores) / len(scores) if scores else 0.0
             
             # Count sentiment types for the day
