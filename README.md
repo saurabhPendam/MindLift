@@ -7,7 +7,10 @@
 
 > A comprehensive mental health support platform combining AI chatbot technology, sentiment analysis, and professional consultation features to provide 24/7 emotional wellness support.
 
-![MindLift Banner](docs/images/banner.png)
+<p align="center">
+  <img src="banner.png" alt="MindLift – AI Mental Health Chatbot" width="900"/>
+</p>
+
 
 ## 🌟 Features
 
