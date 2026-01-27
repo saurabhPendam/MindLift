@@ -2819,3 +2819,45 @@ INFO 2026-01-24 11:19:31,158 basehttp "GET /api/get-report-detail/?report_id=13 
 INFO 2026-01-24 11:19:36,998 basehttp "GET /chat/ HTTP/1.1" 200 13335
 INFO 2026-01-24 11:19:37,148 basehttp "GET /api/conversations/ HTTP/1.1" 200 265
 INFO 2026-01-24 11:19:37,156 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-27 09:57:02,593 groq_service ✅ AI service initialized
+INFO 2026-01-27 09:57:09,243 groq_service ✅ AI service initialized
+INFO 2026-01-27 09:57:18,562 groq_service ✅ AI service initialized
+INFO 2026-01-27 09:57:29,072 groq_service ✅ AI service initialized
+INFO 2026-01-27 09:57:48,173 autoreload Watching for file changes with StatReloader
+INFO 2026-01-27 09:57:50,249 groq_service ✅ AI service initialized
+INFO 2026-01-27 09:57:53,955 basehttp "GET / HTTP/1.1" 302 0
+INFO 2026-01-27 09:57:54,166 basehttp "GET /chat/ HTTP/1.1" 200 14622
+INFO 2026-01-27 09:57:54,486 basehttp "GET /api/conversations/ HTTP/1.1" 200 513
+INFO 2026-01-27 09:57:54,494 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-27 09:57:56,572 basehttp "GET /chat/?session_id=2ebf8d83-4659-4070-8261-3b6258771233 HTTP/1.1" 200 16876
+INFO 2026-01-27 09:57:56,664 basehttp "GET /api/check-llm-status/ HTTP/1.1" 200 226
+INFO 2026-01-27 09:57:56,674 basehttp "GET /api/conversations/ HTTP/1.1" 200 513
+INFO 2026-01-27 09:57:58,190 views Generating report for user saurabh, days=7, session_id=2ebf8d83-4659-4070-8261-3b6258771233
+INFO 2026-01-27 09:57:58,210 views Total user messages: 8
+INFO 2026-01-27 09:57:58,210 views Conversation 2ebf8d83-4659-4070-8261-3b6258771233 has 3 user messages
+INFO 2026-01-27 09:57:58,210 views Generating conversation report for 18
+INFO 2026-01-27 09:57:58,219 sentiment_service Generating conversation report for conversation 18, 3 messages
+INFO 2026-01-27 09:57:58,223 sentiment_service Calculating metrics for 3 messages
+INFO 2026-01-27 09:57:58,226 sentiment_service Total messages with sentiment: 3
+INFO 2026-01-27 09:57:58,231 sentiment_service Sentiment counts - Positive: 0, Neutral: 1, Negative: 2
+INFO 2026-01-27 09:57:58,234 sentiment_service Sentiment scores: [0.0, -0.5423, -0.3612]
+INFO 2026-01-27 09:57:58,236 sentiment_service Calculated average score: -0.301
+INFO 2026-01-27 09:57:58,238 sentiment_service Database average score: -0.301
+INFO 2026-01-27 09:57:58,238 sentiment_service Overall sentiment: negative (score: -0.301)
+ERROR 2026-01-27 09:57:58,242 views Generate report error: 'list' object has no attribute 'values_list'
+Traceback (most recent call last):
+  File "E:\mindlift\webapp\chatbot\views.py", line 710, in generate_report
+    report = generator.generate_conversation_report(conversation, request.user)
+  File "E:\mindlift\webapp\chatbot\sentiment_service.py", line 138, in generate_conversation_report
+    return self._calculate_detailed_metrics(
+  File "E:\mindlift\webapp\chatbot\sentiment_service.py", line 266, in _calculate_detailed_metrics
+    sentiment_trend = self._calculate_sentiment_trend(messages)
+  File "E:\mindlift\webapp\chatbot\sentiment_service.py", line 362, in _calculate_sentiment_trend
+    first_scores = list(first_half.values_list('sentiment_score', flat=True))
+AttributeError: 'list' object has no attribute 'values_list'
+ERROR 2026-01-27 09:57:58,247 log Internal Server Error: /api/generate-report/
+ERROR 2026-01-27 09:57:58,247 basehttp "POST /api/generate-report/ HTTP/1.1" 500 75
+INFO 2026-01-27 09:58:03,695 basehttp "GET /reports/ HTTP/1.1" 200 25398
+INFO 2026-01-27 10:08:58,643 autoreload E:\mindlift\webapp\chatbot\sentiment_service.py changed, reloading.
+INFO 2026-01-27 10:09:01,877 autoreload Watching for file changes with StatReloader
+INFO 2026-01-27 10:09:04,853 groq_service ✅ AI service initialized

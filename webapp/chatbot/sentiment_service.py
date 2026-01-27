@@ -262,7 +262,7 @@ class ReportGenerator:
         sorted_emotions = sorted(all_emotions.items(), key=lambda x: x[1], reverse=True)
         top_emotions = dict(sorted_emotions[:5]) if sorted_emotions else {}
         
-        # Detect trends
+        # FIXED: Calculate sentiment trend with proper list handling
         sentiment_trend = self._calculate_sentiment_trend(messages)
         
         # Identify concerning patterns
@@ -349,21 +349,33 @@ class ReportGenerator:
         }
     
     def _calculate_sentiment_trend(self, messages) -> str:
-        """Calculate if sentiment is improving, declining, or stable"""
-        if messages.count() < 3:
+        """
+        Calculate if sentiment is improving, declining, or stable
+        FIXED: Properly handle both QuerySet and list types
+        """
+        # Convert to list if it's a QuerySet
+        if hasattr(messages, 'values_list'):
+            message_list = list(messages)
+        else:
+            message_list = list(messages)
+        
+        if len(message_list) < 3:
             return 'stable'
         
         # Split messages into first half and second half
-        mid_point = messages.count() // 2
-        first_half = messages[:mid_point]
-        second_half = messages[mid_point:]
+        mid_point = len(message_list) // 2
+        first_half = message_list[:mid_point]
+        second_half = message_list[mid_point:]
         
         # Calculate averages for each half
-        first_scores = list(first_half.values_list('sentiment_score', flat=True))
-        second_scores = list(second_half.values_list('sentiment_score', flat=True))
+        first_scores = [msg.sentiment_score for msg in first_half if msg.sentiment_score is not None]
+        second_scores = [msg.sentiment_score for msg in second_half if msg.sentiment_score is not None]
         
-        first_avg = sum(first_scores) / len(first_scores) if first_scores else 0
-        second_avg = sum(second_scores) / len(second_scores) if second_scores else 0
+        if not first_scores or not second_scores:
+            return 'stable'
+        
+        first_avg = sum(first_scores) / len(first_scores)
+        second_avg = sum(second_scores) / len(second_scores)
         
         diff = second_avg - first_avg
         
