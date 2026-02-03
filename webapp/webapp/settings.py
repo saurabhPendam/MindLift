@@ -205,5 +205,14 @@ GROQ_MAX_TOKENS = int(os.getenv('GROQ_MAX_TOKENS', '500'))
 MAX_CONTEXT_MESSAGES = int(os.getenv('MAX_CONTEXT_MESSAGES', '4'))
 REQUEST_TIMEOUT = int(os.getenv('REQUEST_TIMEOUT', '30'))
 
+# ===== EMAIL CONFIGURATION FOR 2FA =====
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', '587'))
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True') == 'True'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'MindLift <noreply@mindlift.com>')
+
 # ===== SILENCING WARNINGS =====
 SILENCED_SYSTEM_CHECKS = ['staticfiles.W004']

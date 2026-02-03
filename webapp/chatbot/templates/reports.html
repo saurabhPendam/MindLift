@@ -136,15 +136,15 @@
 
 <!-- Report Detail Modal -->
 <div class="modal fade" id="reportDetailModal" tabindex="-1">
-    <div class="modal-dialog modal-xl modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title fw-bold">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 20px; border: none;">
+            <div class="modal-header" style="background: var(--gradient-primary); border: none; border-radius: 20px 20px 0 0;">
+                <h5 class="modal-title fw-bold text-white">
                     <i class="fas fa-chart-line me-2"></i>Detailed Sentiment Report
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body" id="reportDetailContent">
+            <div class="modal-body p-4" id="reportDetailContent" style="background: #f8f9fa; min-height: 400px;">
                 <div class="text-center py-5">
                     <div class="spinner-border text-primary" role="status">
                         <span class="visually-hidden">Loading...</span>
@@ -152,7 +152,7 @@
                     <p class="mt-3">Loading report...</p>
                 </div>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer" style="background: #f8f9fa; border: none; border-radius: 0 0 20px 20px;">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary" id="downloadModalReportBtn">
                     <i class="fas fa-download me-2"></i>Download PDF
@@ -432,98 +432,134 @@ async function viewReportDetail(reportId) {
             const report = data.report;
             
             content.innerHTML = `
-                <div class="report-detail-section">
-                    <h4 class="fw-bold mb-4">📊 Sentiment Analysis Overview</h4>
+                <div class="container-fluid">
+                    <!-- Overview Section -->
+                    <div class="report-detail-section bg-white p-4 rounded-3 shadow-sm mb-4">
+                        <h4 class="fw-bold mb-4">
+                            <i class="fas fa-chart-pie text-primary me-2"></i>
+                            Sentiment Analysis Overview
+                        </h4>
+                        
+                        <div class="row g-4 mb-4">
+                            <div class="col-lg-4">
+                                <div class="card border-0 shadow-sm h-100" style="border-left: 4px solid #10b981 !important;">
+                                    <div class="card-body text-center p-4">
+                                        <div class="mb-3">
+                                            <i class="fas fa-smile fa-4x text-success"></i>
+                                        </div>
+                                        <h2 class="text-success mb-2 display-4">${report.positive_percentage.toFixed(1)}%</h2>
+                                        <p class="mb-1 fw-bold fs-5">Positive Messages</p>
+                                        <small class="text-muted">${report.positive_count} messages</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="card border-0 shadow-sm h-100" style="border-left: 4px solid #6b7280 !important;">
+                                    <div class="card-body text-center p-4">
+                                        <div class="mb-3">
+                                            <i class="fas fa-meh fa-4x text-secondary"></i>
+                                        </div>
+                                        <h2 class="text-secondary mb-2 display-4">${report.neutral_percentage.toFixed(1)}%</h2>
+                                        <p class="mb-1 fw-bold fs-5">Neutral Messages</p>
+                                        <small class="text-muted">${report.neutral_count} messages</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="card border-0 shadow-sm h-100" style="border-left: 4px solid #ef4444 !important;">
+                                    <div class="card-body text-center p-4">
+                                        <div class="mb-3">
+                                            <i class="fas fa-frown fa-4x text-danger"></i>
+                                        </div>
+                                        <h2 class="text-danger mb-2 display-4">${report.negative_percentage.toFixed(1)}%</h2>
+                                        <p class="mb-1 fw-bold fs-5">Negative Messages</p>
+                                        <small class="text-muted">${report.negative_count} messages</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-${report.overall_sentiment === 'positive' ? 'success' : report.overall_sentiment === 'negative' ? 'danger' : 'warning'} border-0 shadow-sm">
+                            <div class="row align-items-center">
+                                <div class="col-auto">
+                                    <i class="fas fa-chart-line fa-3x"></i>
+                                </div>
+                                <div class="col">
+                                    <h5 class="mb-2 fw-bold">Overall Sentiment: ${report.overall_sentiment.toUpperCase()}</h5>
+                                    <p class="mb-2">Average Score: <strong class="fs-5">${report.average_score.toFixed(3)}</strong></p>
+                                    <hr class="my-2">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <p class="mb-1">
+                                                <i class="fas fa-calendar me-2"></i><strong>Period:</strong> ${report.start_date} to ${report.end_date}
+                                            </p>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p class="mb-1">
+                                                <i class="fas fa-message me-2"></i><strong>Total Messages:</strong> ${report.total_messages}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     
-                    <div class="row mb-4">
-                        <div class="col-md-4">
-                            <div class="card text-center border-success">
-                                <div class="card-body">
-                                    <div class="mb-2">
-                                        <i class="fas fa-smile fa-3x text-success"></i>
-                                    </div>
-                                    <h2 class="text-success mb-1">${report.positive_percentage.toFixed(1)}%</h2>
-                                    <p class="mb-0 fw-bold">Positive Messages</p>
-                                    <small class="text-muted">${report.positive_count} messages</small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="card text-center border-secondary">
-                                <div class="card-body">
-                                    <div class="mb-2">
-                                        <i class="fas fa-meh fa-3x text-secondary"></i>
-                                    </div>
-                                    <h2 class="text-secondary mb-1">${report.neutral_percentage.toFixed(1)}%</h2>
-                                    <p class="mb-0 fw-bold">Neutral Messages</p>
-                                    <small class="text-muted">${report.neutral_count} messages</small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="card text-center border-danger">
-                                <div class="card-body">
-                                    <div class="mb-2">
-                                        <i class="fas fa-frown fa-3x text-danger"></i>
-                                    </div>
-                                    <h2 class="text-danger mb-1">${report.negative_percentage.toFixed(1)}%</h2>
-                                    <p class="mb-0 fw-bold">Negative Messages</p>
-                                    <small class="text-muted">${report.negative_count} messages</small>
-                                </div>
+                    ${report.summary ? `
+                    <div class="report-detail-section bg-white p-4 rounded-3 shadow-sm mb-4">
+                        <h5 class="fw-bold mb-3">
+                            <i class="fas fa-file-alt text-primary me-2"></i>
+                            Detailed Summary
+                        </h5>
+                        <div class="card border-0 bg-light">
+                            <div class="card-body p-4">
+                                <p class="mb-0 lh-lg" style="white-space: pre-line; font-size: 1.05rem;">${report.summary}</p>
                             </div>
                         </div>
                     </div>
+                    ` : ''}
                     
-                    <div class="alert alert-${report.overall_sentiment === 'positive' ? 'success' : report.overall_sentiment === 'negative' ? 'danger' : 'warning'}">
-                        <div class="d-flex align-items-center mb-2">
-                            <i class="fas fa-chart-line fa-2x me-3"></i>
-                            <div>
-                                <h5 class="mb-0">Overall Sentiment: ${report.overall_sentiment.toUpperCase()}</h5>
-                                <p class="mb-0">Average Score: <strong>${report.average_score.toFixed(3)}</strong></p>
-                            </div>
-                        </div>
-                        <hr>
-                        <p class="mb-0">
-                            <i class="fas fa-calendar me-2"></i><strong>Period:</strong> ${report.start_date} to ${report.end_date}<br>
-                            <i class="fas fa-message me-2"></i><strong>Total Messages:</strong> ${report.total_messages}
-                        </p>
-                    </div>
-                </div>
-                
-                ${report.summary ? `
-                <div class="report-detail-section">
-                    <h5 class="fw-bold mb-3">📝 Detailed Summary</h5>
-                    <div class="card">
-                        <div class="card-body">
-                            <p style="white-space: pre-line;">${report.summary}</p>
+                    ${Object.keys(report.dominant_emotions || {}).length > 0 ? `
+                    <div class="report-detail-section bg-white p-4 rounded-3 shadow-sm mb-4">
+                        <h5 class="fw-bold mb-3">
+                            <i class="fas fa-masks-theater text-primary me-2"></i>
+                            Detected Emotions
+                        </h5>
+                        <p class="text-muted mb-3">Top emotions identified in your conversations:</p>
+                        <div class="d-flex flex-wrap gap-2">
+                            ${Object.entries(report.dominant_emotions).map(([emotion, score]) => 
+                                `<span class="badge bg-primary bg-opacity-10 text-primary border border-primary px-3 py-2 fs-6">
+                                    ${emotion}: <strong>${score.toFixed(2)}</strong>
+                                </span>`
+                            ).join('')}
                         </div>
                     </div>
-                </div>
-                ` : ''}
-                
-                ${Object.keys(report.dominant_emotions || {}).length > 0 ? `
-                <div class="report-detail-section">
-                    <h5 class="fw-bold mb-3">🎭 Detected Emotions</h5>
-                    <p class="text-muted mb-3">Top emotions identified in your conversations:</p>
-                    <div>
-                        ${Object.entries(report.dominant_emotions).map(([emotion, score]) => 
-                            `<span class="emotion-badge">${emotion}: ${score.toFixed(2)}</span>`
-                        ).join('')}
+                    ` : ''}
+                    
+                    ${report.recommendations && report.recommendations.length > 0 ? `
+                    <div class="report-detail-section bg-white p-4 rounded-3 shadow-sm">
+                        <h5 class="fw-bold mb-3">
+                            <i class="fas fa-lightbulb text-warning me-2"></i>
+                            Personalized Recommendations
+                        </h5>
+                        <p class="text-muted mb-3">Based on your emotional patterns, we recommend:</p>
+                        <div class="row g-3">
+                            ${report.recommendations.map(rec => 
+                                `<div class="col-12">
+                                    <div class="card border-0 bg-light">
+                                        <div class="card-body p-3">
+                                            <div class="d-flex align-items-start">
+                                                <i class="fas fa-check-circle text-success me-3 mt-1 fs-5"></i>
+                                                <p class="mb-0 flex-grow-1">${rec}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>`
+                            ).join('')}
+                        </div>
                     </div>
+                    ` : ''}
                 </div>
-                ` : ''}
-                
-                ${report.recommendations && report.recommendations.length > 0 ? `
-                <div class="report-detail-section">
-                    <h5 class="fw-bold mb-3">💡 Personalized Recommendations</h5>
-                    <p class="text-muted mb-3">Based on your emotional patterns, we recommend:</p>
-                    ${report.recommendations.map(rec => 
-                        `<div class="recommendation-item">
-                            <i class="fas fa-check-circle text-success me-2"></i>${rec}
-                        </div>`
-                    ).join('')}
-                </div>
-                ` : ''}
             `;
         } else {
             content.innerHTML = `

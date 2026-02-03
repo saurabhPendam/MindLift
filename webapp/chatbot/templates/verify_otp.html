@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-background"></div>
+    
+    <!-- 3D Robot Illustration -->
+    <div class="auth-illustration">
+        <!-- 3D Robot Container -->
+        <div class="robot-container">
+            <!-- Speech Bubble -->
+            <div class="speech-bubble">
+                Verify it's you! 🔒
+            </div>
+            
+            <!-- Robot Head with Antenna -->
+            <div class="robot-head">
+                <div class="robot-antenna"></div>
+                <div class="robot-visor">
+                    <div class="robot-eye left"></div>
+                    <div class="robot-eye right"></div>
+                </div>
+            </div>
+            
+            <!-- Robot Body with Arms -->
+            <div class="robot-body">
+                <div class="robot-arm left"></div>
+                <div class="robot-arm right"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="row justify-content-center align-items-center" style="min-height: 100%;">
+            <div class="col-md-8 col-lg-7">
+                <div class="auth-card" data-aos="zoom-in" data-aos-duration="600">
+                    <div class="text-center mb-4" data-aos="fade-down" data-aos-delay="100">
+                        <div class="auth-logo mb-3">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h2 class="fw-bold mb-2">Two-Factor Authentication</h2>
+                        <p class="text-muted">We've sent a 6-digit code to your email</p>
+                        {% if username %}
+                        <p class="text-muted"><strong>{{ username }}</strong></p>
+                        {% endif %}
+                    </div>
+                    
+                    {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert" data-aos="fade-down">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-dismiss="alert"></button>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <form method="post" class="auth-form">
+                        {% csrf_token %}
+                        
+                        <div class="form-floating mb-3" data-aos="fade-up" data-aos-delay="200">
+                            <input type="text" 
+                                   class="form-control text-center" 
+                                   id="otp_code" 
+                                   name="otp_code" 
+                                   placeholder="000000" 
+                                   maxlength="6"
+                                   pattern="[0-9]{6}"
+                                   required
+                                   autocomplete="off"
+                                   style="font-size: 1.5rem; letter-spacing: 0.5rem; font-weight: 600;">
+                            <label for="otp_code"><i class="fas fa-key me-2"></i>Enter 6-Digit Code</label>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100 mb-3" data-aos="fade-up" data-aos-delay="300">
+                            <i class="fas fa-check-circle me-2"></i>Verify OTP
+                        </button>
+                        
+                        <div class="text-center mb-3" data-aos="fade-up" data-aos-delay="400">
+                            <p class="text-muted mb-2">Didn't receive the code?</p>
+                            <button type="button" class="btn btn-link" id="resendOtpBtn">
+                                <i class="fas fa-redo me-1"></i>Resend OTP
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div class="text-center mt-4" data-aos="fade-up" data-aos-delay="500">
+                        <a href="{% url 'login' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Login
+                        </a>
+                    </div>
+                    
+                    <div class="alert alert-info mt-4" role="alert" data-aos="fade-up" data-aos-delay="600">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Security Tip:</strong> The OTP code expires in 10 minutes and can be used only once.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('resendOtpBtn').addEventListener('click', function() {
+    const btn = this;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Sending...';
+    
+    fetch('{% url "resend_otp" %}', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('✓ ' + data.message);
+            btn.innerHTML = '<i class="fas fa-check me-1"></i>OTP Sent';
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-redo me-1"></i>Resend OTP';
+            }, 30000); // Enable after 30 seconds
+        } else {
+            alert('✗ ' + data.message);
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-redo me-1"></i>Resend OTP';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to resend OTP. Please try again.');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-redo me-1"></i>Resend OTP';
+    });
+});
+
+// Auto-submit when 6 digits are entered
+document.getElementById('otp_code').addEventListener('input', function(e) {
+    if (e.target.value.length === 6) {
+        // Optionally auto-submit
+        // this.form.submit();
+    }
+});
+</script>
+{% endblock %}

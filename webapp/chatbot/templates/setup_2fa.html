@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-background">
+        <div class="stars"></div>
+        <div class="stars2"></div>
+        <div class="stars3"></div>
+    </div>
+
+    <div class="right-section">
+        <div class="form-container">
+            <div class="auth-card">
+                <div class="logo-container">
+                    <div class="logo-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <h1 class="form-title">Setup Two-Factor Authentication</h1>
+                    <p class="form-subtitle">Scan this QR code with your authenticator app</p>
+                </div>
+
+                {% if qr_code %}
+                <div class="text-center mb-4">
+                    <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code" style="max-width: 250px;">
+                </div>
+
+                <div class="alert alert-info">
+                    <p><strong>Can't scan the QR code?</strong></p>
+                    <p>Enter this code manually in your authenticator app:</p>
+                    <code style="font-size: 1.1rem; display: block; margin: 10px 0;">{{ secret }}</code>
+                </div>
+
+                <form method="post" action="{% url 'verify_2fa_setup' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="device_id" value="{{ device_id }}">
+                    
+                    <div class="form-group">
+                        <div class="input-wrapper">
+                            <i class="fas fa-key input-icon"></i>
+                            <input type="text" 
+                                   id="code" 
+                                   name="code" 
+                                   class="form-input" 
+                                   placeholder=" "
+                                   required
+                                   maxlength="6"
+                                   pattern="[0-9]{6}"
+                                   autocomplete="off">
+                            <label for="code" class="floating-label">Enter 6-digit code</label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-check"></i>
+                        <span>Verify & Enable 2FA</span>
+                    </button>
+                </form>
+                {% endif %}
+
+                <div class="text-center mt-4">
+                    <a href="{% url 'profile' %}" class="btn-back">
+                        <i class="fas fa-arrow-left"></i>
+                        Back to Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

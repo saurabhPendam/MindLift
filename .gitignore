@@ -33,3 +33,4 @@ Thumbs.db
 
 webapp/debug.log
 webapp/.env
+webapp/.env.example

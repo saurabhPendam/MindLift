@@ -1,0 +1,103 @@
+    {% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-background">
+        <div class="stars"></div>
+        <div class="stars2"></div>
+        <div class="stars3"></div>
+    </div>
+
+    <div class="right-section">
+        <div class="form-container">
+            <div class="auth-card">
+                <div class="logo-container">
+                    <div class="logo-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <h1 class="form-title">Two-Factor Authentication</h1>
+                    <p class="form-subtitle">Enter the 6-digit code from your authenticator app</p>
+                </div>
+
+                <form method="post" class="auth-form">
+                    {% csrf_token %}
+                    
+                    <div class="twofa-container">
+                        <div class="twofa-code-inputs">
+                            <input type="text" maxlength="1" class="twofa-code-input" id="digit1" autocomplete="off">
+                            <input type="text" maxlength="1" class="twofa-code-input" id="digit2" autocomplete="off">
+                            <input type="text" maxlength="1" class="twofa-code-input" id="digit3" autocomplete="off">
+                            <input type="text" maxlength="1" class="twofa-code-input" id="digit4" autocomplete="off">
+                            <input type="text" maxlength="1" class="twofa-code-input" id="digit5" autocomplete="off">
+                            <input type="text" maxlength="1" class="twofa-code-input" id="digit6" autocomplete="off">
+                        </div>
+                        <input type="hidden" name="code" id="fullCode">
+                    </div>
+
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span>Verify</span>
+                    </button>
+                </form>
+
+                <div class="text-center mt-4">
+                    <a href="{% url 'login' %}" class="btn-back">
+                        <i class="fas fa-arrow-left"></i>
+                        Back to Login
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const inputs = document.querySelectorAll('.twofa-code-input');
+    const fullCodeInput = document.getElementById('fullCode');
+
+    inputs.forEach((input, index) => {
+        input.addEventListener('input', (e) => {
+            if (e.target.value.length === 1) {
+                if (index < inputs.length - 1) {
+                    inputs[index + 1].focus();
+                }
+            }
+            updateFullCode();
+        });
+
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && e.target.value === '') {
+                if (index > 0) {
+                    inputs[index - 1].focus();
+                }
+            }
+        });
+
+        input.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const pastedData = e.clipboardData.getData('text');
+            const digits = pastedData.replace(/\D/g, '').slice(0, 6);
+            
+            digits.split('').forEach((digit, i) => {
+                if (inputs[i]) {
+                    inputs[i].value = digit;
+                }
+            });
+            
+            if (digits.length === 6) {
+                inputs[5].focus();
+            }
+            updateFullCode();
+        });
+    });
+
+    function updateFullCode() {
+        const code = Array.from(inputs).map(input => input.value).join('');
+        fullCodeInput.value = code;
+    }
+</script>
+{% endblock %}

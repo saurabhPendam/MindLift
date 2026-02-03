@@ -7,6 +7,8 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.utils import timezone
+from django.core.mail import send_mail
+from django.conf import settings
 from datetime import datetime, timedelta
 import json
 import uuid
@@ -15,7 +17,7 @@ import logging
 from .models import (
     UserProfile, Conversation, Message, SentimentReport,
     Activity, UserActivity, MotivationalQuote, UserQuoteFavorite,
-    DoctorAppointment, AuditLog
+    DoctorAppointment, AuditLog, OTPVerification, AuthorizedEmail
 )
 from .sentiment_service import SentimentAnalyzer, ReportGenerator
 from .groq_service import groq_service
@@ -58,18 +60,23 @@ def home(request):
 
 
 def register(request):
-    """User registration"""
+    """User registration with authorized Gmail check"""
     if request.user.is_authenticated:
         return redirect('chat')
     
     if request.method == 'POST':
         username = request.POST.get('username', '').strip()
-        email = request.POST.get('email', '').strip()
+        email = request.POST.get('email', '').strip().lower()
         password = request.POST.get('password', '')
         confirm_password = request.POST.get('confirm_password', '')
         
         if not username or not email or not password:
             messages.error(request, 'All fields are required')
+            return render(request, 'register.html')
+        
+        # Check if email is Gmail account (optional check)
+        if not email.endswith('@gmail.com'):
+            messages.error(request, 'Only Gmail accounts are allowed to register.')
             return render(request, 'register.html')
         
         if password != confirm_password:
@@ -89,29 +96,153 @@ def register(request):
             return render(request, 'register.html')
         
         try:
-            user = User.objects.create_user(
-                username=username, 
-                email=email, 
-                password=password
+            # Generate OTP for email verification
+            otp_code = OTPVerification.generate_otp()
+            
+            # Store registration data in session temporarily
+            request.session['registration_data'] = {
+                'username': username,
+                'email': email,
+                'password': password,
+                'otp_code': otp_code,
+                'otp_created': timezone.now().isoformat()
+            }
+            
+            # Send verification email
+            send_mail(
+                subject='MindLift - Verify Your Email Address',
+                message=f'Welcome to MindLift!\n\nYour email verification code is: {otp_code}\n\nThis code will expire in 10 minutes.\n\nIf you did not request this registration, please ignore this email.',
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[email],
+                fail_silently=False,
             )
-            UserProfile.objects.create(user=user)
             
-            # Log registration
-            log_audit(user, 'account_created', f'New account registered: {username}', request, 'account')
+            # Log registration attempt
+            log_audit(None, 'registration_started', 
+                     f'Registration OTP sent to: {email}', 
+                     request, 'account')
             
-            login(request, user)
-            messages.success(request, f'Welcome to MindLift, {username}!')
-            return redirect('chat')
+            messages.success(request, f'Verification code sent to {email}. Please check your email.')
+            return redirect('verify_registration')
+            
         except Exception as e:
             logger.error(f"Registration error: {str(e)}")
-            messages.error(request, 'Registration failed. Please try again.')
+            messages.error(request, 'Failed to send verification email. Please check your email and try again.')
             return render(request, 'register.html')
     
     return render(request, 'register.html')
 
 
+def verify_registration(request):
+    """Verify email during registration"""
+    registration_data = request.session.get('registration_data')
+    
+    if not registration_data:
+        messages.error(request, 'Registration session expired. Please register again.')
+        return redirect('register')
+    
+    # Check if OTP expired (10 minutes)
+    otp_created = timezone.datetime.fromisoformat(registration_data['otp_created'])
+    if timezone.now() > otp_created + timedelta(minutes=10):
+        request.session.pop('registration_data', None)
+        messages.error(request, 'Verification code expired. Please register again.')
+        return redirect('register')
+    
+    if request.method == 'POST':
+        otp_code = request.POST.get('otp_code', '').strip()
+        
+        if not otp_code:
+            messages.error(request, 'Please enter the verification code')
+            return render(request, 'verify_registration.html', {
+                'email': registration_data['email']
+            })
+        
+        # Verify OTP
+        if otp_code == registration_data['otp_code']:
+            try:
+                # Create user account
+                user = User.objects.create_user(
+                    username=registration_data['username'],
+                    email=registration_data['email'],
+                    password=registration_data['password']
+                )
+                
+                # Create user profile
+                UserProfile.objects.create(
+                    user=user,
+                    two_factor_enabled=True,
+                    is_authorized_email=True  # Email verified during registration
+                )
+                
+                # Clear registration data
+                request.session.pop('registration_data', None)
+                
+                # Log successful registration
+                log_audit(user, 'account_created', 
+                         f'Email verified and account created: {user.username}', 
+                         request, 'account')
+                
+                # Auto-login
+                login(request, user)
+                messages.success(request, f'Welcome to MindLift, {user.username}! Your account has been verified.')
+                return redirect('chat')
+                
+            except Exception as e:
+                logger.error(f"Account creation error: {str(e)}")
+                messages.error(request, 'Failed to create account. Please try again.')
+                request.session.pop('registration_data', None)
+                return redirect('register')
+        else:
+            messages.error(request, 'Invalid verification code. Please try again.')
+            log_audit(None, 'failed_registration_otp', 
+                     f'Failed registration OTP for: {registration_data["email"]}', 
+                     request, 'security')
+            return render(request, 'verify_registration.html', {
+                'email': registration_data['email']
+            })
+    
+    return render(request, 'verify_registration.html', {
+        'email': registration_data['email']
+    })
+
+
+def resend_registration_otp(request):
+    """Resend registration verification OTP"""
+    registration_data = request.session.get('registration_data')
+    
+    if not registration_data:
+        return JsonResponse({'success': False, 'message': 'Session expired'})
+    
+    try:
+        # Generate new OTP
+        otp_code = OTPVerification.generate_otp()
+        
+        # Update session with new OTP
+        registration_data['otp_code'] = otp_code
+        registration_data['otp_created'] = timezone.now().isoformat()
+        request.session['registration_data'] = registration_data
+        
+        # Send new verification email
+        send_mail(
+            subject='MindLift - New Verification Code',
+            message=f'Your new email verification code is: {otp_code}\n\nThis code will expire in 10 minutes.\n\nIf you did not request this, please ignore this email.',
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[registration_data['email']],
+            fail_silently=False,
+        )
+        
+        log_audit(None, 'registration_otp_resent', 
+                 f'Registration OTP resent to: {registration_data["email"]}', 
+                 request, 'security')
+        return JsonResponse({'success': True, 'message': 'New verification code sent to your email'})
+        
+    except Exception as e:
+        logger.error(f'Failed to resend registration OTP: {str(e)}')
+        return JsonResponse({'success': False, 'message': 'Failed to send verification code'})
+
+
 def login_view(request):
-    """User login"""
+    """User login with 2FA OTP verification"""
     if request.user.is_authenticated:
         return redirect('chat')
     
@@ -126,26 +257,181 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         
         if user is not None:
-            # Check if account deletion is pending
+            # Check if user profile exists
             try:
                 profile = user.profile
+                # Optional: Check if specifically flagged accounts need authorization
+                # Removed strict authorization check to allow normal login
+                if False:  # Disabled authorization check for normal users
+                    messages.error(request, 'Your account is not authorized to access this system.')
+                    log_audit(user, 'unauthorized_login', 
+                             f'Unauthorized login attempt: {username}', 
+                             request, 'security')
+                    return render(request, 'login.html')
+                
+                # Check if account deletion is pending
                 if profile.deletion_requested:
                     messages.warning(request, 
                         f'Your account deletion is scheduled for {profile.deletion_scheduled_for.strftime("%Y-%m-%d")}. '
                         'You can cancel it from your profile settings.')
             except UserProfile.DoesNotExist:
-                UserProfile.objects.create(user=user)
+                # Create profile if doesn't exist
+                profile = UserProfile.objects.create(
+                    user=user,
+                    is_authorized_email=False  # Set to False by default, can be updated later
+                )
             
-            login(request, user)
-            log_audit(user, 'login', f'User logged in: {username}', request, 'security')
-            messages.success(request, f'Welcome back, {username}!')
-            return redirect('chat')
+            # Check if 2FA is enabled
+            if profile.two_factor_enabled:
+                # Generate and send OTP
+                otp_code = OTPVerification.generate_otp()
+                expires_at = timezone.now() + timedelta(minutes=10)
+                
+                OTPVerification.objects.create(
+                    user=user,
+                    otp_code=otp_code,
+                    expires_at=expires_at
+                )
+                
+                # Send OTP via email
+                try:
+                    send_mail(
+                        subject='MindLift - Your Login OTP Code',
+                        message=f'Your OTP code is: {otp_code}\n\nThis code will expire in 10 minutes.\n\nIf you did not request this code, please ignore this email.',
+                        from_email=settings.DEFAULT_FROM_EMAIL,
+                        recipient_list=[user.email],
+                        fail_silently=False,
+                    )
+                    
+                    # Store user ID in session for OTP verification
+                    request.session['otp_user_id'] = user.id
+                    request.session['otp_username'] = username
+                    
+                    log_audit(user, 'otp_sent', f'OTP sent to {user.email}', request, 'security')
+                    messages.success(request, f'OTP has been sent to {user.email}. Please check your email.')
+                    return redirect('verify_otp')
+                    
+                except Exception as e:
+                    logger.error(f'Failed to send OTP email: {str(e)}')
+                    messages.error(request, 'Failed to send OTP. Please try again later.')
+                    return render(request, 'login.html')
+            else:
+                # Login without 2FA
+                login(request, user)
+                log_audit(user, 'login', f'User logged in: {username}', request, 'security')
+                messages.success(request, f'Welcome back, {username}!')
+                return redirect('chat')
         else:
             log_audit(None, 'failed_login', f'Failed login attempt for username: {username}', request, 'security')
             messages.error(request, 'Invalid username or password')
             return render(request, 'login.html')
     
     return render(request, 'login.html')
+
+
+def verify_otp(request):
+    """Verify OTP for 2FA"""
+    # Check if user is in OTP verification process
+    user_id = request.session.get('otp_user_id')
+    username = request.session.get('otp_username')
+    
+    if not user_id:
+        messages.error(request, 'Session expired. Please login again.')
+        return redirect('login')
+    
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        messages.error(request, 'Invalid session. Please login again.')
+        return redirect('login')
+    
+    if request.method == 'POST':
+        otp_code = request.POST.get('otp_code', '').strip()
+        
+        if not otp_code:
+            messages.error(request, 'Please enter the OTP code')
+            return render(request, 'verify_otp.html', {'username': username})
+        
+        # Get the latest valid OTP for this user
+        try:
+            otp = OTPVerification.objects.filter(
+                user=user,
+                is_used=False
+            ).order_by('-created_at').first()
+            
+            if not otp:
+                messages.error(request, 'No valid OTP found. Please request a new one.')
+                return redirect('login')
+            
+            if otp.verify(otp_code):
+                # OTP verified successfully
+                login(request, user)
+                
+                # Clear session data
+                request.session.pop('otp_user_id', None)
+                request.session.pop('otp_username', None)
+                
+                log_audit(user, 'login_2fa_success', f'User logged in with 2FA: {username}', request, 'security')
+                messages.success(request, f'Welcome back, {username}!')
+                return redirect('chat')
+            else:
+                if not otp.is_valid():
+                    messages.error(request, 'OTP has expired or maximum attempts exceeded. Please login again.')
+                    return redirect('login')
+                else:
+                    messages.error(request, f'Invalid OTP code. {5 - otp.attempt_count} attempts remaining.')
+                    log_audit(user, 'failed_otp', f'Failed OTP attempt for {username}', request, 'security')
+                    return render(request, 'verify_otp.html', {'username': username})
+                    
+        except Exception as e:
+            logger.error(f'OTP verification error: {str(e)}')
+            messages.error(request, 'An error occurred. Please try again.')
+            return render(request, 'verify_otp.html', {'username': username})
+    
+    return render(request, 'verify_otp.html', {'username': username})
+
+
+def resend_otp(request):
+    """Resend OTP code"""
+    user_id = request.session.get('otp_user_id')
+    
+    if not user_id:
+        return JsonResponse({'success': False, 'message': 'Session expired'})
+    
+    try:
+        user = User.objects.get(id=user_id)
+        
+        # Invalidate old OTPs
+        OTPVerification.objects.filter(
+            user=user,
+            is_used=False
+        ).update(is_used=True)
+        
+        # Generate new OTP
+        otp_code = OTPVerification.generate_otp()
+        expires_at = timezone.now() + timedelta(minutes=10)
+        
+        OTPVerification.objects.create(
+            user=user,
+            otp_code=otp_code,
+            expires_at=expires_at
+        )
+        
+        # Send OTP via email
+        send_mail(
+            subject='MindLift - Your New Login OTP Code',
+            message=f'Your new OTP code is: {otp_code}\n\nThis code will expire in 10 minutes.\n\nIf you did not request this code, please ignore this email.',
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],
+            fail_silently=False,
+        )
+        
+        log_audit(user, 'otp_resent', f'OTP resent to {user.email}', request, 'security')
+        return JsonResponse({'success': True, 'message': 'New OTP sent to your email'})
+        
+    except Exception as e:
+        logger.error(f'Failed to resend OTP: {str(e)}')
+        return JsonResponse({'success': False, 'message': 'Failed to send OTP'})
 
 
 def logout_view(request):

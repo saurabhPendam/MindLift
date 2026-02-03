@@ -1,0 +1,418 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-background"></div>
+    
+    <!-- 3D Robot Illustration -->
+    <div class="auth-illustration">
+        <div class="robot-container">
+            <div class="speech-bubble">
+                Verify your email! ✉️
+            </div>
+            
+            <div class="robot-head">
+                <div class="robot-antenna"></div>
+                <div class="robot-visor">
+                    <div class="robot-eye left"></div>
+                    <div class="robot-eye right"></div>
+                </div>
+            </div>
+            
+            <div class="robot-body">
+                <div class="robot-arm left"></div>
+                <div class="robot-arm right"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="row justify-content-center align-items-center" style="min-height: 100%;">
+            <div class="col-md-8 col-lg-7">
+                <div class="auth-card" data-aos="zoom-in" data-aos-duration="600">
+                    <div class="text-center mb-4" data-aos="fade-down" data-aos-delay="100">
+                        <div class="auth-logo mb-3">
+                            <i class="fas fa-envelope-open-text"></i>
+                        </div>
+                        <h2 class="fw-bold mb-2">Verify Your Email</h2>
+                        <p class="text-muted">We've sent a 6-digit verification code to:</p>
+                        <p class="text-primary fw-bold">{{ email }}</p>
+                        <p class="text-muted small">Please check your inbox and spam folder</p>
+                    </div>
+                    
+                    {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert" data-aos="fade-down">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-dismiss="alert"></button>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <form method="post" class="auth-form">
+                        {% csrf_token %}
+                        
+                        <div class="form-floating mb-3" data-aos="fade-up" data-aos-delay="200">
+                            <input type="text" 
+                                   class="form-control text-center" 
+                                   id="otp_code" 
+                                   name="otp_code" 
+                                   placeholder="000000" 
+                                   maxlength="6"
+                                   pattern="[0-9]{6}"
+                                   required
+                                   autocomplete="off"
+                                   style="font-size: 1.5rem; letter-spacing: 0.5rem; font-weight: 600;">
+                            <label for="otp_code"><i class="fas fa-key me-2"></i>Enter 6-Digit Code</label>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100 mb-3" data-aos="fade-up" data-aos-delay="300">
+                            <i class="fas fa-check-circle me-2"></i>Verify & Create Account
+                        </button>
+                        
+                        <div class="text-center mb-3" data-aos="fade-up" data-aos-delay="400">
+                            <p class="text-muted mb-2">Didn't receive the code?</p>
+                            <button type="button" class="btn btn-outline-primary btn-sm" id="resend-btn">
+                                <i class="fas fa-redo me-2"></i>Resend Code
+                            </button>
+                        </div>
+                        
+                        <hr class="my-4" data-aos="fade" data-aos-delay="450">
+                        
+                        <div class="text-center" data-aos="fade-up" data-aos-delay="500">
+                            <a href="{% url 'register' %}" class="text-decoration-none">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Registration
+                            </a>
+                        </div>
+                    </form>
+                    
+                    <div class="auth-features mt-4" data-aos="fade-up" data-aos-delay="600">
+                        <div class="feature-item">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Secure Verification</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-clock"></i>
+                            <span>Expires in 10 min</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-user-check"></i>
+                            <span>Email Ownership</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-focus OTP input
+    document.getElementById('otp_code').focus();
+    
+    // Resend OTP functionality
+    document.getElementById('resend-btn').addEventListener('click', function() {
+        const btn = this;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Sending...';
+        
+        fetch('{% url "resend_registration_otp" %}', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Show success message
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-success alert-dismissible fade show';
+                alertDiv.innerHTML = `
+                    ${data.message}
+                    <button type="button" class="btn-close" data-dismiss="alert"></button>
+                `;
+                document.querySelector('.auth-form').insertBefore(alertDiv, document.querySelector('.auth-form').firstChild);
+                
+                // Reset button after 30 seconds
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-redo me-2"></i>Resend Code';
+                }, 30000);
+            } else {
+                alert(data.message);
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-redo me-2"></i>Resend Code';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to resend code. Please try again.');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-redo me-2"></i>Resend Code';
+        });
+    });
+    
+    // Only allow numbers in OTP field
+    document.getElementById('otp_code').addEventListener('input', function(e) {
+        this.value = this.value.replace(/[^0-9]/g, '');
+    });
+});
+</script>
+
+<style>
+/* Auth Container Styles */
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    padding: 2rem 0;
+}
+
+.auth-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    z-index: -1;
+}
+
+.auth-illustration {
+    position: fixed;
+    left: 5%;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 0;
+    display: none;
+}
+
+@media (min-width: 992px) {
+    .auth-illustration {
+        display: block;
+    }
+}
+
+/* Robot Animation Styles */
+.robot-container {
+    position: relative;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+.speech-bubble {
+    background: white;
+    padding: 15px 25px;
+    border-radius: 20px;
+    position: relative;
+    margin-bottom: 20px;
+    font-weight: 600;
+    color: #667eea;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.speech-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid white;
+}
+
+.robot-head {
+    width: 120px;
+    height: 100px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 20px;
+    position: relative;
+    margin: 0 auto;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.robot-antenna {
+    width: 4px;
+    height: 30px;
+    background: #667eea;
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.robot-antenna::after {
+    content: '';
+    width: 12px;
+    height: 12px;
+    background: #ff6b6b;
+    border-radius: 50%;
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: blink 1s ease-in-out infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+.robot-visor {
+    width: 90px;
+    height: 40px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 20px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 15px;
+}
+
+.robot-eye {
+    width: 20px;
+    height: 20px;
+    background: #667eea;
+    border-radius: 50%;
+    animation: eyeMove 3s ease-in-out infinite;
+}
+
+@keyframes eyeMove {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-3px); }
+    75% { transform: translateX(3px); }
+}
+
+.robot-body {
+    width: 100px;
+    height: 80px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 15px;
+    margin: 10px auto 0;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.robot-arm {
+    width: 15px;
+    height: 60px;
+    background: #667eea;
+    border-radius: 10px;
+    position: absolute;
+    top: 10px;
+}
+
+.robot-arm.left {
+    left: -20px;
+    animation: waveLeft 2s ease-in-out infinite;
+}
+
+.robot-arm.right {
+    right: -20px;
+    animation: waveRight 2s ease-in-out infinite;
+}
+
+@keyframes waveLeft {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(-20deg); }
+}
+
+@keyframes waveRight {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(20deg); }
+}
+
+/* Auth Card Styles */
+.auth-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 3rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    position: relative;
+    z-index: 1;
+}
+
+.auth-logo {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2rem;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+}
+
+.auth-features {
+    display: flex;
+    justify-content: space-around;
+    gap: 1rem;
+    padding-top: 1rem;
+}
+
+.feature-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.feature-item i {
+    font-size: 1.5rem;
+    color: #667eea;
+}
+
+/* Form Styles */
+.form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    padding: 0.8rem;
+    font-weight: 600;
+    transition: transform 0.2s;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+}
+
+.btn-outline-primary {
+    color: #667eea;
+    border-color: #667eea;
+}
+
+.btn-outline-primary:hover {
+    background: #667eea;
+    border-color: #667eea;
+}
+</style>
+{% endblock %}

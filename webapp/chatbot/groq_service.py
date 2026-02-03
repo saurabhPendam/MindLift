@@ -30,11 +30,11 @@ class YouTubeService:
             'panic': ['panic attack help', 'grounding techniques', 'panic relief'],
         }
     
-    def search_video(self, topic: str, max_results: int = 1) -> Optional[Dict]:
+    def search_video(self, topic: str, max_results: int = 1, allow_fallback: bool = True) -> Optional[Dict]:
         """Search for mental health videos on YouTube"""
         if not self.api_key:
             logger.warning("YouTube API key not configured")
-            return self._get_fallback_video(topic)
+            return self._get_fallback_video(topic) if allow_fallback else None
         
         search_terms = self.video_topics.get(topic.lower(), [topic])
         query = f"mental health {search_terms[0]}"
@@ -89,7 +89,7 @@ class YouTubeService:
         except Exception as e:
             logger.error(f"YouTube search error: {str(e)}")
         
-        return self._get_fallback_video(topic)
+        return self._get_fallback_video(topic) if allow_fallback else None
     
     def _get_fallback_video(self, topic: str) -> Optional[Dict]:
         """Fallback to curated videos when API is unavailable"""
@@ -257,7 +257,7 @@ I'm very concerned about your safety. Please contact emergency services immediat
 
 You're not alone. These services are available 24/7 with trained professionals who want to help you. Your life matters."""
     
-    def send_message(self, message: str, context: Optional[List[Dict]] = None) -> Dict:
+    def send_message(self, message: str, context: Optional[List[Dict]] = None, allow_video: bool = True) -> Dict:
         """
         Send message to AI service
         
@@ -313,12 +313,12 @@ You're not alone. These services are available 24/7 with trained professionals w
             # Extract response
             bot_response = response.choices[0].message.content.strip()
             
-            # Detect video topic
-            video_topic = self._detect_video_topic(message)
+            # Detect video topic (only when allowed)
+            video_topic = self._detect_video_topic(message) if allow_video else None
             video_info = None
             
             if video_topic:
-                video_info = self.youtube_service.search_video(video_topic)
+                video_info = self.youtube_service.search_video(video_topic, allow_fallback=True)
                 logger.info(f"🎥 Video suggested for: {video_topic}")
             
             logger.info(f"✅ Response received ({len(bot_response)} chars)")
@@ -327,16 +327,16 @@ You're not alone. These services are available 24/7 with trained professionals w
                 'text': bot_response,
                 'video': video_info,
                 'model': self.model,
-                'source': 'ai',  # Changed from 'groq' to 'ai'
+                'source': 'ai',
                 'success': True,
                 'tokens_used': response.usage.total_tokens if response.usage else 0
             }
             
         except Exception as e:
             logger.error(f"💥 AI API error: {str(e)}")
-            return self._get_fallback_response(message)
+            return self._get_fallback_response(message, allow_video=allow_video)
     
-    def _get_fallback_response(self, message: str) -> Dict:
+    def _get_fallback_response(self, message: str, allow_video: bool = True) -> Dict:
         """Rule-based fallback response"""
         message_lower = message.lower()
         video_info = None
@@ -344,7 +344,7 @@ You're not alone. These services are available 24/7 with trained professionals w
         # Anxiety
         if any(word in message_lower for word in ['anxious', 'anxiety', 'worried', 'nervous', 'panic']):
             text = "I hear you're feeling anxious. That's really tough. Try this breathing exercise - breathe in for 4 counts, hold for 4, and breathe out for 4. Repeat a few times. How are you feeling now?"
-            video_info = self.youtube_service.search_video('anxiety')
+            video_info = self.youtube_service.search_video('anxiety', allow_fallback=True) if allow_video else None
         
         # Depression/Sadness
         elif any(word in message_lower for word in ['sad', 'depressed', 'down', 'unhappy', 'hopeless']):
@@ -354,12 +354,12 @@ You're not alone. These services are available 24/7 with trained professionals w
         # Stress
         elif any(word in message_lower for word in ['stress', 'stressed', 'overwhelmed', 'pressure']):
             text = "Stress can be really challenging. Here's a technique that might help. Remember to take things one step at a time. What's causing you the most stress right now?"
-            video_info = self.youtube_service.search_video('stress')
+            video_info = self.youtube_service.search_video('stress', allow_fallback=True) if allow_video else None
         
         # Sleep
         elif any(word in message_lower for word in ['sleep', 'insomnia', 'tired', 'rest']):
             text = "Sleep issues can really affect your well-being. Would a guided sleep meditation help? I'm here to support you."
-            video_info = self.youtube_service.search_video('sleep')
+            video_info = self.youtube_service.search_video('sleep', allow_fallback=True) if allow_video else None
         
         # Greeting
         elif any(word in message_lower for word in ['hello', 'hi', 'hey']):

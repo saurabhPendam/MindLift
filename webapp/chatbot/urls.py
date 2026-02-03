@@ -5,7 +5,11 @@ urlpatterns = [
     # Page Views
     path('', views.home, name='home'),
     path('register/', views.register, name='register'),
+    path('verify-registration/', views.verify_registration, name='verify_registration'),
+    path('resend-registration-otp/', views.resend_registration_otp, name='resend_registration_otp'),
     path('login/', views.login_view, name='login'),
+    path('verify-otp/', views.verify_otp, name='verify_otp'),
+    path('resend-otp/', views.resend_otp, name='resend_otp'),
     path('logout/', views.logout_view, name='logout'),
     path('chat/', views.chat, name='chat'),
     path('activities/', views.activities, name='activities'),

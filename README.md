@@ -43,10 +43,15 @@
 - **Goal Setting**: Personal wellness objectives and milestones
 
 ### 🔒 Privacy & Security
-- **End-to-End Encryption**: Secure data transmission
+- **Two-Way Authentication**: Email verification during registration + 2FA OTP on login
+- **Email Verification**: All users must verify email ownership before account creation
+- **2FA by Default**: Email-based OTP authentication for every login
+- **Rate Limiting**: Maximum 5 OTP attempts with 10-minute expiration
+- **End-to-End Encryption**: Secure data transmission (TLS/SSL)
 - **Account Deletion**: 30-day grace period for account deletion with data export
-- **Audit Logging**: Comprehensive activity tracking for security
+- **Audit Logging**: Comprehensive security event tracking
 - **GDPR Compliant**: User data rights and privacy controls
+- **Gmail-Only Policy**: Verified Gmail accounts required for enhanced security
 
 ## 🚀 Quick Start
 

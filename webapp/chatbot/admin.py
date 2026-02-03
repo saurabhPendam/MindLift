@@ -5,20 +5,23 @@ from django.utils.safestring import mark_safe
 from .models import (
     UserProfile, Conversation, Message, SentimentReport,
     Activity, UserActivity, MotivationalQuote, UserQuoteFavorite,
-    DoctorAppointment, AuditLog
+    DoctorAppointment, AuditLog, OTPVerification, AuthorizedEmail
 )
 
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ['user', 'phone', 'gender', 'days_active_display', 'deletion_status', 'created_at']
+    list_display = ['user', 'phone', 'gender', 'two_factor_enabled', 'is_authorized_email', 'days_active_display', 'deletion_status', 'created_at']
     search_fields = ['user__username', 'user__email', 'phone']
-    list_filter = ['gender', 'deletion_requested', 'created_at']
+    list_filter = ['gender', 'deletion_requested', 'two_factor_enabled', 'is_authorized_email', 'created_at']
     readonly_fields = ['created_at', 'updated_at', 'days_active_display']
     
     fieldsets = (
         ('User Information', {
             'fields': ('user', 'phone', 'date_of_birth', 'gender')
+        }),
+        ('Security Settings', {
+            'fields': ('two_factor_enabled', 'is_authorized_email')
         }),
         ('Account Status', {
             'fields': ('deletion_requested', 'deletion_requested_at', 'deletion_scheduled_for')
@@ -249,6 +252,56 @@ class AuditLogAdmin(admin.ModelAdmin):
     def has_change_permission(self, request, obj=None):
         # Prevent editing of audit logs
         return False
+
+
+@admin.register(OTPVerification)
+class OTPVerificationAdmin(admin.ModelAdmin):
+    list_display = ['user', 'otp_code', 'created_at', 'expires_at', 'is_valid_display', 'attempt_count', 'is_verified']
+    search_fields = ['user__username', 'user__email', 'otp_code']
+    list_filter = ['is_used', 'is_verified', 'created_at']
+    date_hierarchy = 'created_at'
+    readonly_fields = ['created_at', 'attempt_count']
+    
+    def is_valid_display(self, obj):
+        if obj.is_valid():
+            return format_html('<span style="color: green; font-weight: bold;">✓ Valid</span>')
+        return format_html('<span style="color: red;">✗ Expired/Used</span>')
+    is_valid_display.short_description = 'Status'
+    
+    def has_add_permission(self, request):
+        return False
+    
+    def has_change_permission(self, request, obj=None):
+        return False
+
+
+@admin.register(AuthorizedEmail)
+class AuthorizedEmailAdmin(admin.ModelAdmin):
+    list_display = ['email', 'is_active', 'added_at', 'added_by', 'notes_preview']
+    search_fields = ['email', 'notes']
+    list_filter = ['is_active', 'added_at']
+    date_hierarchy = 'added_at'
+    readonly_fields = ['added_at']
+    
+    fieldsets = (
+        ('Email Information', {
+            'fields': ('email', 'is_active')
+        }),
+        ('Administration', {
+            'fields': ('added_by', 'added_at', 'notes')
+        }),
+    )
+    
+    def notes_preview(self, obj):
+        if obj.notes:
+            return obj.notes[:50] + '...' if len(obj.notes) > 50 else obj.notes
+        return '-'
+    notes_preview.short_description = 'Notes'
+    
+    def save_model(self, request, obj, form, change):
+        if not change:  # If creating new object
+            obj.added_by = request.user
+        super().save_model(request, obj, form, change)
 
 
 # Customize admin site

@@ -5,6 +5,8 @@ from django.db.models import Count
 from datetime import timedelta
 import json
 import uuid
+import random
+import string
 
 class UserProfile(models.Model):
     """Extended user profile for additional information"""
@@ -24,6 +26,11 @@ class UserProfile(models.Model):
     deletion_requested = models.BooleanField(default=False)
     deletion_requested_at = models.DateTimeField(null=True, blank=True)
     deletion_scheduled_for = models.DateTimeField(null=True, blank=True)
+    
+    # 2FA fields
+    two_factor_enabled = models.BooleanField(default=True)
+    two_factor_secret = models.CharField(max_length=32, blank=True, null=True)
+    is_authorized_email = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.user.username}'s Profile"
@@ -315,3 +322,79 @@ class AuditLog(models.Model):
     class Meta:
         db_table = 'audit_logs'
         ordering = ['-timestamp']
+
+
+class OTPVerification(models.Model):
+    """Store OTP codes for 2FA"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='otp_codes')
+    otp_code = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    is_used = models.BooleanField(default=False)
+    is_verified = models.BooleanField(default=False)
+    attempt_count = models.IntegerField(default=0)
+    
+    def is_valid(self):
+        """Check if OTP is still valid"""
+        if self.is_used or self.is_verified:
+            return False
+        if timezone.now() > self.expires_at:
+            return False
+        if self.attempt_count >= 5:  # Max 5 attempts
+            return False
+        return True
+    
+    def verify(self, input_otp):
+        """Verify the OTP code"""
+        self.attempt_count += 1
+        self.save()
+        
+        if not self.is_valid():
+            return False
+        
+        if self.otp_code == input_otp:
+            self.is_verified = True
+            self.is_used = True
+            self.save()
+            return True
+        return False
+    
+    @staticmethod
+    def generate_otp():
+        """Generate a 6-digit OTP"""
+        return ''.join(random.choices(string.digits, k=6))
+    
+    def __str__(self):
+        return f"{self.user.username} - OTP - {'Valid' if self.is_valid() else 'Expired'}"
+    
+    class Meta:
+        db_table = 'otp_verifications'
+        ordering = ['-created_at']
+
+
+class AuthorizedEmail(models.Model):
+    """Store authorized Gmail accounts"""
+    email = models.EmailField(unique=True)
+    added_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='added_authorized_emails')
+    added_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+    notes = models.TextField(blank=True)
+    
+    def __str__(self):
+        return f"{self.email} - {'Active' if self.is_active else 'Inactive'}"
+    
+    @staticmethod
+    def is_authorized(email):
+        """Check if an email is authorized"""
+        if not email:
+            return False
+        email = email.lower().strip()
+        # Check if it's a Gmail account
+        if not email.endswith('@gmail.com'):
+            return False
+        # Check if it's in the authorized list
+        return AuthorizedEmail.objects.filter(email=email, is_active=True).exists()
+    
+    class Meta:
+        db_table = 'authorized_emails'
+        ordering = ['-added_at']

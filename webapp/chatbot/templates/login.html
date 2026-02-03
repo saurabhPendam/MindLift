@@ -4,22 +4,49 @@
 {% block content %}
 <div class="auth-container">
     <div class="auth-background"></div>
+    
+    <!-- 3D Robot Illustration -->
+    <div class="auth-illustration">
+        <!-- 3D Robot Container -->
+        <div class="robot-container">
+            <!-- Speech Bubble -->
+            <div class="speech-bubble">
+                Hi! Welcome back 👋
+            </div>
+            
+            <!-- Robot Head with Antenna -->
+            <div class="robot-head">
+                <div class="robot-antenna"></div>
+                <div class="robot-visor">
+                    <div class="robot-eye left"></div>
+                    <div class="robot-eye right"></div>
+                </div>
+            </div>
+            
+            <!-- Robot Body with Arms -->
+            <div class="robot-body">
+                <div class="robot-arm left"></div>
+                <div class="robot-arm right"></div>
+            </div>
+        </div>
+    </div>
+    
     <div class="container">
-        <div class="row justify-content-center align-items-center min-vh-100">
-            <div class="col-md-5">
-                <div class="auth-card" data-aos="zoom-in">
-                    <div class="text-center mb-4">
+        <div class="row justify-content-center align-items-center" style="min-height: 100%;">
+            <div class="col-md-8 col-lg-7">
+                <div class="auth-card" data-aos="zoom-in" data-aos-duration="600">
+                    <div class="text-center mb-4" data-aos="fade-down" data-aos-delay="100">
                         <div class="auth-logo mb-3">
                             <i class="fas fa-brain"></i>
                         </div>
                         <h2 class="fw-bold mb-2">Welcome Back!</h2>
-                        <p class="text-muted">Login to continue your wellness journey</p>
+                        <p class="text-muted">We're here to support your wellness journey</p>
                     </div>
                     
                     <form method="post" class="auth-form">
                         {% csrf_token %}
                         
-                        <div class="form-floating mb-3">
+                        <div class="form-floating mb-3" data-aos="fade-up" data-aos-delay="200">
                             <input type="text" 
                                    class="form-control" 
                                    id="username" 
@@ -30,7 +57,7 @@
                             <label for="username"><i class="fas fa-user me-2"></i>Username</label>
                         </div>
                         
-                        <div class="form-floating mb-3 password-field">
+                        <div class="form-floating mb-3 password-field" data-aos="fade-up" data-aos-delay="300">
                             <input type="password" 
                                    class="form-control" 
                                    id="password" 
@@ -44,7 +71,7 @@
                             </button>
                         </div>
                         
-                        <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-4" data-aos="fade-up" data-aos-delay="400">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="remember">
                                 <label class="form-check-label small" for="remember">
@@ -54,19 +81,19 @@
                             <a href="#" class="small text-decoration-none">Forgot Password?</a>
                         </div>
                         
-                        <button type="submit" class="btn btn-primary w-100 py-3 mb-3">
+                        <button type="submit" class="btn btn-primary w-100 py-3 mb-3" data-aos="fade-up" data-aos-delay="500">
                             <i class="fas fa-sign-in-alt me-2"></i>Login
                         </button>
                     </form>
                     
-                    <div class="text-center mt-4">
+                    <div class="text-center mt-4" data-aos="fade-up" data-aos-delay="600">
                         <p class="text-muted mb-0">
                             Don't have an account? 
-                            <a href="{% url 'register' %}" class="fw-bold text-decoration-none">Create Account</a>
+                            <a href="{% url 'register' %}" class="fw-bold text-decoration-none" style="color: var(--primary);">Create Account</a>
                         </p>
                     </div>
                     
-                    <div class="divider my-4">
+                    <div class="divider my-4" data-aos="fade-up" data-aos-delay="700">
                         <span>OR</span>
                     </div>
                     

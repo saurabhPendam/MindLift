@@ -30,7 +30,7 @@ class Command(BaseCommand):
                 'duration_minutes': 5,
                 'difficulty': 'easy',
                 'instructions': '1. Sit comfortably with your back straight\n2. Close your eyes\n3. Breathe in slowly through your nose for 4 counts\n4. Hold your breath for 4 counts\n5. Breathe out slowly through your mouth for 4 counts\n6. Repeat 10 times',
-                'video_url': 'https://www.youtube.com/embed/tybOi4hjZFQ',
+                'video_url': 'https://www.youtube.com/watch?v=tEmt1Znux58',
                 'is_active': True
             },
             {
@@ -40,7 +40,7 @@ class Command(BaseCommand):
                 'duration_minutes': 10,
                 'difficulty': 'easy',
                 'instructions': '1. Find a quiet space\n2. Sit comfortably\n3. Close your eyes\n4. Follow the guided meditation\n5. Focus on your breath',
-                'video_url': 'https://www.youtube.com/embed/ZToicYcHIOU',
+                'video_url': 'https://www.youtube.com/watch?v=inpok4MKVLM',
                 'is_active': True
             },
             {
@@ -50,7 +50,7 @@ class Command(BaseCommand):
                 'duration_minutes': 15,
                 'difficulty': 'easy',
                 'instructions': '1. Find a comfortable position\n2. Tense each muscle group for 5 seconds\n3. Release and relax for 10 seconds\n4. Move through all major muscle groups\n5. Focus on the sensation of relaxation',
-                'video_url': 'https://www.youtube.com/embed/ClqPtWzozXs',
+                'video_url': 'https://www.youtube.com/watch?v=86HUcr8SmAw',
                 'is_active': True
             },
             {
@@ -60,7 +60,7 @@ class Command(BaseCommand):
                 'duration_minutes': 15,
                 'difficulty': 'easy',
                 'instructions': '1. Put on comfortable shoes\n2. Step outside\n3. Walk at a comfortable pace\n4. Focus on your surroundings\n5. Take deep breaths',
-                'video_url': 'https://www.youtube.com/embed/CZTAjfJ8umA',
+                'video_url': 'https://www.youtube.com/watch?v=aUaInS6HIGo',
                 'is_active': True
             },
             {
@@ -88,7 +88,7 @@ class Command(BaseCommand):
                 'duration_minutes': 10,
                 'difficulty': 'easy',
                 'instructions': '1. Stand with feet shoulder-width apart\n2. Stretch arms overhead\n3. Bend to each side\n4. Roll shoulders\n5. Neck stretches',
-                'video_url': 'https://www.youtube.com/embed/g_tea8ZNk5A',
+                'video_url': 'https://www.youtube.com/watch?v=qULTwquOuT4',
                 'is_active': True
             },
             {

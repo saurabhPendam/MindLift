@@ -21,6 +21,16 @@ class HybridChatService:
         self.use_rasa = getattr(settings, 'USE_RASA', True)
         self.rasa_url = getattr(settings, 'RASA_SERVER_URL', 'http://localhost:5005')
         self.enhance_with_ai = True
+        self.video_intent_map = {
+            'anxious': 'anxiety',
+            'stress': 'stress',
+            'work_stress': 'stress',
+            'sleep_issues': 'sleep',
+            'ask_breathing': 'breathing',
+            'ask_meditation': 'meditation',
+            'mood_unhappy': 'depression',
+            'lonely': 'depression'
+        }
         
     def check_rasa_available(self) -> bool:
         """Check if RASA server is running"""
@@ -57,7 +67,7 @@ class HybridChatService:
                     if self.enhance_with_ai and self._should_enhance(intent):
                         return self._enhance_rasa_with_ai(rasa_result, message, context)
                     else:
-                        return rasa_result
+                        return self._attach_video_if_applicable(rasa_result)
                 
                 logger.info(f"⚠️ Low RASA confidence, using AI")
                 ai_result = self._try_ai(message, context)
@@ -239,6 +249,41 @@ class HybridChatService:
         """Determine if response should be enhanced with AI"""
         skip_enhancement = ['crisis', 'greet', 'goodbye', 'thank', 'bot_challenge']
         return intent not in skip_enhancement if intent else True
+
+    def _should_attach_video(self, intent: Optional[str], confidence: Optional[float]) -> bool:
+        """Attach video only when intent is clear and mapped to a video topic"""
+        if not intent or confidence is None:
+            return False
+        if confidence < self.confidence_threshold:
+            return False
+        if intent == 'crisis':
+            return False
+        return intent in self.video_intent_map
+
+    def _fetch_video_for_intent(self, intent: str) -> Optional[Dict]:
+        """Fetch a YouTube video for a given intent"""
+        topic = self.video_intent_map.get(intent)
+        if not topic:
+            return None
+        return groq_service.youtube_service.search_video(topic, allow_fallback=False)
+
+    def _attach_video_if_applicable(self, result: Dict) -> Dict:
+        """Attach a YouTube video to the response if intent confidence is high"""
+        if result.get('video'):
+            return result
+
+        intent = result.get('intent')
+        confidence = result.get('confidence')
+
+        if not self._should_attach_video(intent, confidence):
+            return result
+
+        video_info = self._fetch_video_for_intent(intent)
+        if video_info:
+            result['video'] = video_info
+            logger.info(f"🎥 YouTube video attached for intent: {intent}")
+
+        return result
     
     def _enhance_rasa_with_ai(self, rasa_result: Dict, message: str, context: Optional[List[Dict]]) -> Dict:
         """Enhance RASA's response with AI while preserving video"""
@@ -254,7 +299,7 @@ Our system detected this as a mental health query. Here's our structured respons
 
 Please rewrite this response to be more empathetic, natural, and conversational while keeping the same information. Keep it concise (2-4 sentences). Maintain a warm, supportive tone."""
 
-            ai_response = groq_service.send_message(enhancement_prompt, context=None)
+            ai_response = groq_service.send_message(enhancement_prompt, context=None, allow_video=False)
             
             if ai_response.get('success') and ai_response.get('text'):
                 enhanced_text = ai_response['text']
@@ -275,7 +320,7 @@ Please rewrite this response to be more empathetic, natural, and conversational 
                 if final_video:
                     logger.info(f"🎥 Final video data: {final_video}")
                 
-                return enhanced_result
+                return self._attach_video_if_applicable(enhanced_result)
             
         except Exception as e:
             logger.error(f"Enhancement error: {str(e)}")
@@ -286,7 +331,7 @@ Please rewrite this response to be more empathetic, natural, and conversational 
     def _try_ai(self, message: str, context: Optional[List[Dict]] = None) -> Dict:
         """Get response from AI"""
         try:
-            ai_result = groq_service.send_message(message, context)
+            ai_result = groq_service.send_message(message, context, allow_video=False)
             
             result = {
                 'text': ai_result.get('text', ''),

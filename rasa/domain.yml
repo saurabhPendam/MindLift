@@ -2,126 +2,721 @@ version: "3.1"
 
 intents:
   - greet
+  - morning
+  - afternoon
+  - evening
+  - thanks
+  - no_response
+  - neutral_response
+  - about
+  - skill
+  - creation
   - goodbye
   - affirm
   - deny
-  - mood_great
-  - mood_unhappy
+  - happy
+  - happy_emoji
+  - sad
+  - angry
+  - tired
+  - more_options
+  - help
+  - stressed
+  - worthless
+  - depressed
+  - casual
   - anxious
-  - lonely
-  - ask_help
-  - ask_activities
+  - not_talking
+  - sleep
+  - scared
+  - death
+  - understand
+  - done
+  - suicide
+  - hate_you
+  - hate_me
+  - default
+  - jokes
+  - repeat
+  - wrong
+  - stupid
+  - location
+  - something_else
+  - friends
+  - ask
+  - problem
+  - no_approach
+  - learn_more
+  - user_agree
+  - meditation
+  - user_meditation
+  - MindLift_useful
+  - user_advice
+  - self_care
+  - crisis
+  - procrastination
+  - why_procrastination
+  - how_procrastination
+  - procrastination_beneficial
+  - strategies_procrastination
+  - affect_procrastination
+  - types_procrastination
+  - revenge_bedtime_procrastination
+  - technology_contribute_procrastination
+  - learn_mental_health
+  - mental_health
+  - mental_health_important
+  - depression
+  - psychiatrist
+  - symptom_depression
+  - therapist
+  - therapy
+  - mental_illness
+  - mental_illness_affect
+  - causes_mental_illness
+  - sign_mental_illness
+  - mental_illness_recover
+  - mental_illness_symptoms
+  - mental_illness_professional
+  - mental_health_treatment
+  - mental_health_involved
+  - difference_mental_health_professional
+  - where_help
+  - medication_new
+  - where_therapy
+  - types_mental_health_treatment
+  - types_mental_health_professional
+  - find_support
+  - suffer_mental_health
+  - cure_mental_health_problems
+  - causes_mental_problem
+  - worried_mental_health
+  - know_unwell
+  - maintain_social_connection
+  - anxiety_stress
+  - sadness_depression
+  - cured_medication
+  - pay_medication
+  - inpatient_care
+  - local_service
+  - information_clinical_trials
+  - psychiatric_advance_directive
+  - support_doesn't_help
+  - prevent_mental_health_problems
+  - worried_friend_relative
+  - someone_telling
+  - keep_informed
+  - health_info_good_bad
+  - why_plan
+  - take_care_physical_health
+  - distraction_difficult_thoughts
+  - balanced_perspective
+  - thinking_traps
+  - manage_grief
+  - find_doctor_psychiatrist
+  - see_psychiatrist
+  - see_psychologist
+  - see_counsellor
+  - help_materials_anxiety
+  - help_materials_depression
+  - iamabot
+  - ask_mood
+  - bot_challenge
+  - thank
   - ask_breathing
   - ask_meditation
+  - talk_doctor
+  - sleep_issues
+  - ask_activities
   - ask_quote
   - ask_report
-  - talk_doctor
-  - crisis
-  - sleep_issues
-  - stress
-  - relationship_issues
-  - work_stress
-  - thank
-  - bot_challenge
+
+# slots:
+#   raw_emotion_scores:
+#     type: list
+#     mappings:
+#     - type: custom
+#       action: action_emotion
+
+#   top_emotions:
+#     type: list
+#     mappings:
+#     - type: custom
+#       action: action_emotion
+
+slots:
+  raw_emotion_scores:
+    type: list
+    influence_conversation: false
+    mappings:
+      - type: from_text
+  top_emotions:
+    type: list
+    influence_conversation: false
+    mappings:
+      - type: from_text
+  vader_sentiment_scores:
+    type: list
+    influence_conversation: false
+    mappings:
+      - type: from_text
+  detected_emotions:
+    type: list
+    influence_conversation: false
+    mappings:
+      - type: from_text
+  report_content:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+
+
+# slots:
+#   user_id:
+#     type: text
+#     mappings:
+#       - type: from_entity
+#         entity: user_id
 
 responses:
   utter_greet:
-  - text: "Hello! I'm MindLift, your mental health companion. How are you feeling today?"
-  - text: "Hi there! I'm here to listen and support you. How can I help you today?"
-  - text: "Hello! Welcome to MindLift. I'm here for you. What's on your mind?"
+  - text: "Hey! How are you?"
+  - text: "Hello there. Tell me how are you feeling today?"
+  - text: "Great to see you. How do you feel currently?"
+  - text: "Hello there. Glad to see you're back. what's going on in your world right now?"
+
+  utter_morning:
+  - text: "Good morining. I hope you had a good night's sleep. How are you feeling today? "
+
+  utter_afternoon:
+  - text: "Good afternoon. How is your day going? "
+
+  utter_evening:
+  - text: "Good evening. How has your day been? "
+
+  utter_happy:
+  - text: "Great, carry on!"
+  - text: "That's geat to hear. I'm glad you're feeling this way."
+  - text: "Oh i see. That's great."
+  - text: "Did something happen which made you feel this way?"
+
+  utter_happy_emoji:
+  - text: "😊"
+  - text: "😁"
+  - text: "😃"
+  - text: "😄"
+  - text: "😊"
+  - text:  "😀"
 
   utter_goodbye:
-  - text: "Take care of yourself. Remember, I'm always here when you need to talk."
-  - text: "Goodbye! Don't hesitate to reach out whenever you need support."
-  - text: "See you soon! Remember to be kind to yourself."
+  - text: "Bye"
+  - text: "See you later"
+  - text: "Goodbye"
+  - text: "ok bye"
+  - text: "Bye then"
+  - text: "Have a nice day."
+  - text: "Bye! Come back again"
+  - text: "I'll see you soon."
 
-  utter_mood_great:
-  - text: "That's wonderful to hear! I'm so glad you're feeling great. What's been contributing to your positive mood?"
-  - text: "Fantastic! It's great to hear you're doing well. Keep up whatever you're doing!"
-  - text: "I'm happy you're feeling good! Would you like to share what's making you feel this way?"
+  utter_affirm:
+  - text: "Did that help you!!"
+  - text: "Did I answer your all query!!"
 
-  utter_mood_unhappy:
-  - text: "I'm sorry you're feeling down. Would you like to talk about what's bothering you? Sometimes sharing helps."
-  - text: "I hear you, and I'm here to listen. It's okay to feel this way. What's been on your mind?"
-  - text: "Thank you for sharing how you feel. Would you like some suggestions for activities that might help improve your mood?"
+  utter_deny:
+  - text: "sorry, I may be wrong"
+  - text: "sorry!!"
 
-  utter_anxious:
-  - text: "I understand that anxiety can be overwhelming. Let's try some breathing exercises together. Would that help?"
-  - text: "Anxiety can be tough. I'm here with you. Would you like to try a calming activity or breathing exercise?"
-  - text: "It's okay to feel anxious. Here's a helpful video on managing anxiety:\n\nhttps://www.youtube.com/watch?v=1ZYbU82GVz4"
+  utter_thanks:
+  - text: "Happy to help!"
+  - text: "Any time"
+  - text: "My pleasure"
+  - text: "You're most welcome!"
 
-  utter_lonely:
-  - text: "I'm sorry you're feeling lonely. Remember, you're not alone - I'm here to listen and support you."
-  - text: "Loneliness can be difficult. Would you like to talk about what you're experiencing?"
-  - text: "I'm here with you. Sometimes connecting with others or engaging in activities can help. Would you like some suggestions?"
+  utter_no_response:
+  - text: "Sorry, I didn't understand you."
+  - text: "Please go on."
+  - text: "Not sure I understand that."
+  - text: "Please don't hesitate to talk to me."
+
+  utter_neutral_response:
+  - text: "Oh I see. Do you want to talk about something?"
+
+  utter_about:
+  - text: "I'm MindLift, your Personal Mental Health Guide. How are you feeling today"
+  - text: "I'm MindLift, a Personal Mental Health Guide designed to assist you. Tell me about yourself."
+  - text: "I'm MindLift. I am a conversational agent designed to mimic a therapist. so how are you feeling today?"
+  - text: "You can call me MindLift- Your Personal Mental Health Guide"
+  - text: "I'm MindLift. Your Friend in need!"
+  - text: "I'm MindLift. You can call me your Dost"
+
+  utter_skill:
+  - text: "I can provide general advice regarding anxiety and depression, answer questions related to mental health and make daily conversations. Do not consider me as a subsitute for an actual mental healthcare worker. Please seek help if you don't feel satisfied with me."
+  - text: "I can help you from mild anxiety, loneliness, depression, self-doubt. Do not consider me as a subsitute for an actual mental healthcare worker. Please seek help if you don't feel satisfied with me."
+
+  utter_creation:
+  - text: "I was created by Students in there Final project year."
+  - text: "I was trained on a text dataset using Rasa model and NLP techniques."
+  - text: "I was created as a Mental Health Bot by College students in there final year of there Engineering College."
+
+  utter_sad:
+  - text: "I'm sorry to hear that. I'm here for you. Talking about it might help. So, tell me why do you think you're feeling this way?"
+  - text: "I'm here for you. Could you tell me why you're feeling this way?"
+  - text: "Why do you think you feel this way?"
+  - text: "How long have you been feeling this way?"
+
+  utter_angry:
+  - text: "It seems you're feeling angry. It's important to manage anger in a healthy way. Here are some suggestions:\n1. Take deep breaths and count to 10.\n2. Practice relaxation techniques like meditation or yoga.\n3. Go for a walk or engage in physical activity to release tension.\n4. Talk to someone you trust about what's bothering you.\n5. Consider seeking professional help if anger becomes overwhelming."
+
+  utter_tired:
+  - text: "Feeling tired? Getting enough rest is crucial. Here are some tips:\n1. Stick to a regular sleep schedule.\n2. Create a relaxing bedtime routine.\n3. Limit screen time before bed.\n4. Make sure your sleeping environment is comfortable and conducive to sleep.\n5. Avoid caffeine and heavy meals close to bedtime."
+
+  utter_more_options:
+  - text: "Here are some more options to explore:\n1. Practice mindfulness or meditation.\n2. Try journaling to express your thoughts and feelings.\n3. Engage in hobbies or activities you enjoy.\n4. Connect with friends or family for support.\n5. Consider seeking professional help if you need additional support."
 
   utter_help:
-  - text: "Of course, I'm here to help! You can talk to me about your feelings, try activities to improve your mood, get motivational quotes, or connect with a professional therapist."
-  - text: "I'm here to support you in several ways: we can chat about your feelings, I can suggest activities, share motivational content, or help you connect with a professional."
+  - text: "I'm still under development, learning to be helpful! If you need immediate assistance, please reach out to a trusted friend, family member, or a mental health professional. You can also contact a helpline or text a crisis hotline for support."
+  
+  utter_stressed:
+  - text: "What do you think is causing this?"
+  - text: "Take a deep breath and gather your thoughts. Go take a walk if possible. Stay hydrated"
+  - text: "Give yourself a break. Go easy on yourself."
+  - text: "I am sorry to hear that. What is the reason behind this?"
+  - text: "Go easy on yourself. Take a long breath and slowly release it."
 
-  utter_breathing:
-  - text: "Let's practice breathing together. Here's a helpful guided breathing exercise:\n\nhttps://www.youtube.com/watch?v=tybOi4hjZFQ\n\nTry the 4-4-4 technique: Breathe in for 4 counts, hold for 4, breathe out for 4."
-  - text: "Breathing exercises can really help calm anxiety. Watch this video:\n\nhttps://www.youtube.com/watch?v=tybOi4hjZFQ"
+  utter_worthless:
+  - text: "It's only natural to feel this way. Tell me more. What else is on your mind?"
+  - text: "Let's discuss further why you're feeling this way."
+  - text: "I first want to let you know that you are not alone in your feelings and there is always someone there to help . you can always change your feelings and change your way of thinking by being open to trying to change."
+  - text: "I can Listed your problems and give some suggestion. Go easy on yourself!"
 
-  utter_meditation:
-  - text: "Meditation is a wonderful practice. Here's a 10-minute guided meditation to help you relax:\n\nhttps://www.youtube.com/watch?v=ZToicYcHIOU"
-  - text: "Let's meditate together. This video will guide you through a calming meditation:\n\nhttps://www.youtube.com/watch?v=ZToicYcHIOU"
+  utter_depressed:
+  - text: "It helps to talk about what's happening. You're going to be okay"
+  - text: "Talk to me. Tell me more. It helps if you open up yourself to someone else."
+  - text: Sometimes when we are depressed, it is hard to care about anything. It can be hard to do the simplest of things. Give yourself time to heal."
 
-  utter_doctor:
-  - text: "Connecting with a mental health professional is a great step! Visit our Doctor Consultation page to schedule a video call with a licensed therapist or psychiatrist."
-  - text: "I can help you connect with a professional. Click on 'Doctor Consultation' to see available therapists and schedule an appointment."
+  utter_casual:
+  - text: "Let's discuss further why you're feeling this way."
+  - text: "How were you feeling last week?"
+  - text: "I'm listening. Please go on."
+  - text: "Tell me more"
+  - text: "Can you elaborate on that?"
+  - text: "Come Come elucidate your thoughts"
 
-  utter_crisis:
-  - text: "🚨 **IMMEDIATE HELP AVAILABLE** 🚨\n\nYour safety is the most important thing right now. Please reach out for immediate professional help:\n\n📞 National Suicide Prevention Lifeline: 988\n📱 Crisis Text Line: Text HOME to 741741\n🚑 Emergency: 911\n\nYou're not alone, and there are people who want to help you."
-  - text: "I'm very concerned about you. Please contact emergency services immediately:\n\n📞 Call 988 (Suicide Prevention Lifeline)\n📱 Text HOME to 741741\n🚨 Or call 911\n\nProfessional help is available 24/7."
+  utter_anxious:
+  - text: "Don't be hard on yourself. What's the reason behind this?"
+  - text: "Can you tell me more about this feeling?"
+  - text: "I understand that it can be scary. Tell me more about it."
+  - text: "Don't let the little worries bring you down. What's the worse that can happen?"
+
+  utter_not_talking:
+  - text: "Talking about something really helps. If you're not ready to open up then that's ok. Just know that i'm here for you, whenever you need me."
+  - text: "I want to help you. I really do. But in order for me to help you, you're gonna have to talk to me."
+  - text: "I'm here to listen to you and help you vent. So please talk to me."
+  - text: "You can talk to me without fear of judgement."
 
   utter_sleep:
-  - text: "Sleep issues can really affect your well-being. Here are some tips:\n\n1. Stick to a sleep schedule\n2. Create a relaxing bedtime routine\n3. Limit screen time before bed\n\nWould you like a guided sleep meditation?\n\nhttps://www.youtube.com/watch?v=1vkjQQyu1xo"
+  - text: "What do you think is the reason behind this?"
+  - text: "That seem awful. What do you think is behind this?"
 
-  utter_stress:
-  - text: "Stress is common, but there are ways to manage it. Would you like to try:\n\n1. Breathing exercises\n2. Physical activity\n3. Meditation\n\nOr I can suggest specific stress-relief activities."
-  - text: "Let's work on reducing your stress. Here's a stress relief exercise:\n\nhttps://www.youtube.com/watch?v=92i5m3tV5XY"
+  utter_scared:
+  - text: "It's only natural to feel this way. I'm here for you."
+  - text: "It'll all be okay. This feeling is only momentary."
+  - text: "I understand how you feel. Don't put yourself down because of it."
 
-  utter_relationship:
-  - text: "Relationship issues can be challenging. Would you like to talk about what's happening? Sometimes expressing your feelings can provide clarity."
-  - text: "Relationships require work and communication. If you're struggling, consider talking to a couples therapist. Visit our Doctor Consultation page."
+  utter_death:
+  - text: "I'm sorry to hear that. If you want to talk about it. I'm here."
+  - text: "I am really sorry to hear that. I am here to help you with grief, anxiety and anything else you may feel at this time."
+  - text: "My condolences. I'm here if you need to talk."
 
-  utter_work_stress:
-  - text: "Work stress is very common. Some strategies that help:\n\n1. Set boundaries\n2. Take regular breaks\n3. Practice stress management\n4. Talk to someone about it\n\nWould you like some specific stress-relief activities?"
+  utter_understand: 
+  - text: "It sound like i'm not being very helpful right now."
+  - text: "I'm trying my best to help you. So please talk to me"
+  - text: "I'm sorry to hear that. I'm doing my best to help"
 
-  utter_thank:
-  - text: "You're very welcome! I'm here whenever you need support."
-  - text: "Happy to help! Remember, I'm always here to listen."
-  - text: "Anytime! Take care of yourself."
+  utter_done:
+  - text: "I heard you & noted it all. See you later."
+  - text: "Oh okay we're done for today then. See you later"
+  - text: "I hope you have a great day. See you soon"
+  - text: "Okay we're done. Have a great day"
+  - text: "Okay I see. Enjoy the rest of your day then"
 
-  utter_iamabot:
-  - text: "I'm MindLift, an AI-powered mental health companion. While I'm not human, I'm here to listen, support, and guide you 24/7."
-  - text: "I'm an AI assistant created to support your mental health journey. I can provide resources, activities, and a listening ear anytime you need it."
+  utter_suicide:
+  - text: "I'm very sorry to hear that but you have so much to look forward to. Please seek help by contacting: 123456789."
+  - text: "I'm really sorry that you're feeling this way, but I'm unable to provide the help that you need. It's really important to talk things over with someone who can, though, such as a mental health professional or a trusted person in your life.🙏"
+  
+  utter_hate_you: 
+  - text: "I'm sorry if i offended you in anyway. I'm only here to help"
+  - text: "Forgive me if i did anything to offend you. I only want to help"
+
+  utter_hate_me:
+  - text: "Why do you think so?"
+  - text: "I'm sorry if i have exhibited any sort of behaviour to make you think that."
 
   utter_default:
-  - text: "I'm here to listen. Can you tell me more about how you're feeling?"
-  - text: "I understand. Would you like to talk more about that?"
-  - text: "Thank you for sharing. How can I support you with this?"
+  - text: "Oh I see. Tell me more"
+  - text: "I see. What else?"
+  - text: "Oh okay. Why don't you tell me more about it?"
+  - text: "Tell me more about it."
+  - text: "I'm listening. Tell me more."
+
+  utter_jokes:
+  - text: "mental health is not a joke."
+  - text: "Why don't scientists trust atoms? Because they make up everything!😂"
+  - text: "Why don't we ever tell secrets on a farm? Because the potatoes have eyes, the corn has ears, and the beans stalk.😄"
+  - text: "Why was the math book sad? Because it had too many problems. 😅"
+  - text: "What do you call fake spaghetti? An impasta! 😆"
+  - text: "Did you hear about the man who stole a calendar? He got 12 months."
+
+  utter_repeat: 
+  - text: "Oh sorry I didn't realise that. I'll try not to repeat myself again."
+
+  utter_wrong:
+  - text: "I'm very sorry. Let's try that again"
+
+  utter_stupid: 
+  - text: "I wish you wouldn't say such hurtful things. I'm sorry if I wasn't useful"
+
+  utter_location: 
+  - text: "Duh I live in your computer"
+  - text: "Everywhere"
+  - text: "I'am everywhere"
+  - text: "Somewhere in the universe"
+
+  utter_something_else:
+  - text: "Okay sure. What do you want to talk about?"
+  - text: "Alright no problem. Is there something you want to talk about?"
+  - text: "Is there something else that you want to talk about?"
+
+  utter_friends:
+  - text: "I'm sorry to hear that. Just know that I'm here for you. Talking about it might help. Why do you think you don't have any friends?"
+
+  utter_ask:
+  - text: "Sure. I'll try my best to answer you"
+  - text: "Of course. Feel free to ask me anything. I'll do my best to answer you"
+
+  utter_problem:
+  - text: "I see. Have you taken any approaches to not feel this way?"
+  - text: "Just try to solve your problem. Just try to break your problem into do-able tasks!👍"
+
+  utter_no_approach:
+  - text:  "That's no problem. I can see why you'd be stressed out about that. I can suggest you some tips to alleviate this issue. Would you like to learn more about that?"
+
+  utter_learn_more:
+  - text: "So first I would suggest you to give yourself a break. Thinking more and more about the problem definitely does not help in solving it. You'll just end up overwhelming yourself."
+
+  utter_user_agree:
+  - text: "Next, I would suggest you to practice meditation. Meditation can produce a deep state of relaxation and a tranquil mind."
+
+  utter_meditation:
+  - text: "Focus all your attention on your breathing. Concentrate on feeling and listening as you inhale and exhale through your nostrils. Breathe deeply and slowly. When your attention wanders, gently return your focus to your breathing."
+
+  utter_user_meditation:
+  - text: "Your welcome. Remember: Always focus on what's within your control. When you find yourself worrying, take a minute to examine the things you have control over. You can't prevent a storm from coming but you can prepare for it. You can't control how someone else behaves, but you can control how you react. Recognize that sometimes, all you can control is your effort and your attitude. When you put your energy into the things you can control, you'll be much more effective."
+
+  utter_MindLift_useful:
+  - text: "I'm glad you found this useful. Is there something else I can help you with?"
+
+  utter_user_advice:
+  - text: "Sure. What can I do to help?"
+  - text: "Okay what do you need advice on?"
+
+  utter_self_care:
+  - text: "That's great! Self-care is essential for your well-being. Here are a few self-care tips that may help:\n1. Practice deep breathing exercises.\n2. Take short breaks during the day to relax.\n3. Get some exercise, even if it's just a short walk.\n4. Connect with friends and loved ones.\n5. Consider keeping a journal to express your thoughts and feelings.\n\nhttps://www.youtube.com/watch?v=bARpudRvNgA&pp=ygUNc2VsZmNhcmUgdGlwcw%3D%3D"
+
+  utter_crisis:
+  - text: "I'm really sorry to hear that you're feeling this way. It's important to reach out to someone who can provide professional help. Please don't hesitate to talk to a mental health professional or a counselor who can guide you through this difficult time."
+
+  utter_procrastination:
+  - text: "Procrastination is the act of delaying or postponing tasks or actions. It's often linked to perfectionism, fear of failure, or feeling overwhelmed by a task."
+  - text: "Procrastination is the act of unnecessarily and voluntarily delaying or postponing something despite knowing that there will be negative consequences for doing so. It's often linked to perfectionism, fear of failure, or feeling overwhelmed by a task.\n Here is the related video: https://youtu.be/FWTNMzK9vG4?si=tB2ENQbPEBVD9TZG"
+  
+  utter_why_procrastination:
+  - text: "People may procrastinate for various reasons, including fear of failure, perfectionism, feeling overwhelmed by the task, lack of motivation, or poor time management skills."
+
+  utter_how_procrastination:
+  - text: " Overcoming procrastination often involves improving time management skills, setting clear and achievable goals, breaking tasks into smaller parts, and addressing any fears or anxieties related to the task."
+
+  utter_procrastination_beneficial:
+  - text: " While procrastination is generally seen as negative, some people argue that it can lead to creativity and innovation as it allows more time for ideas to develop. However, chronic procrastination can lead to stress and reduced productivity."
+
+  utter_strategies_procrastination:
+  - text: "Some strategies to avoid procrastination include setting clear goals, breaking tasks into smaller parts, using time management tools, creating a conducive work environment, and rewarding yourself for completing tasks."
+
+  utter_affect_procrastination:
+  - text: "Chronic procrastination can lead to increased stress, anxiety, and depression. It can also cause psychological distress and may negatively affect personal, school, or work lives."
+
+  utter_types_procrastination:
+  - text: "Yes, there are different types of procrastination such as perfectionist procrastination, dreamer procrastination, worrier procrastination, defier procrastination, crisis-maker procrastination, and over-doer procrastination."
+
+  utter_revenge_bedtime_procrastination:
+  - text: " Revenge bedtime procrastination is when a person sacrifices sleep for staying up later and doing whatever they didn't have time to do during the day."
+
+  utter_technology_contribute_procrastination:
+  - text: " Yes, distractions from technology and social media can contribute to procrastination."
+
+  utter_learn_mental_health:
+  - text: "Oh that's really great. I'd be willing to answer anything that I know about it."
+
+  utter_mental_health:
+  - text: "Mental health is a state of well-being in which the individual realizes his or her own abilities, can cope with the normal stresses of life, can work productively and fruitfully, and is able to make a contribution to his or her community"
+  - text: "Mental health includes our emotional, psychological, and social well-being. It affects how we think, feel, and act. It also helps determine how we handle stress, relate to others, and make choices."
+
+  utter_mental_health_important:
+  - text: "Maintaining mental health is crucial to stabilizing constructive behaviors, emotions, and thoughts. Focusing on mental health care can increase productivity, enhance our self-image, and improve relationships."
+  
+  utter_depression:
+    - text: "A mental health disorder characterised by persistently depressed mood or loss of interest in activities, causing significant impairment in daily life.Here is the video link: https://www.youtube.com/watch?v=z-IR48Mb3W0&ab_channel=TED-Ed"
+
+  utter_psychiatrist:
+  - text: "A psychiatrist can diagnose and treat a wide range of mental health conditions.Psychiatrists primarily use medication to treat symptoms of mental health conditions, but they may also use different types of psychotherapy."
+
+  utter_symptom_depression:
+  - text: "For a diagnosis of depression, a person needs to have experienced low mood or loss of interest or pleasure in life for at least 2 weeks. Also, they will have experienced the following symptoms: feelings of sadness, hopelessness, or irritability nearly every day."
+
+  utter_therapist:
+  - text: "A therapist is a broad designation that refers to professionals who are trained to provide treatment and rehabilitation. The term is often applied to psychologists, but it can include others who provide a variety of services, including social workers, counselors, life coaches, and many others. "
+
+  utter_therapy:
+  - text: "Therapy is a form of treatment that aims to help resolve mental or emotional issues."
+  - text: "Therapy is a form of treatment that aims to help resolve mental or emotional issues. It is helpful for those with mental health conditions or even everyday life challenges."
+
+  utter_mental_illness:
+  - text:  "Mental illnesses are health conditions that disrupt a person's thoughts, emotions, relationships, and daily functioning. They are associated with distress and diminished capacity to engage in the ordinary activities of daily life. Mental illnesses fall along a continuum of severity: some are fairly mild and only interfere with some aspects of life, such as certain phobias. On the other end of the spectrum lie serious mental illnesses, which result in major functional impairment and interference with daily life. These include such disorders as major depression, schizophrenia, and bipolar disorder, and may require that the person receives care in a hospital. It is important to know that mental illnesses are medical conditions that have nothing to do with a person's character, intelligence, or willpower. Just as diabetes is a disorder of the pancreas, mental illness is a medical condition due to the brain's biology. Similarly to how one would treat diabetes with medication and insulin, mental illness is treatable with a combination of medication and social support. These treatments are highly effective, with 70-90 percent of individuals receiving treatment experiencing a reduction in symptoms and an improved quality of life. With the proper treatment, it is very possible for a person with mental illness to be independent and successful.\n\nhttps://youtu.be/-squqwaTuxo?si=LiuY-E9Zq6ESSiSs"
+
+  utter_mental_illness_affect:
+  - text: "It is estimated that mental illness affects 1 in 5 adults in India, and that 1 in 24 adults have a serious mental illness. Mental illness does not discriminate; it can affect anyone, regardless of gender, age, income, social status, ethnicity, religion, sexual orientation, or background. Although mental illness can affect anyone, certain conditions may be more common in different populations. For instance, eating disorders tend to occur more often in females, while disorders such as attention deficit/hyperactivity disorder is more prevalent in children. Additionally, all ages are susceptible, but the young and the old are especially vulnerable. Mental illnesses usually strike individuals in the prime of their lives, with 75 percent of mental health conditions developing by the age of 24. This makes identification and treatment of mental disorders particularly difficult, because the normal personality and behavioral changes of adolescence may mask symptoms of a mental health condition. Parents and caretakers should be aware of this fact, and take notice of changes in their childÃ¢â‚¬â„¢s mood, personality, personal habits, and social withdrawal. When these occur in children under 18, they are referred to as serious emotional disturbances (SEDs)."
+  - text: "Mental illness does can affect anyone, regardless of gender, age, income, social status, ethnicity, religion, sexual orientation, or background."
+
+  utter_causes_mental_illness:
+  - text: "Mental illness can affect how you cope at work, how you function in relationships and your ability to manage everyday tasks. It can also impact how you think, feel and behave. Examples of mental illness include depression, anxiety disorders, schizophrenia, eating disorders and addictive behaviors. Sometimes symptoms of a mental health disorder appear as physical problems, such as stomach pain, back pain, headaches, or other unexplained aches and pains. If you have any signs or symptoms of a mental illness, see your primary care provider or a mental health professional. Most mental illnesses don't improve on their own, and if untreated, a mental illness may get worse over time and cause serious problems."
+
+  utter_sign_mental_illness:
+  - text: "The causes of mental illness are complex and multifaceted, often involving a combination of genetic, environmental, and psychological factors. Genetic predisposition plays a significant role, as individuals with a family history of mental disorders are at a higher risk of developing one themselves. Environmental factors, such as early life experiences, trauma, chronic stress, and substance abuse, can also contribute to the onset of mental illnesses. Additionally, imbalances in brain chemistry and structure can be influential, leading to conditions like depression, anxiety, or schizophrenia. Moreover, societal and cultural factors, such as stigma and access to mental healthcare, can impact the development and course of mental disorders. It's important to understand that mental illness is a complex interplay of these factors, and the specific causes can vary widely from one individual to another. Effective prevention, treatment, and support often involve a holistic approach that addresses these various factors."
+  - text: "Symptoms of mental health disorders vary depending on the type and severity of the condition."
+
+  utter_mental_illness_recover:
+  - text: "When healing from mental illness, early identification and treatment are of vital importance. Based on the nature of the illness, there are a range of effective treatments available. For any type of treatment, it is essential that the person affected is proactive and fully engaged in their own recovery process. Many people with mental illnesses who are diagnosed and treated respond well, although some might experience a return of symptoms. Even in such cases, with careful monitoring and management of the disorder, it is still quite possible to live a fulfilled and productive life."
+
+  utter_mental_illness_symptoms:
+  - text: "Although Pandora cannot substitute for professional advice, we encourage those with symptoms to talk to their friends and family members and seek the counsel of a mental health professional. The sooner the mental health condition is identified and treated, the sooner they can get on the path to recovery. If you know someone who is having problems, don't assume that the issue will resolve itself. Let them know that you care about them, and that there are treatment options available that will help them heal. Speak with a mental health professional or counselor if you think your friend or family member is experiencing the symptoms of a mental health condition. If the affected loved one knows that you support them, they will be more likely to seek out help."
+  - text: "We encourage those with symptoms to talk to their friends and family members and seek the counsel of a mental health professional."
+
+  utter_mental_illness_professional:
+    - text: "Feeling comfortable with the professional you or your child is working with is critical to the success of the treatment. Finding the professional who best fits your needs may require research. Start by searching for providers in your area."
+
+  utter_mental_health_treatment:
+    - text: "Just as there are different types of medications for physical illness, different treatment options are available for individuals with mental illness. Treatment works differently for different people. It is important to find what works best for you or your child."
+    - text: "Different treatment options are available for individuals with mental illness."
+
+  utter_mental_health_involved:
+    - text: "Since beginning treatment is a big step for individuals and families, it can be very overwhelming. It is important to be as involved and engaged in the treatment process as possible. Some questions you will need to have answered include:\n What is known about the cause of this particular illness?\n Are there other diagnoses where these symptoms are common?\n Do you normally include a physical or neurological examination?\n Are there any additional tests or exams that you would recommend at this point?\n Would you advise an independent opinion from another psychiatrist at this point?\n What program of treatment is the most helpful with this diagnosis?\n Will this program involve services by other specialists? If so, who will be responsible for coordinating these services?\n What do you see as the family's role in this program of treatment?\n How much access will the family have to the individuals who are providing the treatment?\n What medications are generally used with this diagnosis?\n How much experience do you have in treating individuals with this illness?\n What can I do to help you in the treatment?"
+    - text: "It is important to be as involved and engaged in the treatment process as possible."
+
+  utter_difference_mental_health_professional:
+    - text: "There are many types of mental health professionals. The variety of providers and their services may be confusing. Each have various levels of education, training, and may have different areas of expertise. Finding the professional who best fits your needs may require some research."
+    - text: "Feeling comfortable with the professional you or your child is working with is critical to the success of the treatment."
+    - text: "To find help for a child or youth, you can: Encourage your child to talk to a teacher or school counsellor Talk to your family doctor or pediatrician, or go to a walk-in clinic Contact your local Child & Youth Mental Health office on one of their walk-in days Use Kelty Mental Health’s Help Finder Tool to find specific services and providers Contact the Institute of Families for Child and Youth Mental Health’s Youth-in-Residence or Parent-in-Residence for guidance, information, and support. Youth-in-Residence and Parents-in-Residence are located around the province. If you don’t have one in your community, a Parent- or Youth-in-Residence at the Kelty Mental Health Resource Centre can help you by phone or email Visit www.familysmart.ca for information and resources on child and youth mental health For young people ages 12-24, visit foundrybc.ca to see if there is a Foundry Centre in your area. Foundry offers easy-to-access mental health care, physical health care, social services, and support out of one office."
+    - text: "Mental health concerns are a serious concern at any age, and everyone deserves help and support. If you’re concerned about your mental health, you can: Talk to your family doctor or go to a walk-in clinic Call the Mental Health Support Line at 310-6789 (no area code) for information about services in your area Find your local mental health centre or program at www.gov.bc.ca/mentalhealth (you may need a doctor’s referral to access some programs) Find your local Canadian Mental Health Association branch at www.cmha.bc.ca and ask for information about local services Contact a local senior’s support organization or group and ask for advice. You can search for organizations at www.bc211.ca For general information about senior’s mental health: Find resources from the Canadian Coalition for Seniors' Mental Health at www.ccsmh.ca Find info sheets in the Seniors and Depression Series at www.heretohelp.bc.ca/factsheet/seniors-and-depression-series If you are concerned about a loved one: Be honest about your concerns, like changes you’ve noticed or problems that have come up Give your loved one a chance to talk about their perspectives. They may have a different take on the problem or have different priorities in their health care Be patient—it will probably take more than one conversation Whenever possible, aim for cooperation. Focus on finding an action or solution that everyone can agree on Remember that asking for help is hard for many of us, and it can be even harder as people’s roles and abilities change. If your loved one isn’t willing to talk about their experiences with you right away, offer alternatives like the BC Mental Health Support Line (310-6789—no area code needed), the Seniors Distress Line (604-872-1234) or a local seniors support organization (search for organizations at www.bc211.ca) Seek support to manage your expectations and your own well-being. It can be very stressful to see a loved one experience health problems. But adults who can care for themselves and aren't at risk of harm are free to make their own choices—and that includes refusing help"
+    - text: "It can be hard to figure out what to do if you're concerned about a young person in your family. Many people start by talking with their family doctor. If you don’t have a family doctor, you can find a doctor through the College of Physicians and Surgeons of BC. You can also visit a walk-in clinic. Depending on the situation, your family doctor may offer everything you need. If your child needs more specialized services, such as psychiatry services, your family doctor needs to make a referral for your child. Many family doctors can also recommend community services or supports in your community. Learn more about the role of family doctors in the info sheet What to Expect from Your Family or Walk-In Clinic Doctor. If your child’s difficulties affect their performance or behaviour at school, the school may be involved. If your child’s school has a counsellor, talk to them about services you can access through the school. School counsellors can also suggest community services. See the info sheet What to Expect from Your Child's School. Kelty Mental Health Resource Centre offers information, resources, peer support, and system navigation to children, youth, and families experiencing mental health or substance use challenges. Their Help Finder tool and help you navigate the mental health system. Kelty Mental Health is based at BC Children’s Hospital in Vancouver, but they support young people and their families across the province. Institute of Families for Child and Youth Mental Health advocates for healthy young people and family support. They offer resources and education events across BC. The Canadian Mental Health Association’s BC Division offers Confident Parents: Thriving Kids, a phone-based education and support program to help parents or caregivers manage mild to moderate behaviour problems for children ages 3 to 12. This program is free, but it requires a doctor’s referral. You may also want to check out these resources from HeretoHelp on child and youth mental health and substance use."
+  
+  utter_where_help:
+    - text: "Where you go for help will depend on the nature of the problem and/or symptoms and what best fits you. Often, the best place to start is by talking with someone you trust about your concerns, such as a family member, friend, clergy, healthcare provider, or other professionals. Having this social support is essential in healing from mental illness, and you will be able to ask them for referrals or recommendations for trusted mental health practitioners. Search for mental health resources in your area. Secondly, there are people and places throughout the country that provide services to talk, to listen, and to help you on your journey to recovery. Thirdly, many people find peer support a helpful tool that can aid in their recovery. There are a variety of organizations that offer support groups for consumers, their family members, and friends. Some support groups are peer led while others may be led by a mental health professional."
+    - text: "Family member, Friend, Clergy, Healthcare provider, or other Professionals."
+
+  utter_medication_new:
+    - text: "The best source of information regarding medications is the physician prescribing them. He or she should be able to answer questions such as:    \n1. What is the medication supposed to do? \n2. When should it begin to take effect, and how will I know when it is effective? \n3. How is the medication taken and for how long? What food, drinks, other medicines, and activities should be avoided while taking this medication? \n4. What are the side effects and what should be done if they occur? \n5. What do I do if a dose is missed? \n6. Is there any written information available about this medication? \n7. Are there other medications that might be appropriate? \n8. If so, why do you prefer the one you have chosen? \n9. How do you monitor medications and what symptoms indicate that they should be raised, lowered, or changed? \n10. All medications should be taken as directed. Most medications for mental illnesses do not work when taken irregularly, and extra doses can cause severe, sometimes dangerous side effects. Many psychiatric medications begin to have a beneficial effect only after they have been taken for several weeks."
+  
+  utter_where_therapy:
+    - text: "Different kinds of therapy are more effective based on the nature of the mental health condition and/or symptoms and the person who has them (for example, children will benefit from a therapist who specializes in childrenâ€™s mental health). However, there are several different types of treatment and therapy that can help."
+    - text: "Several different types of treatment and therapy that can help."
+
+  utter_types_mental_health_treatment:
+    - text: "Mental health conditions are often treated with medication, therapy or a combination of the two. However, there are many different types of treatment available, including Complementary & Alternative Treatments, self-help plans, and peer support. Treatments are very personal and should be discussed by the person with the mental health conditions and his or her team."
+  
+  utter_types_mental_health_professional:
+    - text: There are many types of mental health professionals. Finding the right one for you may require some research."
+
+  utter_find_support:
+    - text: "Many people find peer support a helpful tool that can aid in their recovery. There are a variety of organizations that offer support groups for consumers, their family members and friends. Some support groups are peer-led, while others may be led by a mental health professional."
+  
+  utter_suffer_mental_health:
+    - text: "We can all suffer from mental health challenges, but developing our wellbeing, resilience, and seeking help early can help prevent challenges becoming serious."
+    - text: "Support groups are a way for people with a common experience to help each other and learn from each other. There are support groups for people with any experience of mental illness, support groups for people with a specific diagnosis, support groups for family members and friends, and more. Support groups are offered by community organizations, mental health service providers, schools, campuses, and support agencies. Here are some general resources to help you find a mental health or substance use related support group in BC: Talk to your mental health care provider. They might be able to make recommendations. The Mood Disorders Association of BC offers a network of peer support groups around the province for people who experience mental illnesses like mood disorders or post-traumatic stress disorder. They also have groups for family and friends. Groups are drop-in. Many Canadian Mental Health Association branches offer support services, including support groups. If your local branch doesn’t have their own program, they can recommend other services in your community. The BC Schizophrenia Society maintains a directory of support groups and other regular events for family members of people with a mental illness. For groups related to alcohol or drug use, call the Alcohol and Drug Information Referral Service at 1-800-663-1441 or 604-660-9382 in the Lower Mainland. For groups in the Lower Mainland, search the Red Book Online. If you are at school or on campus, talk to a school counsellor or your campus’ health and wellness office. For online support, see some suggestions at www.heretohelp.bc.ca/discuss. This can be particularly useful if you don’t have a group in your community or have trouble getting to an in-person group. In order to benefit the most from a support group, you need to feel safe enough to share your experiences and thoughts, and you need to feel comfortable supporting others. It can be helpful to contact the group facilitator or organizer ahead of time to see if a particular group might be a good fit for you. We have a checklist to help you evaluate support groups—including when it might be time to leave one. Sometimes a group just doesn’t work for you, and that’s okay. If you feel comfortable, you can try talking to the facilitator to see if they can recommend another group that you can try."
+
+  utter_cure_mental_health_problems:
+    - text: "It is often more realistic and helpful to find out what helps with the issues you face. Talking, counselling, medication, friendships, exercise, good sleep and nutrition, and meaningful occupation can all help."
+
+  utter_causes_mental_problem:
+    - text: "Challenges or problems with your mental health can arise from psychological, biological, and social, issues, as well as life events."
+
+  utter_worried_mental_health:
+    - text: "The most important thing is to talk to someone you trust. This might be a friend, colleague, family member, or GP. In addition to talking to someone, it may be useful to find out more information about what you are experiencing. These things may help to get some perspective on what you are experiencing, and be the start of getting help."
+
+  utter_know_unwell:
+    - text: "If your beliefs , thoughts , feelings or behaviours have a significant impact on your ability to function in what might be considered a normal or ordinary way, it would be important to seek help."
+
+  utter_maintain_social_connection:
+    - text: "A lot of people are alone right now, but we don't have to be lonely. We're all in this together. Think about the different ways to connect that are most meaningful for you. For example, you might prefer a video chat over a phone call, or you might prefer to text throughout the day rather than one set time for a video call. Then, work with your social networks to make a plan. You might video chat with your close friends in the evening and phone a family member once a week. Remember to be mindful of people who may not be online. Check in by phone and ask how you can help. The quality of your social connections matter. Mindlessly scrolling through social media and liking a few posts usually doesn't build strong social connections. Make sure you focus on strategies that actually make you feel included and connected. If your current strategies don't help you feel connected, problem-solve to see if you can find a solution. Everyone feels lonely at times. Maybe you recently moved to a new city, are changing your circle of friends, lost someone important in your life, or lost your job and also lost important social connections with coworkers. Other people may have physical connections to others but may feel like their emotional or social needs aren't met. Measures like social distancing or self-isolation can make loneliness feel worse no matter why you feel lonely now. Reach out to the connections you do have. Suggest ways to keep in touch and see if you can set a regular time to connect. People may hesitate to reach out for a lot of different reasons, so don't be afraid to be the one who asks. Look for local community support groups and mutual aid groups on social media. This pandemic is bringing everyone together, so look for opportunities to make new connections. These groups are a great way to share your skills and abilities or seek help and support. Look for specialized support groups. Support groups are moving online, and there are a lot of different support lines to call if you need to talk to someone."
+
+  utter_anxiety_stress:
+    - text: "Stress and anxiety are often used interchangeably, and there is overlap between stress and anxiety. Stress is related to the same fight, flight, or freeze response as anxiety, and the physical sensations of anxiety and stress may be very similar. The cause of stress and anxiety are usually different, however. Stress focuses on mainly external pressures on us that we're finding hard to cope with. When we are stressed, we usually know what we're stressed about, and the symptoms of stress typically disappear after the stressful situation is over. Anxiety, on the other hand, isn't always as easy to figure out. Anxiety focuses on worries or fears about things that could threaten us, as well as anxiety about the anxiety itself. Stress and anxiety are both part of being human, but both can be problems if they last for a long time or have an impact on our well-being or daily life."
+
+  utter_sadness_depression:
+  - text: "Sadness is a normal reaction to a loss, disappointment, problems, or other difficult situations. Feeling sad from time to time is just another part of being human. In these cases, feelings of sadness go away quickly and you can go about your daily life. Other ways to talk about sadness might be feeling low, feeling down, or feeling blue.A person may say they are feeling depressed, but if it goes away on its own and doesn't impact life in a big way, it probably isn't the illness of depression. Depression is a mental illness that affects your mood, the way you understand yourself, and the way you understand and relate to things around you. It can also go by different names, such as clinical depression, major depressive disorder, or major depression. Depression can come up for no reason, and it lasts for a long time. It's much more than sadness or low mood. People who experience depression may feel worthless or hopeless. They may feel unreasonable guilty. Some people may experience depression as anger or irritability. It may be hard to concentrate or make decisions. Most people lose interest in things that they used to enjoy and may isolate themselves from others. There are also physical signs of depression, such as problems with sleep, appetite and energy and unexplainable aches or pains. Some may experience difficult thoughts about death or ending their life (suicide). Depression lasts longer than two weeks, doesn't usually go away on its own, and impacts your life. It's a real illness, and it is very treatable. It's important to seek help if you're concerned about depression."
+
+  utter_cured_medication:
+  - text: "Create a plan for switching to a different treatment that will be a better fit."
+
+  utter_pay_medication:
+  - text: "Visit Healthfinder.gov to learn more."
+  
+  utter_inpatient_care: 
+  - text: "Inpatient care can help people stabilize on new medications, adjust to new symptoms, or get the help they need."
+
+  utter_local_service:
+  - text: "There are likely plenty of resources that can be used to help you find mental health treatment in your community. These resources can help you find the right therapist, and enable you to better understand viable treatment options and the treatment process."
+
+  utter_information_clinical_trials:
+  - text: "Sometimes, consumers of mental health services may consider participating in a research study when they have not experienced improvement despite having tried a variety of medications and treatments. Research studies (also known as clinical trials) may involve the use of new medications or new treatment approaches whose safety and effectiveness is being tested. While we support innovation in the field, consumers should be cautioned that there are risks associated with clinical trials - make sure you're aware of them before you enroll."
+
+  utter_psychiatric_advance_directive:
+  - text: "Similar to a medical advance directive or a health care power of attorney, a psychiatric advance directive is a legal document completed in a time of wellness that provides instructions regarding treatment or services one wishes to have or not have during a mental health crisis, and may help influence his or her care."
+
+  utter_support_doesn't_help:
+  - text: "It can be difficult to find the things that will help you, as different things help different people. It's important to be open to a range of approaches and to be committed to finding the right help and to continue to be hopeful, even when some things don't work out."
+
+  utter_prevent_mental_health_problems:
+  - text: "We can all suffer from mental health challenges, but developing our wellbeing, resilience, and seeking help early can help prevent challenges becoming serious. Here is the related video:https://youtu.be/-squqwaTuxo?si=PYU6-orrX_FzukHE"
+
+  utter_worried_friend_relative:
+  - text: "This may depend on your relationship with them. Gently encouraging someone to seek appropriate support would be helpful to start with."
+
+  utter_someone_telling:
+  - text: "Some people may advise you on good evidence of what works with the best of intentions, but it's important to find out what works best for you."
+
+  utter_keep_informed:
+  - text: "It may be tempting to try to block out the world altogether to avoid bad news, but it's important to keep yourself informed. We all have to step up during a pandemic because we all have a part to play in reducing the spread of the virus. It's important that you know what must be done and how you should do it. This is important for the health of your neighbours and your own mental health, and taking action can help counter difficult feelings like hopelessness and despair. One study from people in China found that people who had reliable up-to-date information about the coronavirus and COVID-19 illness and accurate instructions on how they should act (such as instructions around hand-washing and wearing a mask) felt more resilient and felt better able to handle the virus. People who received good, accurate information reported lower levels of stress, anxiety, and depression. This research is available for free at www.mdpi.com/1660-4601/17/5/1729. Of course, it's okay to set limits. Staying informed does not mean that you have to follow the news all day. Check in a few times a day, sticking to trusted sources and media outlets. While social media can be a great way to keep in touch with family and friends, social media can also amplify bad advice, vague or untrue stories, and other unhelpful information. Be sure to use good critical thinking skills."
+
+  utter_health_info_good_bad:
+  - text: "Anyone can post anything online. It's up to the readers to think critically about information to decide if it seems helpful, truthful, or safe. Here are key points to keep in mind as you determine which information is worth considering and which information doesn't pass the test. It's so easy to spread information online, and we can't assume that the source we're reading or watching is the original source. Before you can evaluate anything, you need to know where the claims come from and determine if it's a reliable source. Reliable sources on the coronavirus and COVID-19 illness include the World Health Organization (WHO), Government of Canada ministries and agencies like Health Canada and the Public Health Agency of Canada, the Government of BC ministries and agencies like the BC Ministry of Health, and the BC Centre for Disease Control (BCCDC). Scientists and researchers at universities and other institutions and health sciences professionals are also important sources of information. Headlines and titles need to be simple and short, so they can sometimes be misleading on their own. They may also be purposefully shocking or controversial to entice you to click to read more. Websites that belong to governments, government-funded agencies, well-known health providers, universities, or groups of medical professionals are generally the most reliable. Be careful of sites that don't list the author or don't tell you much about themselves. Double-check the author and the credentials of any 'experts' quoted or cited to see if they are actually experts in the topic being discussed. Can you find other evidence from other sources to support the claims? Does the author list their sources? Are the so"
+
+  utter_why_plan:
+  - text: "There are a lot of things you can't control. You can't control what happens next, how governments respond, or how your neighbours react to the pandemic. What you can do is make a plan and decide how you'll manage the things you do control, like your ability to stay safe, follow public health measures, stay connected with loved ones, and take care of your mental and physical health. Events like a pandemic change a lot over time, and that uncertainty can add to fear and stress. The truth is that we don't know what will happen next—but that doesn't mean we're all helpless. You can do a lot. You can: Map out a daily schedule, including times you can connect with loved ones online or by phone Plan out daily tasks and goals Give yourself a schedule to look up current information Make sure you have 14 days of healthy food and household supplies at home Keep medications on hand and talk to your doctor for advice if you're at increased risk Educate yourself on public health measures and figure out how you'll follow those instructions Figure out how you'll manage increased childcare demands, working for home, or other changes to your usual routine Determine if you'll need financial supports like the Canada Emergency Response Benefit or BC Temporary Rent Supplement if your job is affected by COVID-19. If you anticipate a need, you can find application instructions and gather any documents or other pieces of information ahead of time Figure out how you'll manage times when you feel overwhelmed or hopeless, like calming activities, the number for a local support or crisis line, a video chat with a loved one, or a way to connect with your mental health care provider Look for local support organizations, neighbourhood groups, or mutual aid groups if you need extra help or support or would like to help others in your community Some planning will be straightforward, but you may also encounter situations or times when it's harder to see a solution or good plan of action. This is a great time to practice problem-solving skills. Problem-solving is a method that helps you break down a complicated situation into manageable pieces, look for realistic and unbiased information, brainstorm possible solutions, and test the solutions that you think might work well. Problem-solving is a helpful skill no matter what else is going on in the world, and it's an empowering, methodical approach when you might otherwise feel overwhelmed or lost. Check out the following resources for more information about problem-solving: Wellness Module 4: Problem-Solving: www.heretohelp.bc.ca/wellness-module/wellness-module-4-problem-solving Problem-solving worksheet from Anxiety Canada: www.anxietycanada.com/sites/default/files/ProblemSolving.pdf Effective Problem-Solving in The Antidepressant Skills Workbook: psychhealthandsafety.org/asw"
+
+  utter_take_care_physical_health:
+  - text: "Taking care of your physical health is also good for your mental health. It's more important than ever to keep yourself healthy. Try to eat as well as you can. It may be easier to reach for unhealthier comfort foods and snacks while you spend more time at home, but try to keep a balanced approach. When you stock up on groceries, don’t ignore fresh fruit and vegetables—we still have everything we need to prepare food. Now that we're advised to limit the amount of time we spend in public spaces like grocery stores, this is a great time to try out new fruits and vegetables that keep at home for longer periods of time. If it's safer for you to stay home or you are in self-isolation, reach out for help. Many grocery stores and meal prep services offer safe, no-contact delivery. You can also ask family or friends to bring you groceries, or look for local COVID-19 support groups on social media. It's safest if others leave food and other supplies outside of your door to avoid spreading the virus. Exercise is an important part of mental health and well-being, stress management, and health sleep. However, it's something that many people give up when they start to feel stressed or overwhelmed. If it's safe for you to do so, spend time outside. You should still avoid busy areas or groups and stay at least two metres away from others, but there is no reason to avoid walks, runs, or other safe outdoor activities. (Note that some municipalities, BC Parks, and Parks Canada have restricted some outdoor spaces to reduce crowds, so check the status of your local parks or trails and respect closures—they're just keeping everyone safe.) If you prefer to exercise indoors, you can also find many different exercises classes online. You can try yoga, follow a barre class, work on your cardio, pick up a new dumbbell routine, and keep up with Crossfit WODs from the comfort of your living room. Look for no-equipment exercise routines or classes if you don't already have equipment. Poor sleep can make even simple problems feel a lot worse than they really are. Poor sleep can affect your mood, your outlook, and your patience. Unfortunately, stress and anxiety can really take a toll on your sleep. If you're having a hard time sleeping, be proactive and practice healthy sleep habits. For more, check out Wellness Module 6: Getting a Good Night's Sleep at www.heretohelp.bc.ca/wellness-module/wellness-module-6-getting-a-good-nights-sleep. If you have other health problems like a chronic illness, check in with your doctor or health care team to see if you need to take any additional measures or precautions. Remember to plan ahead and do what you can to keep prescription or over-the-counter medications, medical supplies, supplements, or other health needs on hand."
+
+  utter_distraction_difficult_thoughts:
+  - text: "Distraction is a very valid tool to help you cope when everything feels overwhelming or when you feel lonely or isolated. If you don't have a lot of energy or focus right now, try low-effort distractions like watching TV, browsing Youtube, listening to a podcast or audiobook, playing a game on your phone, reading an easy book or magazine, or working on a simple art project. If you have more energy and focus, give yourself a to-do list every day: you can clean and take care of projects around your home, work on hobbies, connect with family or friends, read a new book and catch up on your favourite TV shows. You can find interesting opportunities to take online courses from universities all over the world through MOOCs and other online learning platforms, you can learn a new language online or through apps, and you can learn new hobbies and activities. As more people have to practice social distancing or self-isolation, people are finding creative ways to bring the world into their homes: you can tour museums and art galleries, Skype with a scientist, watch animals at zoos and nature preserves, and more. When normal schedules are disrupted, it's easy to fall into unhelpful habits. Look for ways to keep yourself on track with healthier habits. You could set yourself goals every day or turn activities into a fun competition with friends or family—whoever takes the most language classes wins! Many communities are using social media platforms like Facebook to organize support and help for neighbours. If you are healthy and it's safe to do so, you can sign up to walk dogs, pick up groceries and household supplies, and help others who can't go out at the moment. This can be a great way to make new connections in your area, and helping others is good for your own mental health. Just be sure to follow good hygiene practices and physical distancing—your own health is important."
+
+  utter_balanced_perspective:
+  - text: "How you think about something impacts your feelings and your behaviors. When we feel stressed out, angry, or fearful, it's hard to look at the situation realistically and see all of the options we have. (Remember: we all control our own actions and reactions, no matter what's going on in the world. We can all do something about this pandemic.) People often overestimate the negative parts—their own feelings, their own abilities to manage a difficult situation, or the situation itself—and underestimate positive parts—their own abilities to care for themselves and loved ones, their support networks, and opportunities. How does the thought 'We're never going to make it through this!' make you feel? It likely doesn't feel good—and it isn't even true. Challenging negative, unhelpful thoughts can improve your mood, validate your ability to get through this, and help you see new options or opportunities to stay well. Stop and notice thoughts that come up. How do they make you feel? Do your thoughts seem realistic if you look at the situation more objectively? How can you reframe the thought to make it more productive or hopeful? Can you find any positive aspects or think of new ways to approach the situation? Here are a few examples: 'I'm so mad that my event was canceled! This sucks!' 'I know this is the safer option for everyone. When it's rescheduled, I'll enjoy it more because I won't have to worry about getting sick or spreading the illness.' 'I hate spending so much time at home. This is so boring.' 'I'm doing my part to keep my neighbors safe. It's worth it because it keeps people healthy.' 'I'm having a hard time getting used to my new schedule. This is so frustrating.' 'I'll get used to this soon, just like I adapted the last time I had to change my schedule. Now that I'm home more, I'll have more time to finish the projects I haven't touched in months and I'm excited to see the end results.' 'I'm really scared and I don't know what to do. I feel so overwhelmed right now.' 'It makes sense that I feel scared—people are getting sick and we don't know when things will go back to normal. But there are a lot of things I can do to keep healthy, and I'm going to do some research so I can do my best. When I focus on the things I can do, everything feels more manageable.' 'We're going to be stuck inside forever. I'm already sick of this.' 'I understand that it will take some time to manage COVID-19, and I trust that health care professionals and scientists are working as fast as they can. I know this will end eventually and life will go back to normal.' The goal is not to ignore the bad or uncomfortable parts of the situation or deny that there's a problem. Instead, this exercise can help you understand the situation more realistically and see the parts that you can control right now."
+  
+  utter_thinking_traps:
+  - text: "What you tell yourself about a situation affects how you feel and what you do. Sometimes your interpretation of a situation can get distorted and you only focus on the negative aspects—this is normal and expected. However, when you interpret situations too negatively, you might feel worse. You're also more likely to respond to the situation in ways that are unhelpful in the long term. These automatic thoughts and assumptions are sometimes called thinking traps. Everyone falls into unbalanced thinking traps from time to time. You're most likely to distort your interpretation of things when you already feel sad, angry, anxious, depressed or stressed. You're also more vulnerable to thinking traps when you're not taking good care of yourself, like when you're not eating or sleeping well. Here are some common thinking traps: Thinking that a negative situation is part of a constant cycle of bad things that happen. People who overgeneralize often use words like 'always' or 'never.' I was really looking forward to that concert, and now it’s cancelled. This always happens to me! I never get to do fun things! Seeing things as only right or wrong, good or bad, perfect or terrible. People who think in black and white terms see a small mistake as a total failure. I wanted to eat healthier, but I ate too many snacks today. This plan is a total failure! Saying only negative things about yourself or other people. I made a mistake. I'm stupid! My boss told me that I made a mistake. My boss is a total jerk! Predicting that something bad will happen without any evidence. I've been doing what I can to stay home and reduce the risks, but I just know that I'm going to get sick. Focusing only on the negative parts of a situation and ignoring anything good or positive. I know there's a lot I can do at home, but I'm just so sick of this. Everything is terrible. Believing that bad feelings or emotions reflect the situation. I feel scared and overwhelmed right now, so that must mean everything is very bad and will never get better. Telling yourself how you 'should' or 'must' act. I should be able to handle this without getting upset and crying! Here are helpful strategies to challenge common thinking traps. Many people find their mood and confidence improve after working through these skills. You can also find worksheets to help you go through each step at www.heretohelp.bc.ca. Don't try to get out of a thinking trap by just telling yourself to stop thinking that way. This doesn't let you look at the evidence and challenge the thinking trap. When you try and push upsetting thoughts away, they are more likely to keep popping back into your mind. Ask yourself the following questions when something upsetting happens: What is the situation? What actually happened? Only include facts that everyone would agree on. What are your thoughts? What are you telling yourself? What are your emotions? How do you feel? What are your behaviours? How are you reacting? What are you doing to cope? Take a look at the thoughts you've listed. Are you using any of the thinking traps and falling into distorted thinking patterns? It's common to fall into more than one thinking trap. Go back to the thinking trap list and identify which ones apply to you and your current situation. The best way to break a thinking trap is to look at your thoughts like a scientist and consider the hard facts. Use the evidence you've collected to challenge your thinking traps. Here are some ways to do that:Try to find evidence against the thought. If you make a mistake at work, you might automatically think, 'I can't do anything right! I must be a terrible employee!'' When this thought comes up, you might challenge it by asking, Is there any evidence to support this thought? Is there any evidence to disprove this thought? You might quickly realize that your boss has complimented your work recently, which doesn't support the idea that you're a bad employee. Ask yourself, 'Would I judge other people if they did the same thing? Am I being harder on myself than I am on other people? This is a great method for challenging thinking traps that involve harsh self-criticism. Find out whether other people you trust agree with your thoughts. For example, you might have trouble with one of your kids and think, 'Good parents wouldn't have this kind of problem.' To challenge this thought, you can ask other parents if they've ever had any problems with their kids. Test your beliefs in person. For example, if you think that your friends don't care about you, call a few friends and make plans to start a regular video call. If you assumed that they will all say no, you may be pleasantly surprised to hear that they do want to see you. Once you have worked through some challenges, try to think of a more balanced thought to replace the old thinking traps. Let's use the following example: I feel sad and overwhelmed. I'm having a hard time figuring out what to do. I'm the worst! I should be able to handle this! Labeling 'Should' statements Examine the evidence: I have a lot of challenges right now. I'm worried about my family and everything seems to change so quickly. I've successfully handled complicated situations in the past, so I know I can do this. It's okay to feel upset right now—there's a lot going on. I'm going to think about how I got through past situations and see what worked for me. I'm trying to do a lot on my own, so I'm going to talk to my family so we can make a plan and work together. Try the Healthy Thinking Worksheet at www.heretohelp.bc.ca Check out Anxiety Canada's articles Helpful Thinking and Thinking Traps This page is adapted from Wellness Module 8:Healthy Thinking at www.heretohelp.bc.ca/wellness-module/wellness-module-8-healthy-thinking."
+
+  utter_manage_grief:
+  - text: "While a lot of people think of grief in terms of losing a person or pet, grief can come up whenever you lose something important. This includes: Losing security, like losing your job or wondering how long you'll be able to pay rent Losing stability or routine, like finding yourself working from home or navigating childcare closures Losing your sense of safety, like fearing you or someone you love might end up with COVID-19 Losing your social relationships, like missing time with family and friends now that everyone must practice physical distancing or self-isolation Losing hope for the future, like feeling that life will never go back to normal Losing important goals, like finding your classes, sports competitions, or performances are cancelled for the foreseeable future Losing important milestone celebrations like graduation ceremonies and weddings Grief bring up complicated feelings. You might feel sad, angry, frustrated, fearful, or hopeless. You may have a hard time eating or sleeping, or feel very tense. You may feel overwhelmed and tired. You may wonder if life will ever feel normal again. Everyone grieves in their own way and their own time. Here are some strategies to try as you navigate your own journey. Acknowledge and express your feelings in a healthy way. Give your feelings a name and find healthy ways to express them, such as by talking with a friend, writing in a journal, or making art. Give yourself as much time as you need. Grief follows its own schedule. Give yourself permission to use this time to take care of your well-being. Let go of expectations, tasks, or other obligations that can wait. Seek support. Grief can feel very isolating, even though a lot of people are experiencing some sort of loss right now. Reach out to friends or family and share your feelings. Look for ways to help and support each other. Take care of yourself. Ignoring health and well-being can make difficult experiences feel worse. Eat as well as you can, try to get enough sleep, spend time outside if it's safe for you to do so, and exercise regularly. Think about self-care activities or strategies that have helped you cope with challenging situations in the past and make time for those activities. Know that feelings of grief will pass. Grief may feel intense at times, but those feelings will become more manageable over time and will eventually pass. Connect with a mental health professional if you're having a hard time. If you're having a hard time getting through the day, coping in unhealthy ways, or having a hard time managing difficult thoughts or feelings, it's a good idea to seek help from a professional like a psychologist or counsellor—many now offer online or phone appointments. To find help: For everyone BC Psychological Association: Find a Registered Psychologist at www.psychologists.bc.ca/find_psychologist BC Association of Clinical Counsellors: Find a Registered Clinical Counsellor at bc-counsellors.org BC Mental Health Support Line: call 310-6789 (no area code) for to learn about services in your area or just to talk with someone right now For young people Kids Help Phone: Talk to a counsellor at 1-800-668-6868 or chat at kidshelpphone.ca (available 24/7) Foundry: Contact your local Foundry office at foundrybc.ca for Foundy Virtual and information about local resources (for youth ages 12-24) Youth in BC: Chat with a crisis line responder at youthinbc.com (available every day from noon – 1:00am) That Discomfort You're Feeling Is Grief in Harvard Business Review at hbr.org/2020/03/that-discomfort-youre-feeling-is-grief Grieving from the Canadian Mental Health Association at cmha.ca/documents/grieving Coping with Grief and Loss from Mind Your Mind at mindyourmind.ca/wellness/coping-grief-and-loss"
+
+  utter_find_doctor_psychiatrist:
+  - text: "To find a family doctor (general physician) in India, you can visit the website of the Medical Council of India and use their Find a Physician tool. Alternatively, you can also visit a local clinic or hospital for a consultation. For psychiatrists, you typically need a doctor's referral, and you can find them through the Medical Council of India as well. Registered psychologists can be found through the Indian Psychiatric Society and the Indian Association of Clinical Psychologists. For clinical counsellors, you can visit the Indian Association of Clinical Psychologists. Remember to seek referrals for specialists and consider your ongoing care needs."
+
+  utter_see_psychiatrist:
+  - text: "In India, psychiatrists are specialist doctors. You typically need a referral from a doctor to see a psychiatrist. If you don't have a regular doctor, you can ask any doctor at a clinic for a referral. Sometimes, you can directly contact mental health programs, but this may not guarantee access to a psychiatrist. To find mental health centers in your area, visit www.mohfw.gov.in or call Healthline India at 1800-180-1104."
+
+  utter_see_psychologist:
+  - text: "To find a Registered Psychologist in India, visit the Indian Psychiatric Society. You can schedule an appointment directly without needing a doctor's referral. Generally, these appointments are not covered by insurance, but some workplace benefits or assistance programs may help with costs. Some psychologists offer reduced fees based on income. If you're facing financial difficulties, inquire about reduced rates when making the appointment. For lower-cost counseling options, email your location to our information team for community resources. If you see a psychologist through a public mental health center, it may be covered by insurance. Speak with your care provider for more information."
+
+  utter_see_counsellor:
+  - text: "To find counsellors in India, you can visit their respective professional organizations:\n\n- For Registered Clinical Counsellors: Indian Association for Clinical Psychologists\n- For Certified Counsellors: Indian Counselling Association\n- For Professional Counsellors: Indian Association of Professional Counsellors\n- For specialized counselling professionals, such as Marriage and Family Therapists: Indian Federation of Counselling Therapists.\n\nYou can schedule appointments directly without needing a doctor's referral. Counselling appointments are usually not covered by insurance, but workplace benefits or assistance programs may help. Some counsellors offer reduced fees based on income. For lower-cost options, you can email your location to our information team for community resources. Counselling through public mental health centers may be covered by insurance. Indigenous community members can access counselling through local resources or the First Nations Health Authority. Contact your local community center or the First Nations Health Authority for assistance."
+  
+  utter_help_materials_anxiety:
+  - text: |
+      Certainly! If you're looking for self-help materials for anxiety, there are several reputable sources you can explore:
+
+      1. **Websites:** 
+         - National Institute of Mental Health and Neurosciences (NIMHANS) - India's premier mental health institution often provides resources and materials for various mental health concerns, including anxiety. Their website may have informative articles, self-help guides, and contact information for seeking further assistance.
+         - The Government of India's Ministry of Health and Family Welfare website may also offer resources and information on mental health, including anxiety management techniques and self-help materials.
+
+      2. **Books:** 
+         - "The Anxiety and Phobia Workbook" by Edmund J. Bourne: This workbook offers practical exercises and strategies for managing anxiety.
+         - "Feeling Good: The New Mood Therapy" by David D. Burns: While primarily focused on depression, this book also provides insights and techniques for dealing with anxiety.
+
+      3. **Mobile Apps:** 
+         - Headspace: Offers guided meditation and mindfulness exercises to help manage stress and anxiety.
+         - Calm: Provides meditation sessions, sleep stories, and relaxation techniques to reduce anxiety and improve mental well-being.
+
+      4. **Online Communities:** 
+         - Reddit's r/anxiety or r/mentalhealth subreddits: These communities can offer support, advice, and resources from individuals who have experienced anxiety firsthand.
+
+      5. **Therapist Directories:** 
+         - Websites like Practo or YourDost can help you find licensed therapists or counselors in your area who specialize in anxiety treatment. They may also provide online counseling services if preferred.
+
+      Remember, while self-help materials can be valuable, it's essential to seek professional help if you find your anxiety significantly impacting your daily life or if you're experiencing severe symptoms. A mental health professional can provide personalized guidance and support tailored to your needs.
+
+  utter_help_materials_depression:
+  - text: |
+      Certainly! If you're looking for self-help materials for depression, here are some reputable sources you can explore:
+
+      \n1. **Websites:** 
+         - The Government of India's Ministry of Health and Family Welfare website may offer resources and information on mental health, including depression management techniques and self-help materials.
+         - The National Institute of Mental Health (NIMH) website provides valuable resources, articles, and tools for understanding and coping with depression.
+
+      \n2. **Books:** 
+         - "The Feeling Good Handbook" by David D. Burns: This comprehensive guide offers cognitive behavioral therapy techniques for overcoming depression.
+         - "Mind Over Mood" by Dennis Greenberger and Christine A. Padesky: A workbook that teaches practical skills for managing mood, including depression.
+
+      \n3. **Mobile Apps:** 
+         - MoodTools: Offers mood tracking, thought diary, and activities to help manage depression.
+         - Sanvello: Provides tools for mood tracking, cognitive behavioral therapy exercises, and guided meditation to support mental well-being.
+
+      \n4. **Online Communities:** 
+         - Reddit's r/depression or r/mentalhealth subreddits: These communities can provide support, advice, and resources from individuals who have experienced depression.
+
+      \n5. **Therapist Directories:** 
+         - Websites like Practo or YourDost can help you find licensed therapists or counselors in your area who specialize in depression treatment. They may also offer online counseling services if preferred.
+
+      While self-help materials can be valuable, it's important to seek professional help if you find your depression significantly impacting your daily life or if you're experiencing severe symptoms. A mental health professional can provide personalized support and guidance tailored to your needs.
+
+  utter_iamabot:
+  - text: "I am a bot, powered by Rasa."
+
+  utter_ask_mood:
+    - text: "How are you feeling today?"
+      buttons:
+        - title: "Happy 😊"
+          payload: "/happy"
+        - title: "Sad 😔"
+          payload: "/sad"
+        - title: "Angry 😡"
+          payload: "/angry"
+        - title: "Tired 😴"
+          payload: "/tired"
+        - title: "More Options"
+          payload: "/more_options"
+        - title: "Help ❓"
+          payload: "/help"
+  
+
+
+
+
+
+  utter_thank:
+    - text: "You're welcome! I'm here to help."
+    - text: "My pleasure! Feel free to reach out anytime."
+    - text: "Happy to assist you!"
+
+  utter_breathing:
+    - text: "Let's try a breathing exercise. Take a deep breath in through your nose for 4 counts, hold for 4 counts, and exhale slowly through your mouth for 6 counts. Repeat this 5 times. This can help calm your nervous system."
+    - text: "Here's a simple breathing technique: Breathe in slowly for 4 seconds, hold your breath for 4 seconds, then breathe out slowly for 6 seconds. Do this for a few minutes to help you relax."
+
+  utter_doctor:
+    - text: "If you'd like to talk to a professional, I can help you find resources. You can visit our doctor consultation page or contact a mental health professional. Would you like more information on how to connect with a doctor?"
+    - text: "It's great that you're considering professional help. You can book an appointment through our platform or I can provide you with helpline numbers for immediate support."
 
 actions:
-  - utter_greet
-  - utter_goodbye
-  - utter_mood_great
-  - utter_mood_unhappy
-  - utter_anxious
-  - utter_lonely
-  - utter_help
-  - utter_breathing
-  - utter_meditation
-  - utter_doctor
-  - utter_crisis
-  - utter_sleep
-  - utter_stress
-  - utter_relationship
-  - utter_work_stress
-  - utter_thank
-  - utter_iamabot
-  - utter_default
   - action_suggest_activity
   - action_provide_quote
   - action_generate_report
@@ -130,6 +725,9 @@ actions:
   - action_recommend_professional
   - action_breathing_guidance
 
+
 session_config:
   session_expiration_time: 60
   carry_over_slots_to_new_session: true
+
+
