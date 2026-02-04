@@ -1,0 +1,425 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Assessment Progress - MindLift{% endblock %}
+
+{% block content %}
+<div class="progress-container">
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-12">
+                <!-- Header -->
+                <div class="text-center mb-5" data-aos="fade-up">
+                    <h1 class="fw-bold mb-3">Your Progress Dashboard</h1>
+                    <p class="lead text-muted">
+                        Track your mental health journey with validated clinical assessments
+                    </p>
+                    <div class="mt-3">
+                        <a href="{% url 'chat' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Chat
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3" data-aos="fade-up">
+                        <div class="card action-card shadow-lg border-0 h-100">
+                            <div class="card-body p-4 d-flex align-items-center">
+                                <div class="icon-box me-4">
+                                    <i class="fas fa-clipboard-list"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h5 class="fw-bold mb-2">PHQ-9 Assessment</h5>
+                                    <p class="text-muted mb-3">Depression screening</p>
+                                    <a href="{% url 'phq9_assessment' %}" class="btn btn-primary">
+                                        Take Assessment
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3" data-aos="fade-up" data-aos-delay="100">
+                        <div class="card action-card shadow-lg border-0 h-100">
+                            <div class="card-body p-4 d-flex align-items-center">
+                                <div class="icon-box me-4">
+                                    <i class="fas fa-heartbeat"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h5 class="fw-bold mb-2">GAD-7 Assessment</h5>
+                                    <p class="text-muted mb-3">Anxiety screening</p>
+                                    <a href="{% url 'gad7_assessment' %}" class="btn btn-primary">
+                                        Take Assessment
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress Charts -->
+                <div class="row mb-4">
+                    <div class="col-lg-6 mb-4" data-aos="fade-up">
+                        <div class="card shadow-lg border-0">
+                            <div class="card-body p-4">
+                                <h5 class="fw-bold mb-4">
+                                    <i class="fas fa-chart-line me-2"></i>Depression Trend (PHQ-9)
+                                </h5>
+                                <canvas id="phq9Chart"></canvas>
+                                <div id="phq9Summary" class="mt-3">
+                                    <!-- Summary will be added by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 mb-4" data-aos="fade-up" data-aos-delay="100">
+                        <div class="card shadow-lg border-0">
+                            <div class="card-body p-4">
+                                <h5 class="fw-bold mb-4">
+                                    <i class="fas fa-chart-line me-2"></i>Anxiety Trend (GAD-7)
+                                </h5>
+                                <canvas id="gad7Chart"></canvas>
+                                <div id="gad7Summary" class="mt-3">
+                                    <!-- Summary will be added by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Theoretical Framework Info -->
+                <div class="card shadow-lg border-0 mb-4" data-aos="fade-up">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-4">
+                            <i class="fas fa-graduation-cap me-2"></i>Evidence-Based Approach
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="fw-bold">Self-Determination Theory (SDT)</h6>
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-check text-success me-2"></i><strong>Autonomy:</strong> Your choices drive your journey</li>
+                                    <li><i class="fas fa-check text-success me-2"></i><strong>Competence:</strong> Build skills and confidence</li>
+                                    <li><i class="fas fa-check text-success me-2"></i><strong>Relatedness:</strong> Feel supported and connected</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="fw-bold">Cognitive Behavioral Therapy (CBT)</h6>
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-check text-success me-2"></i>Identify thought patterns</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>Challenge cognitive distortions</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>Develop coping strategies</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>Behavioral activation</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Insights and Recommendations -->
+                <div class="card shadow-lg border-0" data-aos="fade-up">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-4">
+                            <i class="fas fa-lightbulb me-2"></i>Personalized Insights
+                        </h5>
+                        <div id="insights-container">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Complete at least two assessments to see your progress trends and personalized recommendations.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.progress-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #e8e2d9 0%, #d4cbc0 100%);
+    padding-top: 80px;
+}
+
+.action-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.action-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+}
+
+.icon-box {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: white;
+}
+
+.progress-metric {
+    text-align: center;
+    padding: 1.5rem;
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+}
+
+.progress-metric h3 {
+    color: var(--primary);
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.progress-metric p {
+    margin: 0;
+    color: var(--text-secondary);
+}
+
+.trend-badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.trend-improving {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.trend-stable {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.trend-worsening {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<script>
+let phq9Chart, gad7Chart;
+
+document.addEventListener('DOMContentLoaded', async function() {
+    await loadProgressData();
+});
+
+async function loadProgressData() {
+    try {
+        const response = await fetch('/api/assessment-progress/');
+        const data = await response.json();
+        
+        if (data.success) {
+            renderPhq9Chart(data.phq9_history);
+            renderGad7Chart(data.gad7_history);
+            renderInsights(data.insights);
+        }
+    } catch (error) {
+        console.error('Error loading progress data:', error);
+    }
+}
+
+function renderPhq9Chart(history) {
+    if (!history || history.length === 0) {
+        document.getElementById('phq9Summary').innerHTML = `
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                No PHQ-9 assessments completed yet. Take your first assessment to start tracking progress!
+            </div>
+        `;
+        return;
+    }
+    
+    const ctx = document.getElementById('phq9Chart').getContext('2d');
+    const dates = history.map(item => new Date(item.date).toLocaleDateString());
+    const scores = history.map(item => item.score);
+    
+    phq9Chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: dates,
+            datasets: [{
+                label: 'PHQ-9 Score',
+                data: scores,
+                borderColor: 'rgb(75, 192, 192)',
+                backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return 'Score: ' + context.parsed.y + '/27';
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 27,
+                    title: {
+                        display: true,
+                        text: 'Score (0-27)'
+                    }
+                }
+            }
+        }
+    });
+    
+    // Show summary
+    const baseline = scores[0];
+    const current = scores[scores.length - 1];
+    const change = baseline - current;
+    const percentChange = baseline > 0 ? ((change / baseline) * 100).toFixed(1) : 0;
+    
+    let trendClass = 'trend-stable';
+    let trendText = 'Stable';
+    if (change > 0) {
+        trendClass = 'trend-improving';
+        trendText = 'Improving ↓';
+    } else if (change < 0) {
+        trendClass = 'trend-worsening';
+        trendText = 'Needs Attention ↑';
+    }
+    
+    document.getElementById('phq9Summary').innerHTML = `
+        <div class="row text-center">
+            <div class="col-6">
+                <div class="progress-metric">
+                    <h3>${current}</h3>
+                    <p>Current Score</p>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="progress-metric">
+                    <h3>${Math.abs(percentChange)}%</h3>
+                    <p>Change</p>
+                    <span class="trend-badge ${trendClass}">${trendText}</span>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function renderGad7Chart(history) {
+    if (!history || history.length === 0) {
+        document.getElementById('gad7Summary').innerHTML = `
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                No GAD-7 assessments completed yet. Take your first assessment to start tracking progress!
+            </div>
+        `;
+        return;
+    }
+    
+    const ctx = document.getElementById('gad7Chart').getContext('2d');
+    const dates = history.map(item => new Date(item.date).toLocaleDateString());
+    const scores = history.map(item => item.score);
+    
+    gad7Chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: dates,
+            datasets: [{
+                label: 'GAD-7 Score',
+                data: scores,
+                borderColor: 'rgb(255, 99, 132)',
+                backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return 'Score: ' + context.parsed.y + '/21';
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 21,
+                    title: {
+                        display: true,
+                        text: 'Score (0-21)'
+                    }
+                }
+            }
+        }
+    });
+    
+    // Show summary
+    const baseline = scores[0];
+    const current = scores[scores.length - 1];
+    const change = baseline - current;
+    const percentChange = baseline > 0 ? ((change / baseline) * 100).toFixed(1) : 0;
+    
+    let trendClass = 'trend-stable';
+    let trendText = 'Stable';
+    if (change > 0) {
+        trendClass = 'trend-improving';
+        trendText = 'Improving ↓';
+    } else if (change < 0) {
+        trendClass = 'trend-worsening';
+        trendText = 'Needs Attention ↑';
+    }
+    
+    document.getElementById('gad7Summary').innerHTML = `
+        <div class="row text-center">
+            <div class="col-6">
+                <div class="progress-metric">
+                    <h3>${current}</h3>
+                    <p>Current Score</p>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="progress-metric">
+                    <h3>${Math.abs(percentChange)}%</h3>
+                    <p>Change</p>
+                    <span class="trend-badge ${trendClass}">${trendText}</span>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function renderInsights(insights) {
+    if (!insights || insights.length === 0) return;
+    
+    const container = document.getElementById('insights-container');
+    container.innerHTML = insights.map(insight => `
+        <div class="alert alert-${insight.type} mb-3">
+            <h6 class="fw-bold mb-2">
+                <i class="fas fa-${insight.icon} me-2"></i>${insight.title}
+            </h6>
+            <p class="mb-0">${insight.message}</p>
+        </div>
+    `).join('');
+}
+</script>
+{% endblock %}

@@ -28,8 +28,9 @@
                         <div class="profile-avatar mx-auto mb-3">
                             <i class="fas fa-user"></i>
                         </div>
-                        <h4 class="fw-bold mb-1">{{ username }}</h4>
-                        <p class="text-muted">{{ email }}</p>
+                        <h4 class="fw-bold mb-1">{{ full_name }}</h4>
+                        <p class="text-muted mb-0">@{{ username }}</p>
+                        <p class="text-muted small">{{ email }}</p>
                         
                         {% if deletion_pending %}
                         <div class="alert alert-warning mt-3">
@@ -79,6 +80,16 @@
                     <h5 class="fw-bold mb-4">Account Settings</h5>
                     
                     <form id="profileForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">First Name</label>
+                                <input type="text" class="form-control" value="{{ first_name }}" id="firstNameInput">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Last Name</label>
+                                <input type="text" class="form-control" value="{{ last_name }}" id="lastNameInput">
+                            </div>
+                        </div>
                         <div class="mb-3">
                             <label class="form-label fw-bold">Username</label>
                             <input type="text" class="form-control" value="{{ username }}" readonly>
@@ -412,8 +423,59 @@ function viewPrivacyPolicy() {
     window.open('/privacy-policy/', '_blank');
 }
 
-function saveProfileChanges() {
-    alert('Profile update functionality will be implemented.');
+async function saveProfileChanges() {
+    const firstName = document.getElementById('firstNameInput').value.trim();
+    const lastName = document.getElementById('lastNameInput').value.trim();
+    const email = document.getElementById('emailInput').value.trim();
+    const newPassword = document.getElementById('newPassword').value;
+    
+    if (!firstName || !lastName) {
+        alert('First name and last name are required');
+        return;
+    }
+    
+    if (firstName.length < 2 || lastName.length < 2) {
+        alert('First and last name must be at least 2 characters each');
+        return;
+    }
+    
+    if (newPassword && newPassword.length < 6) {
+        alert('Password must be at least 6 characters');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/update-profile/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                first_name: firstName,
+                last_name: lastName,
+                email: email,
+                new_password: newPassword
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok && data.success) {
+            alert(data.message);
+            if (newPassword) {
+                alert('Password changed. You will need to login again.');
+                window.location.href = '/logout/';
+            } else {
+                location.reload();
+            }
+        } else {
+            alert(data.error || 'Failed to update profile');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+    }
 }
 
 function getCookie(name) {

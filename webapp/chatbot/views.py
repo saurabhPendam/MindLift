@@ -17,10 +17,13 @@ import logging
 from .models import (
     UserProfile, Conversation, Message, SentimentReport,
     Activity, UserActivity, MotivationalQuote, UserQuoteFavorite,
-    DoctorAppointment, AuditLog, OTPVerification, AuthorizedEmail
+    DoctorAppointment, AuditLog, OTPVerification, AuthorizedEmail,
+    PHQ9Assessment, GAD7Assessment, CBTThoughtRecord, CBTBehavioralActivation,
+    CBTExposureHierarchy, InterventionOutcome, TheoreticalFramework
 )
 from .sentiment_service import SentimentAnalyzer, ReportGenerator
 from .groq_service import groq_service
+from .cbt_service import CBTService, AssessmentAnalytics, SDTFramework
 
 logger = logging.getLogger(__name__)
 
@@ -65,18 +68,25 @@ def register(request):
         return redirect('chat')
     
     if request.method == 'POST':
+        first_name = request.POST.get('first_name', '').strip()
+        last_name = request.POST.get('last_name', '').strip()
         username = request.POST.get('username', '').strip()
         email = request.POST.get('email', '').strip().lower()
         password = request.POST.get('password', '')
         confirm_password = request.POST.get('confirm_password', '')
         
-        if not username or not email or not password:
+        if not first_name or not last_name or not username or not email or not password:
             messages.error(request, 'All fields are required')
             return render(request, 'register.html')
         
-        # Check if email is Gmail account (optional check)
+        # Validate first and last names
+        if len(first_name) < 2 or len(last_name) < 2:
+            messages.error(request, 'First and last name must be at least 2 characters each')
+            return render(request, 'register.html')
+        
+        # Strict Gmail validation to prevent fake/temp emails
         if not email.endswith('@gmail.com'):
-            messages.error(request, 'Only Gmail accounts are allowed to register.')
+            messages.error(request, 'For security reasons, only Gmail accounts (@gmail.com) are allowed to register. This helps us verify user authenticity and prevent fake accounts.')
             return render(request, 'register.html')
         
         if password != confirm_password:
@@ -101,6 +111,8 @@ def register(request):
             
             # Store registration data in session temporarily
             request.session['registration_data'] = {
+                'first_name': first_name,
+                'last_name': last_name,
                 'username': username,
                 'email': email,
                 'password': password,
@@ -164,7 +176,9 @@ def verify_registration(request):
                 user = User.objects.create_user(
                     username=registration_data['username'],
                     email=registration_data['email'],
-                    password=registration_data['password']
+                    password=registration_data['password'],
+                    first_name=registration_data['first_name'],
+                    last_name=registration_data['last_name']
                 )
                 
                 # Create user profile
@@ -184,7 +198,8 @@ def verify_registration(request):
                 
                 # Auto-login
                 login(request, user)
-                messages.success(request, f'Welcome to MindLift, {user.username}! Your account has been verified.')
+                display_name = f"{user.first_name} {user.last_name}".strip()
+                messages.success(request, f'Welcome to MindLift, {display_name}! Your account has been verified.')
                 return redirect('chat')
                 
             except Exception as e:
@@ -319,7 +334,8 @@ def login_view(request):
                 # Login without 2FA
                 login(request, user)
                 log_audit(user, 'login', f'User logged in: {username}', request, 'security')
-                messages.success(request, f'Welcome back, {username}!')
+                display_name = f"{user.first_name} {user.last_name}".strip() or username
+                messages.success(request, f'Welcome back, {display_name}!')
                 return redirect('chat')
         else:
             log_audit(None, 'failed_login', f'Failed login attempt for username: {username}', request, 'security')
@@ -435,12 +451,62 @@ def resend_otp(request):
 
 
 def logout_view(request):
-    """User logout"""
+    """Redirect to feedback page before logout"""
+    if request.user.is_authenticated:
+        log_audit(request.user, 'logout_initiated', f'User initiated logout: {request.user.username}', request, 'security')
+        return redirect('feedback')
+    return redirect('home')
+
+
+@require_http_methods(["GET"])
+def complete_logout(request):
+    """Complete logout without feedback"""
     if request.user.is_authenticated:
         log_audit(request.user, 'logout', f'User logged out: {request.user.username}', request, 'security')
     logout(request)
     messages.success(request, 'You have been logged out successfully')
     return redirect('home')
+
+
+def feedback_page(request):
+    """Display feedback page"""
+    return render(request, 'feedback.html')
+
+
+@require_http_methods(["POST"])
+def submit_feedback(request):
+    """Submit user feedback"""
+    try:
+        rating = request.POST.get('rating')
+        category = request.POST.get('category')
+        message = request.POST.get('message')
+        email = request.POST.get('email', '').strip()
+        would_recommend = request.POST.get('would_recommend', '')
+        
+        if not rating or not category or not message:
+            return JsonResponse({'success': False, 'error': 'Missing required fields'}, status=400)
+        
+        from .models import Feedback
+        
+        feedback = Feedback.objects.create(
+            user=request.user if request.user.is_authenticated else None,
+            rating=int(rating),
+            category=category,
+            message=message,
+            email=email if email else None,
+            would_recommend=would_recommend if would_recommend else None
+        )
+        
+        logger.info(f"Feedback submitted: {feedback.id} - Rating: {rating} - Category: {category}")
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Thank you for your feedback!'
+        })
+        
+    except Exception as e:
+        logger.error(f"Feedback submission error: {str(e)}", exc_info=True)
+        return JsonResponse({'success': False, 'error': 'Failed to submit feedback'}, status=500)
 
 
 @login_required
@@ -472,6 +538,7 @@ def chat(request):
     
     return render(request, 'chat.html', {
         'username': request.user.username,
+        'full_name': f"{request.user.first_name} {request.user.last_name}".strip() or request.user.username,
         'conversation_id': conversation.id if conversation else None,
         'session_id': str(conversation.session_id) if conversation else None,
         'recent_messages': recent_messages,
@@ -511,6 +578,9 @@ def profile(request):
     
     return render(request, 'profile.html', {
         'username': request.user.username,
+        'full_name': f"{request.user.first_name} {request.user.last_name}".strip() or request.user.username,
+        'first_name': request.user.first_name,
+        'last_name': request.user.last_name,
         'email': request.user.email,
         'profile': profile,
         'days_active': days_active,
@@ -520,6 +590,63 @@ def profile(request):
         'deletion_pending': profile.deletion_requested,
         'deletion_date': profile.deletion_scheduled_for
     })
+
+
+@login_required
+@require_http_methods(["POST"])
+def update_profile(request):
+    """Update user profile information"""
+    try:
+        data = json.loads(request.body)
+        first_name = data.get('first_name', '').strip()
+        last_name = data.get('last_name', '').strip()
+        email = data.get('email', '').strip().lower()
+        new_password = data.get('new_password', '').strip()
+        
+        user = request.user
+        
+        # Update name if provided
+        if first_name and len(first_name) >= 2:
+            user.first_name = first_name
+        
+        if last_name and len(last_name) >= 2:
+            user.last_name = last_name
+        
+        # Update email if provided and different
+        if email and email != user.email:
+            # Check if email is already taken
+            if User.objects.filter(email=email).exclude(id=user.id).exists():
+                return JsonResponse({'error': 'Email already in use'}, status=400)
+            
+            # Validate Gmail only
+            if not email.endswith('@gmail.com'):
+                return JsonResponse({'error': 'Only Gmail accounts are allowed'}, status=400)
+            
+            user.email = email
+        
+        # Update password if provided
+        if new_password and len(new_password) >= 6:
+            user.set_password(new_password)
+        
+        user.save()
+        
+        log_audit(
+            user,
+            'profile_updated',
+            'User updated profile information',
+            request,
+            'account'
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Profile updated successfully',
+            'full_name': f"{user.first_name} {user.last_name}".strip()
+        })
+        
+    except Exception as e:
+        logger.error(f"Profile update error: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)
 
 
 @login_required
@@ -844,17 +971,24 @@ def send_message(request):
             for msg in reversed(list(context_messages))
         ]
         
-        # === HYBRID SYSTEM: Use RASA + Groq ===
+        # === HYBRID SYSTEM: Use RASA + Groq + ECFN ===
         from .hybrid_service import hybrid_service
         
+        # Initialize variables to avoid UnboundLocalError
+        intent = None
+        confidence = None
+        ecfn_data = None
+        
         try:
-            logger.info("🚀 Processing message through Hybrid System")
+            logger.info("🚀 Processing message through Hybrid System with ECFN")
             
-            # Process through hybrid system
+            # Process through hybrid system with ECFN enabled
             bot_response = hybrid_service.process_message(
                 message=user_message,
                 user_id=str(request.user.id),
-                context=context
+                context=context,
+                user=request.user,  # Pass user for ECFN analysis
+                enable_ecfn=True  # Enable advanced emotion-context fusion
             )
             
             if not bot_response or not bot_response.get('success'):
@@ -866,11 +1000,14 @@ def send_message(request):
             response_source = bot_response.get('source', 'unknown')
             intent = bot_response.get('intent')
             confidence = bot_response.get('confidence')
+            ecfn_data = bot_response.get('ecfn')  # ECFN analysis results
             
             # Log which system was used
             logger.info(f"✅ Response from: {response_source}")
             if intent:
                 logger.info(f"📊 Intent: {intent} (confidence: {confidence:.2f})")
+            if ecfn_data:
+                logger.info(f"🧠 ECFN: Emotion={ecfn_data.get('emotion')}, Trend={ecfn_data.get('mood_trend')}, Risk={ecfn_data.get('crisis_risk')}")
             
         except Exception as e:
             logger.error(f"Hybrid system error: {str(e)}")
@@ -1364,3 +1501,454 @@ def check_llm_status(request):
             'error': str(e),
             'messages': ['❌ Error checking service status']
         }, status=500)
+
+
+# ============================================
+# CLINICAL ASSESSMENT VIEWS (PHQ-9, GAD-7)
+# ============================================
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def phq9_assessment(request):
+    """PHQ-9 Depression Assessment"""
+    if request.method == 'GET':
+        # Get user's assessment history
+        assessments = PHQ9Assessment.objects.filter(user=request.user).order_by('-completed_at')[:10]
+        return render(request, 'assessments/phq9.html', {
+            'assessments': assessments
+        })
+    
+    elif request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            responses = data.get('responses', [])
+            
+            # Validate responses
+            if len(responses) != 9:
+                return JsonResponse({'success': False, 'error': 'Invalid number of responses'}, status=400)
+            
+            # Calculate score and severity before creating the object
+            total_score = sum(responses)
+            
+            # Determine severity
+            if total_score <= 4:
+                severity = 'minimal'
+            elif total_score <= 9:
+                severity = 'mild'
+            elif total_score <= 14:
+                severity = 'moderate'
+            elif total_score <= 19:
+                severity = 'moderately_severe'
+            else:
+                severity = 'severe'
+            
+            # Flag for intervention if moderate or higher, or suicidal ideation present
+            requires_intervention = (total_score >= 10 or responses[8] >= 1)
+            
+            # Create PHQ-9 assessment with calculated values
+            assessment = PHQ9Assessment.objects.create(
+                user=request.user,
+                assessment_type=data.get('assessment_type', 'baseline'),
+                q1_interest=responses[0],
+                q2_depressed=responses[1],
+                q3_sleep=responses[2],
+                q4_fatigue=responses[3],
+                q5_appetite=responses[4],
+                q6_failure=responses[5],
+                q7_concentration=responses[6],
+                q8_psychomotor=responses[7],
+                q9_suicidal=responses[8],
+                total_score=total_score,
+                severity=severity,
+                requires_intervention=requires_intervention
+            )
+            
+            # Log the assessment
+            log_audit(
+                request.user,
+                'PHQ-9 Assessment Completed',
+                f'Score: {assessment.total_score}, Severity: {assessment.severity}',
+                request,
+                category='assessment'
+            )
+            
+            # Check for crisis
+            if assessment.q9_suicidal >= 1:
+                log_audit(
+                    request.user,
+                    'Suicidal Ideation Detected',
+                    f'PHQ-9 Question 9 score: {assessment.q9_suicidal}',
+                    request,
+                    category='crisis'
+                )
+            
+            return JsonResponse({
+                'success': True,
+                'assessment': {
+                    'id': assessment.id,
+                    'total_score': assessment.total_score,
+                    'severity': assessment.severity,
+                    'severity_display': assessment.get_severity_display(),
+                    'requires_intervention': assessment.requires_intervention
+                },
+                'message': f'PHQ-9 completed. Score: {assessment.total_score} ({assessment.get_severity_display()})'
+            })
+        
+        except Exception as e:
+            logger.error(f"PHQ-9 assessment error: {str(e)}")
+            return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def gad7_assessment(request):
+    """GAD-7 Anxiety Assessment"""
+    if request.method == 'GET':
+        # Get user's assessment history
+        assessments = GAD7Assessment.objects.filter(user=request.user).order_by('-completed_at')[:10]
+        return render(request, 'assessments/gad7.html', {
+            'assessments': assessments
+        })
+    
+    elif request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            responses = data.get('responses', [])
+            
+            # Validate responses
+            if len(responses) != 7:
+                return JsonResponse({'success': False, 'error': 'Invalid number of responses'}, status=400)
+            
+            # Calculate score and severity before creating the object
+            total_score = sum(responses)
+            
+            # Determine severity
+            if total_score <= 4:
+                severity = 'minimal'
+            elif total_score <= 9:
+                severity = 'mild'
+            elif total_score <= 14:
+                severity = 'moderate'
+            else:
+                severity = 'severe'
+            
+            # Flag for intervention if moderate or higher
+            requires_intervention = (total_score >= 10)
+            
+            # Create GAD-7 assessment with calculated values
+            assessment = GAD7Assessment.objects.create(
+                user=request.user,
+                assessment_type=data.get('assessment_type', 'baseline'),
+                q1_nervous=responses[0],
+                q2_control=responses[1],
+                q3_worrying=responses[2],
+                q4_relaxing=responses[3],
+                q5_restless=responses[4],
+                q6_irritable=responses[5],
+                q7_afraid=responses[6],
+                total_score=total_score,
+                severity=severity,
+                requires_intervention=requires_intervention
+            )
+            
+            # Log the assessment
+            log_audit(
+                request.user,
+                'GAD-7 Assessment Completed',
+                f'Score: {assessment.total_score}, Severity: {assessment.severity}',
+                request,
+                category='assessment'
+            )
+            
+            return JsonResponse({
+                'success': True,
+                'assessment': {
+                    'id': assessment.id,
+                    'total_score': assessment.total_score,
+                    'severity': assessment.severity,
+                    'severity_display': assessment.get_severity_display(),
+                    'requires_intervention': assessment.requires_intervention
+                },
+                'message': f'GAD-7 completed. Score: {assessment.total_score} ({assessment.get_severity_display()})'
+            })
+        
+        except Exception as e:
+            logger.error(f"GAD-7 assessment error: {str(e)}")
+            return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+
+@login_required
+@require_http_methods(["GET"])
+def assessment_progress(request):
+    """View assessment progress and analytics"""
+    try:
+        # Generate comprehensive progress report
+        progress_report = AssessmentAnalytics.generate_progress_report(request.user)
+        
+        # Get recent assessments
+        recent_phq9 = PHQ9Assessment.objects.filter(user=request.user).order_by('-completed_at')[:5]
+        recent_gad7 = GAD7Assessment.objects.filter(user=request.user).order_by('-completed_at')[:5]
+        
+        # Get CBT activities
+        thought_records = CBTThoughtRecord.objects.filter(user=request.user).order_by('-created_at')[:5]
+        behavioral_activities = CBTBehavioralActivation.objects.filter(user=request.user).order_by('-scheduled_date')[:5]
+        
+        return render(request, 'assessments/progress.html', {
+            'progress_report': progress_report,
+            'recent_phq9': recent_phq9,
+            'recent_gad7': recent_gad7,
+            'thought_records': thought_records,
+            'behavioral_activities': behavioral_activities
+        })
+    
+    except Exception as e:
+        logger.error(f"Assessment progress error: {str(e)}")
+        messages.error(request, 'Error loading progress data')
+        return redirect('chat')
+
+
+@login_required
+@require_http_methods(["GET"])
+def get_assessment_progress_api(request):
+    """API endpoint for assessment progress data"""
+    try:
+        # Get PHQ-9 history
+        phq9_assessments = PHQ9Assessment.objects.filter(user=request.user).order_by('completed_at')
+        phq9_history = [
+            {
+                'date': assessment.completed_at.isoformat(),
+                'score': assessment.total_score,
+                'severity': assessment.severity,
+                'severity_display': assessment.get_severity_display()
+            }
+            for assessment in phq9_assessments
+        ]
+        
+        # Get GAD-7 history
+        gad7_assessments = GAD7Assessment.objects.filter(user=request.user).order_by('completed_at')
+        gad7_history = [
+            {
+                'date': assessment.completed_at.isoformat(),
+                'score': assessment.total_score,
+                'severity': assessment.severity,
+                'severity_display': assessment.get_severity_display()
+            }
+            for assessment in gad7_assessments
+        ]
+        
+        # Generate insights
+        insights = []
+        
+        # PHQ-9 insights
+        if len(phq9_assessments) >= 2:
+            latest_phq9 = phq9_assessments.last()
+            first_phq9 = phq9_assessments.first()
+            change = first_phq9.total_score - latest_phq9.total_score
+            
+            if change > 0:
+                insights.append({
+                    'type': 'positive',
+                    'message': f'Your PHQ-9 score has improved by {change} points since your first assessment!'
+                })
+            elif change < 0:
+                insights.append({
+                    'type': 'warning',
+                    'message': f'Your PHQ-9 score has increased by {abs(change)} points. Consider reaching out for support.'
+                })
+        
+        # GAD-7 insights
+        if len(gad7_assessments) >= 2:
+            latest_gad7 = gad7_assessments.last()
+            first_gad7 = gad7_assessments.first()
+            change = first_gad7.total_score - latest_gad7.total_score
+            
+            if change > 0:
+                insights.append({
+                    'type': 'positive',
+                    'message': f'Your GAD-7 score has improved by {change} points since your first assessment!'
+                })
+            elif change < 0:
+                insights.append({
+                    'type': 'warning',
+                    'message': f'Your GAD-7 score has increased by {abs(change)} points. Consider professional support.'
+                })
+        
+        return JsonResponse({
+            'success': True,
+            'phq9_history': phq9_history,
+            'gad7_history': gad7_history,
+            'insights': insights
+        })
+    
+    except Exception as e:
+        logger.error(f"Assessment progress API error: {str(e)}")
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+
+# ============================================
+# CBT INTERVENTION VIEWS
+# ============================================
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def cbt_thought_record(request):
+    """Create and view CBT thought records"""
+    if request.method == 'GET':
+        records = CBTThoughtRecord.objects.filter(user=request.user).order_by('-created_at')
+        return render(request, 'cbt/thought_records.html', {'records': records})
+    
+    elif request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            
+            record = CBTThoughtRecord.objects.create(
+                user=request.user,
+                situation=data['situation'],
+                automatic_thoughts=data['automatic_thoughts'],
+                emotions=data.get('emotions', {}),
+                evidence_for=data.get('evidence_for', ''),
+                evidence_against=data.get('evidence_against', ''),
+                alternative_thought=data.get('alternative_thought', ''),
+                emotions_after=data.get('emotions_after', {}),
+                completed=data.get('completed', False)
+            )
+            
+            # Identify cognitive distortions
+            distortions = CBTService.identify_distortions(data['automatic_thoughts'])
+            record.distortions = distortions
+            record.save()
+            
+            # Generate Socratic questions
+            questions = []
+            for distortion in distortions:
+                questions.extend(CBTService.generate_socratic_questions(distortion))
+            
+            return JsonResponse({
+                'success': True,
+                'record_id': record.id,
+                'distortions': [CBTService.COGNITIVE_DISTORTIONS.get(d, d) for d in distortions],
+                'socratic_questions': questions[:3],  # Top 3 questions
+                'message': 'Thought record created successfully'
+            })
+        
+        except Exception as e:
+            logger.error(f"Thought record error: {str(e)}")
+            return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+@require_http_methods(["POST"])
+def cbt_behavioral_activation(request):
+    """Create behavioral activation plan"""
+    try:
+        data = json.loads(request.body)
+        
+        activity = CBTBehavioralActivation.objects.create(
+            user=request.user,
+            activity_name=data['activity_name'],
+            activity_description=data.get('activity_description', ''),
+            activity_type=data['activity_type'],
+            scheduled_date=data['scheduled_date'],
+            scheduled_time=data.get('scheduled_time'),
+            duration_minutes=data.get('duration_minutes', 30),
+            predicted_pleasure=data['predicted_pleasure'],
+            predicted_mastery=data['predicted_mastery'],
+            autonomy_support=data.get('autonomy_support', True),
+            competence_building=data.get('competence_building', False),
+            relatedness_fostering=data.get('relatedness_fostering', False)
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'activity_id': activity.id,
+            'message': 'Activity scheduled successfully'
+        })
+    
+    except Exception as e:
+        logger.error(f"Behavioral activation error: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+@require_http_methods(["POST"])
+def complete_behavioral_activation(request, activity_id):
+    """Mark behavioral activation as complete and record outcomes"""
+    try:
+        activity = get_object_or_404(CBTBehavioralActivation, id=activity_id, user=request.user)
+        data = json.loads(request.body)
+        
+        activity.completed = True
+        activity.completed_at = timezone.now()
+        activity.actual_pleasure = data['actual_pleasure']
+        activity.actual_mastery = data['actual_mastery']
+        activity.completion_notes = data.get('completion_notes', '')
+        activity.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Activity completed! Great job!',
+            'sdt_feedback': SDTFramework.build_competence_feedback(
+                success_rate=0.7,  # Could calculate from user history
+                difficulty='medium'
+            )
+        })
+    
+    except Exception as e:
+        logger.error(f"Complete activity error: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+@require_http_methods(["GET"])
+def get_cbt_suggestions(request):
+    """Get personalized CBT suggestions based on assessment scores"""
+    try:
+        # Get latest assessments
+        latest_phq9 = PHQ9Assessment.objects.filter(user=request.user).order_by('-completed_at').first()
+        latest_gad7 = GAD7Assessment.objects.filter(user=request.user).order_by('-completed_at').first()
+        
+        suggestions = {
+            'thought_records': False,
+            'behavioral_activation': False,
+            'exposure_therapy': False,
+            'recommendations': []
+        }
+        
+        # Depression-focused interventions
+        if latest_phq9 and latest_phq9.total_score >= 10:
+            suggestions['behavioral_activation'] = True
+            suggestions['recommendations'].append({
+                'type': 'behavioral_activation',
+                'title': 'Behavioral Activation',
+                'description': 'Schedule pleasant activities to combat depression',
+                'priority': 'high'
+            })
+        
+        # Anxiety-focused interventions
+        if latest_gad7 and latest_gad7.total_score >= 10:
+            suggestions['exposure_therapy'] = True
+            suggestions['recommendations'].append({
+                'type': 'exposure',
+                'title': 'Gradual Exposure',
+                'description': 'Face your fears step-by-step in a controlled way',
+                'priority': 'high'
+            })
+        
+        # Thought records useful for both
+        if (latest_phq9 and latest_phq9.total_score >= 5) or (latest_gad7 and latest_gad7.total_score >= 5):
+            suggestions['thought_records'] = True
+            suggestions['recommendations'].append({
+                'type': 'thought_record',
+                'title': 'Thought Records',
+                'description': 'Challenge negative thinking patterns',
+                'priority': 'medium'
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'suggestions': suggestions
+        })
+    
+    except Exception as e:
+        logger.error(f"CBT suggestions error: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)

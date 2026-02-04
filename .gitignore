@@ -34,3 +34,13 @@ Thumbs.db
 webapp/debug.log
 webapp/.env
 webapp/.env.example
+
+# Ignore all markdown files in root
+/*.md
+
+# But keep these
+!README.md
+
+# Allow banner image and requirements
+!banner.png
+!requirements.txt

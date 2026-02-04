@@ -1,0 +1,311 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}GAD-7 Anxiety Assessment - MindLift{% endblock %}
+
+{% block content %}
+<div class="assessment-container">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <!-- Header -->
+                <div class="assessment-header text-center mb-5" data-aos="fade-up">
+                    <h1 class="fw-bold mb-3">GAD-7 Anxiety Assessment</h1>
+                    <p class="lead text-muted">
+                        The Generalized Anxiety Disorder (GAD-7) is a validated screening tool for anxiety.
+                        It takes about 2 minutes to complete.
+                    </p>
+                </div>
+
+                <!-- Assessment Form -->
+                <div class="card shadow-lg border-0 mb-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card-body p-4">
+                        <form id="gad7Form">
+                            {% csrf_token %}
+                            
+                            <div class="alert alert-info">
+                                <strong>Instructions:</strong> Over the last 2 weeks, how often have you been bothered by the following problems?
+                            </div>
+
+                            <div id="questions-container">
+                                <!-- Questions will be dynamically added -->
+                            </div>
+
+                            <div class="d-grid gap-2 mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-check-circle me-2"></i>Complete Assessment
+                                </button>
+                                <a href="{% url 'chat' %}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i>Back to Chat
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Previous Assessments -->
+                {% if assessments %}
+                <div class="card shadow-lg border-0" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-4">
+                            <i class="fas fa-history me-2"></i>Your Assessment History
+                        </h5>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Score</th>
+                                        <th>Severity</th>
+                                        <th>Type</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for assessment in assessments %}
+                                    <tr>
+                                        <td>{{ assessment.completed_at|date:"M d, Y" }}</td>
+                                        <td><strong>{{ assessment.total_score }}/21</strong></td>
+                                        <td>
+                                            <span class="badge bg-{{ assessment.severity|lower }}">
+                                                {{ assessment.get_severity_display }}
+                                            </span>
+                                        </td>
+                                        <td>{{ assessment.get_assessment_type_display }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Results Modal -->
+<div class="modal fade" id="resultsModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Assessment Results</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-4">
+                    <div class="score-display mb-3">
+                        <h2 class="display-4 fw-bold mb-0" id="scoreValue">0</h2>
+                        <p class="text-muted">out of 21</p>
+                    </div>
+                    <h4 class="fw-bold" id="severityLevel">Severity Level</h4>
+                    <p class="lead" id="severityDescription"></p>
+                </div>
+                
+                <div class="alert alert-warning">
+                    <strong>Important:</strong> This assessment is for screening purposes only. 
+                    If you're experiencing severe symptoms, please consult a mental health professional.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a href="{% url 'assessment_progress' %}" class="btn btn-primary">View Progress</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.assessment-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #e8e2d9 0%, #d4cbc0 100%);
+    padding-top: 80px;
+}
+
+.assessment-header h1 {
+    color: var(--text-primary);
+}
+
+.question-card {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.question-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.question-text {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.response-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.response-option {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    background: white;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.response-option:hover {
+    border-color: var(--primary);
+    background: var(--bg-primary);
+}
+
+.response-option input[type="radio"] {
+    margin-right: 1rem;
+    width: 20px;
+    height: 20px;
+}
+
+.response-option label {
+    margin: 0;
+    cursor: pointer;
+    flex-grow: 1;
+}
+
+.badge.bg-minimal { background-color: #28a745 !important; }
+.badge.bg-mild { background-color: #ffc107 !important; }
+.badge.bg-moderate { background-color: #fd7e14 !important; }
+.badge.bg-severe { background-color: #dc3545 !important; }
+
+.score-display {
+    padding: 2rem;
+    background: var(--bg-secondary);
+    border-radius: 16px;
+}
+</style>
+
+<script>
+const GAD7_QUESTIONS = [
+    "Feeling nervous, anxious, or on edge",
+    "Not being able to stop or control worrying",
+    "Worrying too much about different things",
+    "Trouble relaxing",
+    "Being so restless that it's hard to sit still",
+    "Becoming easily annoyed or irritable",
+    "Feeling afraid, as if something awful might happen"
+];
+
+const RESPONSE_OPTIONS = [
+    { value: 0, label: "Not at all" },
+    { value: 1, label: "Several days" },
+    { value: 2, label: "More than half the days" },
+    { value: 3, label: "Nearly every day" }
+];
+
+document.addEventListener('DOMContentLoaded', function() {
+    renderQuestions();
+    
+    document.getElementById('gad7Form').addEventListener('submit', handleSubmit);
+});
+
+function renderQuestions() {
+    const container = document.getElementById('questions-container');
+    
+    GAD7_QUESTIONS.forEach((question, index) => {
+        const questionCard = document.createElement('div');
+        questionCard.className = 'question-card';
+        questionCard.setAttribute('data-aos', 'fade-up');
+        questionCard.setAttribute('data-aos-delay', (index * 50).toString());
+        
+        const questionNumber = index + 1;
+        questionCard.innerHTML = `
+            <div class="question-text">
+                ${questionNumber}. ${question}
+            </div>
+            <div class="response-options">
+                ${RESPONSE_OPTIONS.map(option => `
+                    <div class="response-option">
+                        <input type="radio" 
+                               id="q${questionNumber}_${option.value}" 
+                               name="question_${questionNumber}" 
+                               value="${option.value}" 
+                               required>
+                        <label for="q${questionNumber}_${option.value}">
+                            ${option.label}
+                        </label>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        
+        container.appendChild(questionCard);
+    });
+}
+
+async function handleSubmit(e) {
+    e.preventDefault();
+    
+    const responses = [];
+    for (let i = 1; i <= 7; i++) {
+        const selected = document.querySelector(`input[name="question_${i}"]:checked`);
+        if (!selected) {
+            alert(`Please answer question ${i}`);
+            return;
+        }
+        responses.push(parseInt(selected.value));
+    }
+    
+    const totalScore = responses.reduce((a, b) => a + b, 0);
+    
+    try {
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const response = await fetch('{% url "gad7_assessment" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify({
+                responses: responses,
+                assessment_type: 'baseline'
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showResults(data.assessment);
+        } else {
+            alert('Error saving assessment: ' + (data.error || 'Unknown error'));
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while saving your assessment');
+    }
+}
+
+function showResults(assessment) {
+    document.getElementById('scoreValue').textContent = assessment.total_score;
+    document.getElementById('severityLevel').textContent = assessment.severity_display;
+    
+    const descriptions = {
+        'Minimal': 'Your responses suggest minimal anxiety symptoms. Continue monitoring your mental health.',
+        'Mild': 'Your responses suggest mild anxiety symptoms. Consider relaxation techniques and stress management.',
+        'Moderate': 'Your responses suggest moderate anxiety symptoms. We recommend consulting with a mental health professional.',
+        'Severe': 'Your responses suggest severe anxiety symptoms. We strongly recommend immediate consultation with a mental health professional.'
+    };
+    
+    document.getElementById('severityDescription').textContent = descriptions[assessment.severity_display] || '';
+    
+    const modal = new bootstrap.Modal(document.getElementById('resultsModal'));
+    modal.show();
+}
+</script>
+{% endblock %}

@@ -3,36 +3,35 @@
 
 {% block content %}
 <div class="auth-container">
-    <div class="auth-background"></div>
+    <!-- Animated Bubbles Background -->
+    <div class="auth-background">
+        <div class="bubble bubble-1"></div>
+        <div class="bubble bubble-2"></div>
+        <div class="bubble bubble-3"></div>
+        <div class="bubble bubble-4"></div>
+        <div class="bubble bubble-5"></div>
+        <div class="bubble bubble-6"></div>
+        <div class="bubble bubble-7"></div>
+        <div class="bubble bubble-8"></div>
+    </div>
     
-    <!-- 3D Robot Illustration -->
+    <!-- MindLift Logo Illustration -->
     <div class="auth-illustration">
-        <!-- 3D Robot Container -->
-        <div class="robot-container">
-            <!-- Speech Bubble -->
+        <div class="logo-container">
+            <!-- Peaceful Message Bubble -->
             <div class="speech-bubble">
                 Let's get started! 🚀
             </div>
             
-            <!-- Robot Head with Antenna -->
-            <div class="robot-head">
-                <div class="robot-antenna"></div>
-                <div class="robot-visor">
-                    <div class="robot-eye left"></div>
-                    <div class="robot-eye right"></div>
-                </div>
-            </div>
-            
-            <!-- Robot Body with Arms -->
-            <div class="robot-body">
-                <div class="robot-arm left"></div>
-                <div class="robot-arm right"></div>
-            </div>
+            <!-- MindLift Logo -->
+            <img src="{% static 'images/Logo_1.png' %}" 
+                 alt="MindLift - Your Mental Wellness Companion" 
+                 class="auth-page-logo">
         </div>
     </div>
     
     <div class="container">
-        <div class="row justify-content-center align-items-center" style="min-height: 100%;">
+        <div class="row justify-content-center" style="padding: 1rem 0;">
             <div class="col-md-8 col-lg-7">
                 <div class="auth-card" data-aos="zoom-in" data-aos-duration="600">
                     <div class="text-center mb-4" data-aos="fade-down" data-aos-delay="100">
@@ -45,6 +44,32 @@
                     
                     <form method="post" class="auth-form" id="registerForm">
                         {% csrf_token %}
+                        
+                        <div class="form-floating mb-3" data-aos="fade-up" data-aos-delay="150">
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="first_name" 
+                                   name="first_name" 
+                                   placeholder="First Name" 
+                                   required
+                                   minlength="2"
+                                   autocomplete="given-name">
+                            <label for="first_name"><i class="fas fa-user-circle me-2"></i>First Name</label>
+                            <div class="form-text">Your first name</div>
+                        </div>
+                        
+                        <div class="form-floating mb-3" data-aos="fade-up" data-aos-delay="175">
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="last_name" 
+                                   name="last_name" 
+                                   placeholder="Last Name" 
+                                   required
+                                   minlength="2"
+                                   autocomplete="family-name">
+                            <label for="last_name"><i class="fas fa-user-circle me-2"></i>Last Name</label>
+                            <div class="form-text">Your last name</div>
+                        </div>
                         
                         <div class="form-floating mb-3" data-aos="fade-up" data-aos-delay="200">
                             <input type="text" 
@@ -66,8 +91,10 @@
                                    name="email" 
                                    placeholder="Email" 
                                    required
+                                   pattern="[a-zA-Z0-9._%+-]+@gmail\.com$"
                                    autocomplete="email">
                             <label for="email"><i class="fas fa-envelope me-2"></i>Email Address</label>
+                            <div class="form-text"><i class="fas fa-info-circle me-1"></i>Only Gmail accounts (@gmail.com) are accepted for verification</div>
                         </div>
                         
                         <div class="form-floating mb-3 password-field" data-aos="fade-up" data-aos-delay="400">

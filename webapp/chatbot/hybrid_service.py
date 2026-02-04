@@ -1,5 +1,5 @@
 """
-Enhanced Hybrid Service - COMPLETE FIXED VERSION
+Enhanced Hybrid Service - COMPLETE FIXED VERSION WITH CBT AND ECFN INTEGRATION
 File: chatbot/hybrid_service.py
 """
 
@@ -9,6 +9,8 @@ import re
 from typing import Dict, List, Optional
 from django.conf import settings
 from .groq_service import groq_service
+from .cbt_service import CBTService
+from .ecfn_service import ecfn
 
 logger = logging.getLogger(__name__)
 
@@ -41,10 +43,65 @@ class HybridChatService:
             logger.error(f"RASA availability check failed: {str(e)}")
             return False
     
-    def process_message(self, message: str, user_id: str, context: Optional[List[Dict]] = None) -> Dict:
-        """Process message through hybrid system"""
+    def process_message(self, message: str, user_id: str, context: Optional[List[Dict]] = None, 
+                       user=None, enable_ecfn=True) -> Dict:
+        """
+        Process message through hybrid system with ECFN integration.
         
-        # Crisis check
+        Args:
+            message: User message text
+            user_id: User identifier
+            context: Conversation history
+            user: Django User object (for ECFN analysis)
+            enable_ecfn: Whether to use ECFN advanced analysis
+        """
+        
+        # ECFN Analysis (if enabled and user provided)
+        ecfn_analysis = None
+        if enable_ecfn and user:
+            try:
+                # Get recent assessments for ECFN
+                from .models import PHQ9Assessment, GAD7Assessment, CBTSession
+                
+                recent_phq9 = PHQ9Assessment.objects.filter(user=user).order_by('-completed_at').first()
+                recent_gad7 = GAD7Assessment.objects.filter(user=user).order_by('-completed_at').first()
+                cbt_sessions = CBTSession.objects.filter(user=user).count()
+                
+                assessments = {}
+                if recent_phq9:
+                    assessments['phq9'] = recent_phq9.total_score
+                    assessments['phq9_q9'] = recent_phq9.q9_suicidal
+                    assessments['depression_severity'] = recent_phq9.severity
+                if recent_gad7:
+                    assessments['gad7'] = recent_gad7.total_score
+                
+                cbt_engagement = {
+                    'sessions_completed': cbt_sessions,
+                    'thought_records': 0,  # Can be enhanced
+                    'activities': 0  # Can be enhanced
+                }
+                
+                # Run ECFN analysis
+                ecfn_analysis = ecfn.process_message(
+                    user=user,
+                    message=message,
+                    conversation_history=context or [],
+                    assessments=assessments if assessments else None,
+                    cbt_engagement=cbt_engagement
+                )
+                
+                logger.info(f"🧠 ECFN Analysis Complete: Risk={ecfn_analysis['crisis_assessment']['risk_level']}")
+                
+                # Handle crisis based on ECFN prediction
+                if ecfn_analysis['crisis_assessment']['risk_level'] in ['critical', 'high']:
+                    logger.warning("🚨 ECFN CRISIS DETECTED")
+                    return self._handle_crisis_with_ecfn(ecfn_analysis)
+                
+            except Exception as e:
+                logger.error(f"ECFN analysis error: {str(e)}")
+                ecfn_analysis = None
+        
+        # Standard crisis check (fallback)
         if self._is_crisis_message(message):
             logger.warning("🚨 CRISIS MESSAGE DETECTED")
             return self._handle_crisis()
@@ -65,12 +122,18 @@ class HybridChatService:
                     logger.info(f"📊 Using RASA response (high confidence)")
                     
                     if self.enhance_with_ai and self._should_enhance(intent):
-                        return self._enhance_rasa_with_ai(rasa_result, message, context)
+                        result = self._enhance_rasa_with_ai(rasa_result, message, context)
                     else:
-                        return self._attach_video_if_applicable(rasa_result)
+                        result = self._attach_video_if_applicable(rasa_result)
+                    
+                    # Attach ECFN metadata
+                    if ecfn_analysis:
+                        result['ecfn'] = ecfn_analysis
+                    
+                    return result
                 
                 logger.info(f"⚠️ Low RASA confidence, using AI")
-                ai_result = self._try_ai(message, context)
+                ai_result = self._try_ai(message, context, ecfn_analysis)
                 
                 # Preserve RASA video if AI doesn't have one
                 if rasa_result.get('video') and not ai_result.get('video'):
@@ -79,7 +142,7 @@ class HybridChatService:
                 return ai_result
         
         logger.info("ℹ️ RASA unavailable, using AI only")
-        return self._try_ai(message, context)
+        return self._try_ai(message, context, ecfn_analysis)
     
     def _try_rasa(self, message: str, user_id: str) -> Optional[Dict]:
         """Get response from RASA"""
@@ -328,10 +391,39 @@ Please rewrite this response to be more empathetic, natural, and conversational 
         # Return original RASA result if enhancement fails
         return rasa_result
     
-    def _try_ai(self, message: str, context: Optional[List[Dict]] = None) -> Dict:
-        """Get response from AI"""
+    def _try_ai(self, message: str, context: Optional[List[Dict]] = None, ecfn_analysis=None) -> Dict:
+        """Get response from AI with CBT and ECFN integration"""
         try:
-            ai_result = groq_service.send_message(message, context, allow_video=False)
+            # Check for CBT-relevant patterns
+            cbt_prompt_enhancement = CBTService.get_cbt_prompt_integration(message, context)
+            
+            # Build enhanced prompt with ECFN insights
+            enhanced_message = message
+            
+            if cbt_prompt_enhancement:
+                technique = cbt_prompt_enhancement['technique']
+                prompts = cbt_prompt_enhancement['prompts']
+                logger.info(f"🧠 CBT technique identified: {technique}")
+                
+                cbt_guidance = f"\n\nTHERAPEUTIC TECHNIQUE SUGGESTION ({technique}):\n"
+                cbt_guidance += "\n".join(f"- {prompt}" for prompt in prompts)
+                enhanced_message = f"{message}\n{cbt_guidance}"
+            
+            # Add ECFN personalization if available
+            if ecfn_analysis:
+                response_config = ecfn_analysis.get('response_config', {})
+                emotion_analysis = ecfn_analysis.get('emotion_analysis', {})
+                mood_trajectory = ecfn_analysis.get('mood_trajectory', {})
+                
+                ecfn_context = "\n\nPERSONALIZATION CONTEXT:\n"
+                ecfn_context += f"- User's dominant emotion: {emotion_analysis.get('dominant_emotion', 'unknown')}\n"
+                ecfn_context += f"- Mood trend (7-day): {mood_trajectory.get('trend', 'unknown')}\n"
+                ecfn_context += f"- Response tone: {response_config.get('tone', 'empathetic')}\n"
+                ecfn_context += f"- Suggested techniques: {', '.join(response_config.get('techniques', []))}\n"
+                
+                enhanced_message += ecfn_context
+            
+            ai_result = groq_service.send_message(enhanced_message, context, allow_video=False)
             
             result = {
                 'text': ai_result.get('text', ''),
@@ -339,8 +431,17 @@ Please rewrite this response to be more empathetic, natural, and conversational 
                 'source': 'assistant',
                 'intent': None,
                 'confidence': None,
-                'success': ai_result.get('success', False)
+                'success': ai_result.get('success', False),
+                'cbt_technique': cbt_prompt_enhancement['technique'] if cbt_prompt_enhancement else None
             }
+            
+            # Attach ECFN analysis
+            if ecfn_analysis:
+                result['ecfn'] = {
+                    'emotion': ecfn_analysis['emotion_analysis']['dominant_emotion'],
+                    'mood_trend': ecfn_analysis['mood_trajectory']['trend'],
+                    'crisis_risk': ecfn_analysis['crisis_assessment']['risk_level']
+                }
             
             if result['video']:
                 logger.info(f"🎥 AI video data: {result['video']}")
@@ -378,6 +479,45 @@ You're not alone. These services are available 24/7 with trained professionals w
             'intent': 'crisis',
             'confidence': 1.0,
             'success': True
+        }
+    
+    def _handle_crisis_with_ecfn(self, ecfn_analysis: Dict) -> Dict:
+        """Enhanced crisis handling with ECFN context"""
+        crisis_assessment = ecfn_analysis.get('crisis_assessment', {})
+        indicators = crisis_assessment.get('indicators', [])
+        
+        # Build contextual crisis message
+        crisis_text = """🚨 **IMMEDIATE HELP AVAILABLE** 🚨
+
+I'm very concerned about your safety. Please contact emergency services immediately:
+
+📞 **National Suicide Prevention Lifeline: 988**
+📱 **Crisis Text Line: Text HOME to 741741**
+🚨 **Emergency: 911**
+
+"""
+        
+        # Add specific concerns if available
+        if indicators:
+            crisis_text += "\n**I noticed:**\n"
+            for indicator in indicators[:3]:  # Limit to top 3
+                if 'description' in indicator:
+                    crisis_text += f"- {indicator['description']}\n"
+        
+        crisis_text += "\nYou're not alone. These services are available 24/7 with trained professionals who want to help you."
+        
+        return {
+            'text': crisis_text,
+            'video': None,
+            'source': 'crisis',
+            'intent': 'crisis',
+            'confidence': 1.0,
+            'success': True,
+            'ecfn': {
+                'risk_score': crisis_assessment.get('risk_score'),
+                'risk_level': crisis_assessment.get('risk_level'),
+                'indicators_count': len(indicators)
+            }
         }
     
     def _get_emergency_fallback(self, message: str) -> Dict:

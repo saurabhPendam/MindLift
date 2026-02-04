@@ -136,15 +136,15 @@
 
 <!-- Report Detail Modal -->
 <div class="modal fade" id="reportDetailModal" tabindex="-1">
-    <div class="modal-dialog modal-xl modal-dialog-scrollable modal-dialog-centered">
-        <div class="modal-content" style="border-radius: 20px; border: none;">
-            <div class="modal-header" style="background: var(--gradient-primary); border: none; border-radius: 20px 20px 0 0;">
-                <h5 class="modal-title fw-bold text-white">
-                    <i class="fas fa-chart-line me-2"></i>Detailed Sentiment Report
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" style="max-width: 1000px;">
+        <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.15);">
+            <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 16px 16px 0 0; padding: 1.25rem 1.5rem;">
+                <h5 class="modal-title fw-bold text-white" style="font-size: 1.15rem;">
+                    <i class="fas fa-chart-pie me-2"></i>Sentiment Analysis Report
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body p-4" id="reportDetailContent" style="background: #f8f9fa; min-height: 400px;">
+            <div class="modal-body p-3" id="reportDetailContent" style="background: #f8fafc; min-height: 400px;">
                 <div class="text-center py-5">
                     <div class="spinner-border text-primary" role="status">
                         <span class="visually-hidden">Loading...</span>
@@ -301,6 +301,415 @@
     margin-top: 1rem;
 }
 
+/* Enhanced Modal Report Styles */
+.sentiment-metric-card {
+    background: white;
+    border-radius: 14px;
+    padding: 1.75rem 1.5rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 3px solid;
+    height: 100%;
+    min-height: 180px;
+    position: relative;
+}
+
+.sentiment-metric-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.positive-card {
+    border-color: #10b981;
+    background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
+}
+
+.neutral-card {
+    border-color: #f59e0b;
+    background: linear-gradient(135deg, #ffffff 0%, #fffbeb 100%);
+}
+
+.negative-card {
+    border-color: #ef4444;
+    background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%);
+}
+
+.metric-icon-wrapper {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    flex-shrink: 0;
+    margin-bottom: 1rem;
+}
+
+.positive-card .metric-icon-wrapper {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+}
+
+.neutral-card .metric-icon-wrapper {
+    background: rgba(245, 158, 11, 0.15);
+    color: #f59e0b;
+}
+
+.negative-card .metric-icon-wrapper {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+}
+
+.positive-card .metric-icon-wrapper {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+}
+
+.neutral-card .metric-icon-wrapper {
+    background: rgba(245, 158, 11, 0.15);
+    color: #f59e0b;
+}
+
+.negative-card .metric-icon-wrapper {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+}
+
+.metric-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.metric-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+}
+
+.metric-value {
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+}
+
+.positive-card .metric-value { color: #10b981; }
+.neutral-card .metric-value { color: #f59e0b; }
+.negative-card .metric-value { color: #ef4444; }
+
+.metric-percentage {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+    text-align: center;
+}
+
+.overall-summary-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    border: 2px solid #e2e8f0;
+}
+
+.overall-summary-card.positive-border { border-color: #10b981; }
+.overall-summary-card.neutral-border { border-color: #f59e0b; }
+.overall-summary-card.negative-border { border-color: #ef4444; }
+
+.overall-sentiment-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.overall-sentiment-badge.positive {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.overall-sentiment-badge.neutral {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.overall-sentiment-badge.negative {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.overall-sentiment-badge i {
+    font-size: 1rem;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.info-item i {
+    font-size: 1.25rem;
+    color: #6366f1;
+}
+
+.info-content {
+    flex: 1;
+}
+
+.info-label {
+    font-size: 0.7rem;
+    color: #64748b;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.15rem;
+}
+
+.info-value {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1e293b;
+    word-break: break-word;
+}
+
+.detail-section-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    border: 1px solid #e2e8f0;
+}
+
+.section-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.section-title i {
+    color: #6366f1;
+    font-size: 1rem;
+}
+
+.summary-content {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 1rem;
+    line-height: 1.7;
+    color: #475569;
+    font-size: 0.9rem;
+}
+
+.summary-content p {
+    margin: 0;
+    white-space: pre-line;
+}
+
+.emotion-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.emotion-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #ede9fe;
+    color: #5b21b6;
+    padding: 0.5rem 0.875rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    border: 1px solid #ddd6fe;
+    transition: all 0.2s ease;
+}
+
+.emotion-tag:hover {
+    background: #ddd6fe;
+    transform: translateY(-1px);
+}
+
+.emotion-name {
+    text-transform: capitalize;
+}
+
+.emotion-score {
+    background: #c4b5fd;
+    color: #4c1d95;
+    padding: 0.15rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.recommendations-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.recommendation-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    background: #f0fdf4;
+    border-left: 3px solid #10b981;
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    transition: all 0.2s ease;
+}
+
+.recommendation-item:hover {
+    background: #dcfce7;
+    transform: translateX(3px);
+}
+
+.recommendation-item i {
+    color: #10b981;
+    font-size: 1rem;
+    margin-top: 0.15rem;
+    flex-shrink: 0;
+}
+
+.recommendation-item span {
+    color: #166534;
+    line-height: 1.6;
+    font-size: 0.9rem;
+}
+
+/* Mobile Responsive Styles for Report Modal */
+@media (max-width: 768px) {
+    .sentiment-metric-card {
+        padding: 1.5rem 1.25rem;
+        min-height: 160px;
+    }
+    
+    .metric-icon-wrapper {
+        width: 55px;
+        height: 55px;
+        font-size: 1.5rem;
+    }
+    
+    .metric-value {
+        font-size: 2.75rem;
+    }
+    
+    .metric-label {
+        font-size: 0.7rem;
+    }
+    
+    .metric-percentage {
+        font-size: 1.35rem;
+    }
+    
+    .overall-summary-card {
+        padding: 1rem;
+    }
+    
+    .overall-sentiment-badge {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.8rem;
+    }
+    
+    .info-item {
+        padding: 0.65rem 0.85rem;
+        gap: 0.65rem;
+    }
+    
+    .info-item i {
+        font-size: 1.1rem;
+    }
+    
+    .info-value {
+        font-size: 0.9rem;
+    }
+    
+    .detail-section-card {
+        padding: 1rem;
+    }
+    
+    .section-title {
+        font-size: 0.875rem;
+    }
+    
+    .emotion-tag {
+        font-size: 0.8rem;
+        padding: 0.45rem 0.75rem;
+    }
+    
+    .recommendation-item {
+        padding: 0.7rem 0.9rem;
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .sentiment-metric-card {
+        padding: 1.25rem 1rem;
+        min-height: 150px;
+    }
+    
+    .metric-icon-wrapper {
+        width: 50px;
+        height: 50px;
+        font-size: 1.35rem;
+    }
+    
+    .metric-value {
+        font-size: 2.5rem;
+    }
+    
+    .metric-percentage {
+        font-size: 1.25rem;
+    }
+}
+
+/* Prevent horizontal scroll in modal */
+#reportDetailModal .modal-body {
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+}
+
+#reportDetailContent {
+    overflow-x: hidden !important;
+    max-width: 100%;
+}
+
+#reportDetailContent * {
+    max-width: 100%;
+    word-wrap: break-word;
+}
+
+.container-fluid {
+    overflow-x: hidden;
+}
+
 /* Modal Styles */
 .report-detail-section {
     padding: 1.5rem 0;
@@ -326,6 +735,90 @@
     background: var(--bg-soft);
     border-radius: 8px;
     margin-bottom: 0.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .sentiment-metric-card {
+        padding: 1.25rem;
+        min-height: 180px;
+    }
+    
+    .metric-icon-wrapper {
+        width: 60px;
+        height: 60px;
+        font-size: 2rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .metric-value {
+        font-size: 2.5rem;
+    }
+    
+    .metric-label {
+        font-size: 0.75rem;
+    }
+    
+    .metric-percentage {
+        font-size: 1.25rem;
+    }
+    
+    .overall-sentiment-badge {
+        width: 80px;
+        height: 80px;
+        font-size: 2rem;
+    }
+    
+    .overall-label {
+        font-size: 0.65rem;
+    }
+    
+    .info-item {
+        padding: 0.75rem;
+        min-height: 90px;
+    }
+    
+    .info-item i {
+        font-size: 1.25rem;
+    }
+    
+    .info-label {
+        font-size: 0.65rem;
+    }
+    
+    .info-value {
+        font-size: 1rem;
+    }
+    
+    .overall-summary-card {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .metric-value {
+        font-size: 2rem;
+    }
+    
+    .metric-percentage {
+        font-size: 1.1rem;
+    }
+}
+
+/* Prevent horizontal scroll */
+#reportDetailModal .modal-body {
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+}
+
+#reportDetailContent {
+    overflow-x: hidden !important;
+    max-width: 100%;
+}
+
+#reportDetailContent * {
+    max-width: 100%;
+    word-wrap: break-word;
 }
 </style>
 
@@ -432,73 +925,79 @@ async function viewReportDetail(reportId) {
             const report = data.report;
             
             content.innerHTML = `
-                <div class="container-fluid">
-                    <!-- Overview Section -->
-                    <div class="report-detail-section bg-white p-4 rounded-3 shadow-sm mb-4">
-                        <h4 class="fw-bold mb-4">
-                            <i class="fas fa-chart-pie text-primary me-2"></i>
-                            Sentiment Analysis Overview
-                        </h4>
-                        
-                        <div class="row g-4 mb-4">
-                            <div class="col-lg-4">
-                                <div class="card border-0 shadow-sm h-100" style="border-left: 4px solid #10b981 !important;">
-                                    <div class="card-body text-center p-4">
-                                        <div class="mb-3">
-                                            <i class="fas fa-smile fa-4x text-success"></i>
-                                        </div>
-                                        <h2 class="text-success mb-2 display-4">${report.positive_percentage.toFixed(1)}%</h2>
-                                        <p class="mb-1 fw-bold fs-5">Positive Messages</p>
-                                        <small class="text-muted">${report.positive_count} messages</small>
-                                    </div>
+                <div class="container-fluid px-0">
+                    <!-- Key Metrics Dashboard -->
+                    <div class="row g-3 mb-3">
+                        <!-- Positive Card -->
+                        <div class="col-md-4">
+                            <div class="sentiment-metric-card positive-card">
+                                <div class="metric-icon-wrapper">
+                                    <i class="fas fa-smile"></i>
                                 </div>
-                            </div>
-                            <div class="col-lg-4">
-                                <div class="card border-0 shadow-sm h-100" style="border-left: 4px solid #6b7280 !important;">
-                                    <div class="card-body text-center p-4">
-                                        <div class="mb-3">
-                                            <i class="fas fa-meh fa-4x text-secondary"></i>
-                                        </div>
-                                        <h2 class="text-secondary mb-2 display-4">${report.neutral_percentage.toFixed(1)}%</h2>
-                                        <p class="mb-1 fw-bold fs-5">Neutral Messages</p>
-                                        <small class="text-muted">${report.neutral_count} messages</small>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-4">
-                                <div class="card border-0 shadow-sm h-100" style="border-left: 4px solid #ef4444 !important;">
-                                    <div class="card-body text-center p-4">
-                                        <div class="mb-3">
-                                            <i class="fas fa-frown fa-4x text-danger"></i>
-                                        </div>
-                                        <h2 class="text-danger mb-2 display-4">${report.negative_percentage.toFixed(1)}%</h2>
-                                        <p class="mb-1 fw-bold fs-5">Negative Messages</p>
-                                        <small class="text-muted">${report.negative_count} messages</small>
-                                    </div>
+                                <div class="metric-content">
+                                    <div class="metric-label">Positive</div>
+                                    <div class="metric-value">${report.positive_count}</div>
+                                    <div class="metric-percentage">${report.positive_percentage.toFixed(1)}%</div>
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="alert alert-${report.overall_sentiment === 'positive' ? 'success' : report.overall_sentiment === 'negative' ? 'danger' : 'warning'} border-0 shadow-sm">
-                            <div class="row align-items-center">
-                                <div class="col-auto">
-                                    <i class="fas fa-chart-line fa-3x"></i>
+                        <!-- Neutral Card -->
+                        <div class="col-md-4">
+                            <div class="sentiment-metric-card neutral-card">
+                                <div class="metric-icon-wrapper">
+                                    <i class="fas fa-meh"></i>
                                 </div>
-                                <div class="col">
-                                    <h5 class="mb-2 fw-bold">Overall Sentiment: ${report.overall_sentiment.toUpperCase()}</h5>
-                                    <p class="mb-2">Average Score: <strong class="fs-5">${report.average_score.toFixed(3)}</strong></p>
-                                    <hr class="my-2">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <p class="mb-1">
-                                                <i class="fas fa-calendar me-2"></i><strong>Period:</strong> ${report.start_date} to ${report.end_date}
-                                            </p>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <p class="mb-1">
-                                                <i class="fas fa-message me-2"></i><strong>Total Messages:</strong> ${report.total_messages}
-                                            </p>
-                                        </div>
+                                <div class="metric-content">
+                                    <div class="metric-label">Neutral</div>
+                                    <div class="metric-value">${report.neutral_count}</div>
+                                    <div class="metric-percentage">${report.neutral_percentage.toFixed(1)}%</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Negative Card -->
+                        <div class="col-md-4">
+                            <div class="sentiment-metric-card negative-card">
+                                <div class="metric-icon-wrapper">
+                                    <i class="fas fa-frown"></i>
+                                </div>
+                                <div class="metric-content">
+                                    <div class="metric-label">Negative</div>
+                                    <div class="metric-value">${report.negative_count}</div>
+                                    <div class="metric-percentage">${report.negative_percentage.toFixed(1)}%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Overall Summary Card -->
+                    <div class="overall-summary-card ${report.overall_sentiment}-border mb-3">
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                            <div class="overall-sentiment-badge ${report.overall_sentiment}">
+                                <i class="fas fa-${report.overall_sentiment === 'positive' ? 'smile' : report.overall_sentiment === 'negative' ? 'frown' : 'meh'}"></i>
+                                <span>${report.overall_sentiment.toUpperCase()}</span>
+                            </div>
+                            <div class="d-flex gap-3 flex-wrap">
+                                <div class="info-item">
+                                    <i class="fas fa-chart-bar"></i>
+                                    <div class="info-content">
+                                        <div class="info-label">Avg Score</div>
+                                        <div class="info-value">${report.average_score.toFixed(3)}</div>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-calendar"></i>
+                                    <div class="info-content">
+                                        <div class="info-label">Date</div>
+                                        <div class="info-value">${report.start_date.substring(5, 10)}</div>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-message"></i>
+                                    <div class="info-content">
+                                        <div class="info-label">Total</div>
+                                        <div class="info-value">${report.total_messages}</div>
                                     </div>
                                 </div>
                             </div>
@@ -506,59 +1005,56 @@ async function viewReportDetail(reportId) {
                     </div>
                     
                     ${report.summary ? `
-                    <div class="report-detail-section bg-white p-4 rounded-3 shadow-sm mb-4">
-                        <h5 class="fw-bold mb-3">
-                            <i class="fas fa-file-alt text-primary me-2"></i>
-                            Detailed Summary
+                    <div class="detail-section-card mb-4">
+                        <h5 class="section-title">
+                            <i class="fas fa-file-alt"></i>
+                            Detailed Analysis
                         </h5>
-                        <div class="card border-0 bg-light">
-                            <div class="card-body p-4">
-                                <p class="mb-0 lh-lg" style="white-space: pre-line; font-size: 1.05rem;">${report.summary}</p>
+                        <div class="summary-content">
+                            <p>${report.summary}</p>
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    <div class="row g-4">
+                        ${Object.keys(report.dominant_emotions || {}).length > 0 ? `
+                        <div class="col-lg-6">
+                            <div class="detail-section-card h-100">
+                                <h5 class="section-title">
+                                    <i class="fas fa-heart-pulse"></i>
+                                    Detected Emotions
+                                </h5>
+                                <div class="emotion-tags">
+                                    ${Object.entries(report.dominant_emotions).map(([emotion, score]) => 
+                                        `<span class="emotion-tag">
+                                            <span class="emotion-name">${emotion}</span>
+                                            <span class="emotion-score">${score.toFixed(2)}</span>
+                                        </span>`
+                                    ).join('')}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    ` : ''}
-                    
-                    ${Object.keys(report.dominant_emotions || {}).length > 0 ? `
-                    <div class="report-detail-section bg-white p-4 rounded-3 shadow-sm mb-4">
-                        <h5 class="fw-bold mb-3">
-                            <i class="fas fa-masks-theater text-primary me-2"></i>
-                            Detected Emotions
-                        </h5>
-                        <p class="text-muted mb-3">Top emotions identified in your conversations:</p>
-                        <div class="d-flex flex-wrap gap-2">
-                            ${Object.entries(report.dominant_emotions).map(([emotion, score]) => 
-                                `<span class="badge bg-primary bg-opacity-10 text-primary border border-primary px-3 py-2 fs-6">
-                                    ${emotion}: <strong>${score.toFixed(2)}</strong>
-                                </span>`
-                            ).join('')}
+                        ` : ''}
+                        
+                        ${report.recommendations && report.recommendations.length > 0 ? `
+                        <div class="col-lg-${Object.keys(report.dominant_emotions || {}).length > 0 ? '6' : '12'}">
+                            <div class="detail-section-card h-100">
+                                <h5 class="section-title">
+                                    <i class="fas fa-lightbulb"></i>
+                                    Recommendations
+                                </h5>
+                                <div class="recommendations-list">
+                                    ${report.recommendations.map(rec => 
+                                        `<div class="recommendation-item">
+                                            <i class="fas fa-check-circle"></i>
+                                            <span>${rec}</span>
+                                        </div>`
+                                    ).join('')}
+                                </div>
+                            </div>
                         </div>
+                        ` : ''}
                     </div>
-                    ` : ''}
-                    
-                    ${report.recommendations && report.recommendations.length > 0 ? `
-                    <div class="report-detail-section bg-white p-4 rounded-3 shadow-sm">
-                        <h5 class="fw-bold mb-3">
-                            <i class="fas fa-lightbulb text-warning me-2"></i>
-                            Personalized Recommendations
-                        </h5>
-                        <p class="text-muted mb-3">Based on your emotional patterns, we recommend:</p>
-                        <div class="row g-3">
-                            ${report.recommendations.map(rec => 
-                                `<div class="col-12">
-                                    <div class="card border-0 bg-light">
-                                        <div class="card-body p-3">
-                                            <div class="d-flex align-items-start">
-                                                <i class="fas fa-check-circle text-success me-3 mt-1 fs-5"></i>
-                                                <p class="mb-0 flex-grow-1">${rec}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>`
-                            ).join('')}
-                        </div>
-                    </div>
-                    ` : ''}
                 </div>
             `;
         } else {

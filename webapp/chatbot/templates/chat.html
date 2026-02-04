@@ -23,8 +23,8 @@
                 <i class="fas fa-user"></i>
             </div>
             <div>
-                <h6 class="mb-0 fw-bold">{{ username }}</h6>
-                <small class="text-muted">Active Now</small>
+                <h6 class="mb-0 fw-bold">{{ full_name }}</h6>
+                <small class="text-muted">@{{ username }}</small>
             </div>
         </div>
         
@@ -86,6 +86,10 @@
             <a href="{% url 'quotes' %}" class="sidebar-item">
                 <i class="fas fa-quote-right"></i>
                 <span>Quotes</span>
+            </a>
+            <a href="{% url 'assessment_progress' %}" class="sidebar-item">
+                <i class="fas fa-clipboard-check"></i>
+                <span>Assessments</span>
             </a>
             <a href="{% url 'reports' %}" class="sidebar-item">
                 <i class="fas fa-chart-line"></i>

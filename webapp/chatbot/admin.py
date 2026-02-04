@@ -5,7 +5,7 @@ from django.utils.safestring import mark_safe
 from .models import (
     UserProfile, Conversation, Message, SentimentReport,
     Activity, UserActivity, MotivationalQuote, UserQuoteFavorite,
-    DoctorAppointment, AuditLog, OTPVerification, AuthorizedEmail
+    DoctorAppointment, AuditLog, OTPVerification, AuthorizedEmail, Feedback
 )
 
 
@@ -302,6 +302,48 @@ class AuthorizedEmailAdmin(admin.ModelAdmin):
         if not change:  # If creating new object
             obj.added_by = request.user
         super().save_model(request, obj, form, change)
+
+
+@admin.register(Feedback)
+class FeedbackAdmin(admin.ModelAdmin):
+    list_display = ['user_display', 'rating_display', 'category', 'would_recommend', 'created_at', 'is_reviewed']
+    search_fields = ['user__username', 'email', 'message', 'category']
+    list_filter = ['rating', 'category', 'would_recommend', 'is_reviewed', 'created_at']
+    date_hierarchy = 'created_at'
+    readonly_fields = ['created_at']
+    
+    fieldsets = (
+        ('Feedback Information', {
+            'fields': ('user', 'rating', 'category', 'would_recommend')
+        }),
+        ('Contact', {
+            'fields': ('email',)
+        }),
+        ('Message', {
+            'fields': ('message',)
+        }),
+        ('Administration', {
+            'fields': ('is_reviewed', 'admin_notes', 'created_at')
+        }),
+    )
+    
+    def user_display(self, obj):
+        if obj.user:
+            return format_html('<a href="{}">{}</a>', 
+                             reverse('admin:auth_user_change', args=[obj.user.id]),
+                             obj.user.username)
+        elif obj.email:
+            return format_html('<span style="color: #666;">{}</span>', obj.email)
+        return format_html('<span style="color: #999;">Anonymous</span>')
+    user_display.short_description = 'User'
+    
+    def rating_display(self, obj):
+        stars = '⭐' * obj.rating
+        color = '#10b981' if obj.rating >= 4 else '#f59e0b' if obj.rating == 3 else '#ef4444'
+        return format_html('<span style="color: {}; font-size: 1.2em;">{}</span>', color, stars)
+    rating_display.short_description = 'Rating'
+    
+    list_per_page = 25
 
 
 # Customize admin site

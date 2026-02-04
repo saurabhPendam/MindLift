@@ -1,0 +1,504 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Feedback - MindLift{% endblock %}
+
+{% block content %}
+<div class="feedback-page">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-7 col-md-9">
+                <div class="feedback-card" data-aos="fade-up">
+                    <div class="feedback-header text-center mb-4">
+                        <div class="feedback-icon mb-3">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <h2 class="fw-bold mb-3">We'd Love Your Feedback</h2>
+                        <p class="text-muted">Your thoughts help us improve MindLift for everyone. Please take a moment to share your experience.</p>
+                    </div>
+
+                    <form id="feedbackForm" method="post">
+                        {% csrf_token %}
+                        
+                        <!-- Rating Section -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">How would you rate your experience? <span class="text-danger">*</span></label>
+                            <div class="rating-container">
+                                <input type="radio" name="rating" id="rating5" value="5" required>
+                                <label for="rating5" class="rating-star">
+                                    <i class="fas fa-star"></i>
+                                    <span>Excellent</span>
+                                </label>
+                                
+                                <input type="radio" name="rating" id="rating4" value="4">
+                                <label for="rating4" class="rating-star">
+                                    <i class="fas fa-star"></i>
+                                    <span>Good</span>
+                                </label>
+                                
+                                <input type="radio" name="rating" id="rating3" value="3">
+                                <label for="rating3" class="rating-star">
+                                    <i class="fas fa-star"></i>
+                                    <span>Average</span>
+                                </label>
+                                
+                                <input type="radio" name="rating" id="rating2" value="2">
+                                <label for="rating2" class="rating-star">
+                                    <i class="fas fa-star"></i>
+                                    <span>Poor</span>
+                                </label>
+                                
+                                <input type="radio" name="rating" id="rating1" value="1">
+                                <label for="rating1" class="rating-star">
+                                    <i class="fas fa-star"></i>
+                                    <span>Very Poor</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Feedback Category -->
+                        <div class="mb-4">
+                            <label for="category" class="form-label fw-bold">What's your feedback about? <span class="text-danger">*</span></label>
+                            <select class="form-select form-select-lg" id="category" name="category" required>
+                                <option value="">Choose a category...</option>
+                                <option value="chatbot">AI Chatbot Experience</option>
+                                <option value="ui">User Interface & Design</option>
+                                <option value="features">Features & Functionality</option>
+                                <option value="performance">Performance & Speed</option>
+                                <option value="content">Content & Resources</option>
+                                <option value="bug">Bug Report</option>
+                                <option value="suggestion">Feature Suggestion</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <!-- Feedback Message -->
+                        <div class="mb-4">
+                            <label for="message" class="form-label fw-bold">Tell us more <span class="text-danger">*</span></label>
+                            <textarea class="form-control form-control-lg" id="message" name="message" rows="6" 
+                                      placeholder="Share your thoughts, suggestions, or any issues you've encountered..." required></textarea>
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Please be as detailed as possible. This helps us understand and address your feedback better.
+                            </div>
+                        </div>
+
+                        <!-- Email (Optional) -->
+                        <div class="mb-4">
+                            <label for="email" class="form-label fw-bold">Email (Optional)</label>
+                            <input type="email" class="form-control form-control-lg" id="email" name="email" 
+                                   placeholder="your.email@example.com" value="{{ user.email|default:'' }}">
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                If you'd like us to follow up on your feedback, please provide your email.
+                            </div>
+                        </div>
+
+                        <!-- Would Recommend -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Would you recommend MindLift to others?</label>
+                            <div class="d-flex gap-3 flex-wrap">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="would_recommend" id="recommend_yes" value="yes">
+                                    <label class="form-check-label" for="recommend_yes">
+                                        <i class="fas fa-thumbs-up text-success me-1"></i> Yes, definitely
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="would_recommend" id="recommend_maybe" value="maybe">
+                                    <label class="form-check-label" for="recommend_maybe">
+                                        <i class="fas fa-hand text-warning me-1"></i> Maybe
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="would_recommend" id="recommend_no" value="no">
+                                    <label class="form-check-label" for="recommend_no">
+                                        <i class="fas fa-thumbs-down text-danger me-1"></i> No
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex gap-3 justify-content-between flex-wrap">
+                            <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-lg px-4">
+                                <i class="fas fa-times me-2"></i>Skip
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg px-5">
+                                <i class="fas fa-paper-plane me-2"></i>Submit Feedback
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Logout Link -->
+                    {% if request.user.is_authenticated %}
+                    <div class="text-center mt-4 pt-4 border-top">
+                        <a href="{% url 'complete_logout' %}" class="text-muted">
+                            <i class="fas fa-sign-out-alt me-2"></i>Complete Logout
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Success Message (Hidden by default) -->
+                <div class="feedback-success d-none" data-aos="zoom-in">
+                    <div class="text-center">
+                        <div class="success-icon mb-4">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h3 class="fw-bold mb-3">Thank You!</h3>
+                        <p class="text-muted mb-4">Your feedback has been submitted successfully. We truly appreciate you taking the time to help us improve MindLift.</p>
+                        <div class="d-flex gap-3 justify-content-center flex-wrap">
+                            <a href="{% url 'home' %}" class="btn btn-outline-primary btn-lg px-4">
+                                <i class="fas fa-home me-2"></i>Go to Home
+                            </a>
+                            <a href="{% url 'complete_logout' %}" class="btn btn-primary btn-lg px-4">
+                                <i class="fas fa-sign-out-alt me-2"></i>Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.feedback-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #e8f4f8 0%, #d6eaf8 50%, #b8dced 100%);
+    padding-top: 100px;
+    padding-bottom: 60px;
+}
+
+.feedback-card {
+    background: white;
+    border-radius: 24px;
+    padding: 3rem;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.feedback-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+}
+
+.feedback-icon i {
+    font-size: 2.5rem;
+    color: white;
+}
+
+.rating-container {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 1.5rem;
+    background: #f8fafc;
+    border-radius: 16px;
+}
+
+.rating-container input[type="radio"] {
+    display: none;
+}
+
+.rating-star {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    background: white;
+    min-width: 100px;
+}
+
+.rating-star i {
+    font-size: 2rem;
+    color: #cbd5e1;
+    transition: all 0.3s ease;
+}
+
+.rating-star span {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #64748b;
+    transition: all 0.3s ease;
+}
+
+.rating-star:hover {
+    border-color: #fbbf24;
+    background: #fffbeb;
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.2);
+}
+
+.rating-star:hover i {
+    color: #fbbf24;
+    transform: scale(1.1);
+}
+
+.rating-container input[type="radio"]:checked + .rating-star {
+    border-color: #f59e0b;
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+}
+
+.rating-container input[type="radio"]:checked + .rating-star i {
+    color: #f59e0b;
+    transform: scale(1.15);
+}
+
+.rating-container input[type="radio"]:checked + .rating-star span {
+    color: #92400e;
+}
+
+.form-control, .form-select {
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 0.875rem 1.25rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+}
+
+.form-control-lg {
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+}
+
+.form-select-lg {
+    padding: 1rem 1.5rem;
+}
+
+textarea.form-control {
+    resize: vertical;
+    min-height: 150px;
+}
+
+.btn-lg {
+    padding: 0.875rem 2rem;
+    font-size: 1.05rem;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn-outline-secondary {
+    border: 2px solid #e2e8f0;
+    color: #64748b;
+}
+
+.btn-outline-secondary:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: #475569;
+}
+
+.feedback-success {
+    background: white;
+    border-radius: 24px;
+    padding: 4rem 3rem;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    animation: zoomIn 0.5s ease-out;
+}
+
+@keyframes zoomIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.success-icon {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.success-icon i {
+    font-size: 3.5rem;
+    color: white;
+}
+
+/* Mobile Responsive */
+@media (max-width: 767px) {
+    .feedback-card, .feedback-success {
+        padding: 2rem 1.5rem;
+        border-radius: 20px;
+    }
+    
+    .feedback-icon {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .feedback-icon i {
+        font-size: 2rem;
+    }
+    
+    .rating-container {
+        gap: 0.75rem;
+        padding: 1rem;
+    }
+    
+    .rating-star {
+        padding: 0.75rem 0.5rem;
+        min-width: 80px;
+    }
+    
+    .rating-star i {
+        font-size: 1.5rem;
+    }
+    
+    .rating-star span {
+        font-size: 0.75rem;
+    }
+    
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+    }
+    
+    .success-icon {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .success-icon i {
+        font-size: 2.75rem;
+    }
+    
+    .d-flex.gap-3 {
+        flex-direction: column;
+    }
+    
+    .d-flex.gap-3 .btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 575px) {
+    .feedback-page {
+        padding-top: 80px;
+    }
+    
+    .feedback-card, .feedback-success {
+        padding: 1.75rem 1.25rem;
+    }
+    
+    .rating-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .rating-star {
+        flex-direction: row;
+        justify-content: space-between;
+        min-width: auto;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const feedbackForm = document.getElementById('feedbackForm');
+    const feedbackCard = document.querySelector('.feedback-card');
+    const successCard = document.querySelector('.feedback-success');
+    
+    feedbackForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(feedbackForm);
+        const submitBtn = feedbackForm.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.innerHTML;
+        
+        // Disable button and show loading
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Submitting...';
+        
+        try {
+            const response = await fetch('{% url "submit_feedback" %}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                },
+                body: formData
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Hide form and show success message
+                feedbackCard.classList.add('d-none');
+                successCard.classList.remove('d-none');
+            } else {
+                alert('Error: ' + (data.error || 'Failed to submit feedback'));
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnText;
+        }
+    });
+});
+</script>
+{% endblock %}

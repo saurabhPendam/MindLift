@@ -11,6 +11,8 @@ urlpatterns = [
     path('verify-otp/', views.verify_otp, name='verify_otp'),
     path('resend-otp/', views.resend_otp, name='resend_otp'),
     path('logout/', views.logout_view, name='logout'),
+    path('complete-logout/', views.complete_logout, name='complete_logout'),
+    path('feedback/', views.feedback_page, name='feedback'),
     path('chat/', views.chat, name='chat'),
     path('activities/', views.activities, name='activities'),
     path('quotes/', views.quotes, name='quotes'),
@@ -39,8 +41,24 @@ urlpatterns = [
     path('api/get-report-detail/', views.get_report_detail, name='get_report_detail'),
     
     # Account Management
+    path('api/update-profile/', views.update_profile, name='update_profile'),
     path('api/request-account-deletion/', views.request_account_deletion, name='request_account_deletion'),
     path('api/cancel-account-deletion/', views.cancel_account_deletion, name='cancel_account_deletion'),
     path('api/delete-account-now/', views.delete_account_now, name='delete_account_now'),
     path('api/user-stats/', views.get_user_stats, name='get_user_stats'),
+    
+    # Feedback
+    path('api/submit-feedback/', views.submit_feedback, name='submit_feedback'),
+    
+    # Clinical Assessments
+    path('assessments/phq9/', views.phq9_assessment, name='phq9_assessment'),
+    path('assessments/gad7/', views.gad7_assessment, name='gad7_assessment'),
+    path('assessments/progress/', views.assessment_progress, name='assessment_progress'),
+    path('api/assessment-progress/', views.get_assessment_progress_api, name='get_assessment_progress_api'),
+    
+    # CBT Interventions
+    path('cbt/thought-record/', views.cbt_thought_record, name='cbt_thought_record'),
+    path('cbt/behavioral-activation/', views.cbt_behavioral_activation, name='cbt_behavioral_activation'),
+    path('cbt/complete-activity/<int:activity_id>/', views.complete_behavioral_activation, name='complete_behavioral_activation'),
+    path('api/cbt-suggestions/', views.get_cbt_suggestions, name='get_cbt_suggestions'),
 ]
