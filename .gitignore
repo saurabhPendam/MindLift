@@ -37,6 +37,8 @@ webapp/.env.example
 
 # Ignore all markdown files in root
 /*.md
+DEPLOYMENT_GUIDE.md
+AUTO_TRAINING_GUIDE.md
 
 # But keep these
 !README.md
