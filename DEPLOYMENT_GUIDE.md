@@ -417,8 +417,19 @@ pip install -r requirements.txt
 
 ```bash
 # Create production .env file
-vim /home/mindlift/mindlift/webapp/.env
+vim /home/mindlift/mindlift/MindLift/webapp/.env
+``` for editing the files in env:
+i
+ESC
+:wq
+
 ```
+for webapp
+import nltk; nltk.download('averaged_perceptron_tagger_eng'); nltk.download('wordnet'); nltk.download('omw-1.4'); nltk.download('punkt'); nltk.download('stopwords')"
+
+
+python manage.py train_adaptive_models --stats-only  # Check data
+python manage.py train_adaptive_models --days 90     # Train models to train models with user data
 
 **Production .env file:**
 
@@ -521,7 +532,7 @@ sudo vim /etc/supervisor/conf.d/rasa-actions.conf
 
 ```ini
 [program:rasa-actions]
-command=/home/mindlift/mindlift/rasa/venv/bin/rasa run actions
+command=/home/mindlift/mindlift/MindLift/rasa/venv/bin/rasa run actions
 directory=/home/mindlift/mindlift/rasa
 user=mindlift
 autostart=true
@@ -949,6 +960,145 @@ sudo tail -f /var/log/supervisor/*.log
 
 ---
 
+## 12. Automatic Model Training Setup
+
+### Step 12.1: Understanding Adaptive Learning
+
+MindLift includes an adaptive learning system that improves over time by training ML models on user data:
+
+**Models trained:**
+- **Sentiment Classifier**: Learns from user feedback corrections
+- **Theme Extractor**: Adapts to user language patterns
+- **Distortion Detector**: Identifies cognitive distortions (CBT)
+
+**Training Requirements:**
+- Minimum 50 messages for sentiment classifier
+- Minimum 30 messages for theme extractor  
+- Minimum 20 messages for distortion detector
+
+### Step 12.2: Setup Automatic Training with Cron
+
+```bash
+# Create scripts directory
+mkdir -p /home/mindlift/mindlift/scripts
+
+# Upload setup script (from local machine)
+# Or create it on server:
+sudo nano /home/mindlift/mindlift/scripts/setup_cron.sh
+
+# Copy the content from scripts/setup_cron.sh
+# Make executable
+chmod +x /home/mindlift/mindlift/scripts/setup_cron.sh
+chmod +x /home/mindlift/mindlift/scripts/check_training_status.sh
+
+# Run setup script
+bash /home/mindlift/mindlift/scripts/setup_cron.sh
+```
+
+### Step 12.3: Verify Automatic Training
+
+```bash
+# Check cron schedule
+crontab -l
+
+# Expected output:
+# MindLift Auto-Training - Runs daily at 3 AM
+# 0 3 * * * /home/mindlift/mindlift/scripts/run_auto_training.sh
+
+# Check training status
+bash /home/mindlift/mindlift/scripts/check_training_status.sh
+
+# View training logs
+tail -f /home/mindlift/mindlift/logs/auto_training.log
+```
+
+### Step 12.4: Manual Training (Optional)
+
+```bash
+# Switch to mindlift user
+sudo su - mindlift
+
+# Navigate to webapp
+cd /home/mindlift/mindlift/webapp
+
+# Activate virtual environment
+source ../venv/bin/activate
+
+# Check training data availability
+python manage.py auto_train_models --days 90
+
+# Force training (even with insufficient data)
+python manage.py auto_train_models --force
+
+# Train with custom thresholds
+python manage.py auto_train_models --min-messages 30
+```
+
+### Step 12.5: Customize Training Schedule
+
+Edit crontab to change schedule:
+```bash
+crontab -e
+
+# Examples:
+# Every 6 hours:     0 */6 * * *
+# Twice daily:       0 3,15 * * *
+# Weekly (Sunday):   0 2 * * 0
+# Every 12 hours:    0 */12 * * *
+```
+
+### Step 12.6: Monitor Model Performance
+
+```bash
+# Check trained models
+ls -lh /home/mindlift/mindlift/webapp/ml_models/
+
+# Expected files:
+# sentiment_classifier.pkl
+# theme_extractor.pkl
+# distortion_detector.pkl
+
+# View training results in Django admin
+# Go to: https://YOUR_DOMAIN.com/admin
+# Check recent message analytics
+```
+
+### Step 12.7: Training Data Best Practices
+
+**To get quality training data:**
+
+1. **Encourage user engagement** - More conversations = better models
+2. **Collect feedback** - User corrections improve sentiment accuracy
+3. **Clinical assessments** - PHQ-9 and GAD-7 help validate mental health insights
+4. **Diverse conversations** - Different themes help theme extraction
+
+**Minimum data timeline:**
+- Week 1-2: Gathering initial conversations (0-50 messages)
+- Week 3-4: First automatic training triggers (50+ messages)
+- Week 5-8: Models improve with more data (100+ messages)
+- Month 3+: Mature models with high accuracy (500+ messages)
+
+### Step 12.8: Troubleshooting Training
+
+```bash
+# Check why training didn't run
+tail -f /home/mindlift/mindlift/logs/auto_training.log
+
+# Common issues:
+# "Insufficient data" - Need more user messages
+# "Model training failed" - Check error logs
+
+# Check system logs
+grep -i "training" /var/log/syslog
+
+# Manual test run
+cd /home/mindlift/mindlift/webapp
+source ../venv/bin/activate
+python manage.py auto_train_models --force
+```
+
+---
+
 ## Security Checklist
 
 - [ ] Changed default passwords
@@ -961,6 +1111,7 @@ sudo tail -f /var/log/supervisor/*.log
 - [ ] Monitoring setup
 - [ ] Log rotation configured
 - [ ] API keys secured in .env
+- [ ] Automatic training scheduled
 
 ---
 

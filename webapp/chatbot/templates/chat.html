@@ -9,13 +9,15 @@
 <div class="chat-page" data-session-id="{{ session_id }}">
     <!-- Sidebar -->
     <div class="chat-sidebar" id="chatSidebar">
-        <!-- Sidebar Toggle Button -->
-        <button class="sidebar-toggle-btn" id="sidebarToggleBtn" title="Toggle Sidebar">
-            <i class="fas fa-chevron-left"></i>
-        </button>
         
         <div class="sidebar-header">
-            <h5 class="fw-bold mb-0"><i class="fas fa-brain me-2"></i>MindLift</h5>
+            <a class="navbar-brand fw-bold" href="{% url 'chat' %}" style="font-size: 0;">
+                <span class="brand-text">Mind</span><span class="brand-text-accent">Lift</span>
+            </a>
+            <!-- Sidebar Toggle Button -->
+            <button class="sidebar-toggle-btn" id="sidebarToggleBtn" title="Toggle Sidebar">
+                <i class="fas fa-angles-left"></i>
+            </button>
         </div>
         
         <div class="sidebar-user">
@@ -111,17 +113,26 @@
             </a>
         </div>
     </div>
+
+    <div class="chat-sidebar-overlay" id="chatSidebarOverlay" aria-hidden="true"></div>
+    
+    <!-- Floating Sidebar Open Button (visible when collapsed) -->
+    <button class="sidebar-open-btn" id="sidebarOpenBtn" title="Open Sidebar">
+        <i class="fas fa-bars"></i>
+    </button>
     
     <!-- Main Chat -->
     <div class="chat-main">
         <!-- Header -->
         <div class="chat-header">
             <div class="d-flex align-items-center">
-                <div class="chat-avatar me-3">
-                    <i class="fas fa-robot"></i>
-                </div>
+                <button class="btn btn-sm btn-light rounded-circle d-md-none me-2" id="mobileSidebarBtn" title="Menu">
+                    <i class="fas fa-bars"></i>
+                </button>
                 <div>
-                    <h5 class="mb-0 fw-bold">MindLift Assistant</h5>
+                    <h5 class="mb-0 fw-bold" style="font-size: 0;">
+                        <span class="brand-text" style="font-size: 1.25rem;">Mind</span><span class="brand-text-accent" style="font-size: 1.25rem;">Lift</span>
+                    </h5>
                     <small class="text-success">
                         <i class="fas fa-circle" style="font-size: 8px;"></i> Online
                     </small>
@@ -149,7 +160,11 @@
                 {% for msg in recent_messages %}
                 <div class="message {{ msg.sender }}-message">
                     <div class="message-avatar">
-                        <i class="fas fa-{% if msg.sender == 'user' %}user{% else %}robot{% endif %}"></i>
+                        {% if msg.sender == 'user' %}
+                            <i class="fas fa-user"></i>
+                        {% else %}
+                            <img src="{% static 'images/Logo_1.png' %}" alt="MindLift" class="message-avatar-logo">
+                        {% endif %}
                     </div>
                     <div class="message-content">
                         <div class="message-text">{{ msg.content }}</div>
@@ -173,7 +188,7 @@
             {% else %}
             <div class="welcome-message" data-aos="fade-up">
                 <div class="welcome-icon">
-                    <i class="fas fa-brain"></i>
+                    <img src="{% static 'images/Logo_1.png' %}" alt="MindLift" class="welcome-logo">
                 </div>
                 <h4 class="fw-bold mb-2">Welcome to MindLift!</h4>
                 <p class="text-muted mb-4">
@@ -202,7 +217,7 @@
         <div class="typing-indicator" id="typingIndicator" style="display: none;">
             <div class="message bot-message">
                 <div class="message-avatar">
-                    <i class="fas fa-robot"></i>
+                    <img src="{% static 'images/Logo_1.png' %}" alt="MindLift" class="message-avatar-logo">
                 </div>
                 <div class="message-content">
                     <div class="thinking-container">

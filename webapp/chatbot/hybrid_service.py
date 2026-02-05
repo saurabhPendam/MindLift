@@ -61,11 +61,15 @@ class HybridChatService:
         if enable_ecfn and user:
             try:
                 # Get recent assessments for ECFN
-                from .models import PHQ9Assessment, GAD7Assessment, CBTSession
+                from .models import PHQ9Assessment, GAD7Assessment, CBTThoughtRecord, CBTBehavioralActivation
                 
                 recent_phq9 = PHQ9Assessment.objects.filter(user=user).order_by('-completed_at').first()
                 recent_gad7 = GAD7Assessment.objects.filter(user=user).order_by('-completed_at').first()
-                cbt_sessions = CBTSession.objects.filter(user=user).count()
+                
+                # Count CBT activities
+                thought_records_count = CBTThoughtRecord.objects.filter(user=user, completed=True).count()
+                behavioral_activities_count = CBTBehavioralActivation.objects.filter(user=user, completed=True).count()
+                total_cbt_activities = thought_records_count + behavioral_activities_count
                 
                 assessments = {}
                 if recent_phq9:
@@ -76,9 +80,9 @@ class HybridChatService:
                     assessments['gad7'] = recent_gad7.total_score
                 
                 cbt_engagement = {
-                    'sessions_completed': cbt_sessions,
-                    'thought_records': 0,  # Can be enhanced
-                    'activities': 0  # Can be enhanced
+                    'sessions_completed': total_cbt_activities,
+                    'thought_records': thought_records_count,
+                    'activities': behavioral_activities_count
                 }
                 
                 # Run ECFN analysis

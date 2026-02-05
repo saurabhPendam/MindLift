@@ -2,14 +2,14 @@
 {% load static %}
 
 {% block navbar %}
-<!-- FIXED: Dark navbar with visible back button -->
-<nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
+<!-- Light navbar matching homepage style -->
+<nav class="navbar navbar-expand-lg navbar-light" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); box-shadow: 0 2px 10px rgba(124, 156, 191, 0.1);">
     <div class="container">
-        <a class="navbar-brand fw-bold text-white" href="{% url 'chat' %}">
-            <i class="fas fa-brain me-2"></i>MindLift
+        <a class="navbar-brand fw-bold" href="{% url 'chat' %}">
+            <span class="brand-text">Mind</span><span class="brand-text-accent">Lift</span>
         </a>
         <div class="ms-auto">
-            <a href="{% url 'chat' %}" class="btn btn-light">
+            <a href="{% url 'chat' %}" class="btn btn-outline-primary">
                 <i class="fas fa-arrow-left me-2"></i>Back to Chat
             </a>
         </div>

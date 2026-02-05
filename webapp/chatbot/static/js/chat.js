@@ -137,6 +137,33 @@ class MindLiftChat {
     setupSidebarToggle() {
         const sidebar = document.getElementById('chatSidebar');
         const toggleBtn = document.getElementById('sidebarToggleBtn');
+        const openBtn = document.getElementById('sidebarOpenBtn');
+        const mobileToggleBtn = document.getElementById('mobileSidebarBtn');
+        const sidebarOverlay = document.getElementById('chatSidebarOverlay');
+        const isMobile = () => window.matchMedia('(max-width: 768px)').matches;
+
+        const openMobileSidebar = () => {
+            if (!sidebar) return;
+            sidebar.classList.add('show');
+            sidebarOverlay?.classList.add('active');
+            document.body.classList.add('sidebar-open');
+        };
+
+        const closeMobileSidebar = () => {
+            if (!sidebar) return;
+            sidebar.classList.remove('show');
+            sidebarOverlay?.classList.remove('active');
+            document.body.classList.remove('sidebar-open');
+        };
+
+        const toggleMobileSidebar = () => {
+            if (!sidebar) return;
+            if (sidebar.classList.contains('show')) {
+                closeMobileSidebar();
+            } else {
+                openMobileSidebar();
+            }
+        };
         
         if (toggleBtn && sidebar) {
             // Check if sidebar state was saved
@@ -146,11 +173,54 @@ class MindLiftChat {
             }
             
             toggleBtn.addEventListener('click', () => {
-                sidebar.classList.toggle('collapsed');
-                // Save state
-                localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+                if (isMobile()) {
+                    toggleMobileSidebar();
+                } else {
+                    sidebar.classList.toggle('collapsed');
+                    // Save state
+                    localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+                }
             });
         }
+
+        // Open button handler (for collapsed sidebar)
+        if (openBtn && sidebar) {
+            openBtn.addEventListener('click', () => {
+                sidebar.classList.remove('collapsed');
+                localStorage.setItem('sidebarCollapsed', 'false');
+            });
+        }
+
+        if (mobileToggleBtn && sidebar) {
+            mobileToggleBtn.addEventListener('click', () => {
+                if (isMobile()) {
+                    toggleMobileSidebar();
+                } else {
+                    sidebar.classList.toggle('collapsed');
+                    localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+                }
+            });
+        }
+
+        if (sidebarOverlay) {
+            sidebarOverlay.addEventListener('click', closeMobileSidebar);
+        }
+
+        if (sidebar) {
+            sidebar.querySelectorAll('a').forEach((link) => {
+                link.addEventListener('click', () => {
+                    if (isMobile()) {
+                        closeMobileSidebar();
+                    }
+                });
+            });
+        }
+
+        window.addEventListener('resize', () => {
+            if (!isMobile()) {
+                closeMobileSidebar();
+            }
+        });
     }
 
     // ===== SPEECH TO TEXT =====
@@ -159,7 +229,7 @@ class MindLiftChat {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             this.recognition = new SpeechRecognition();
             this.recognition.continuous = false;
-            this.recognition.interimResults = false;
+            this.recognition.interimResults = true;
             this.recognition.lang = 'en-US';
             this.recognition.maxAlternatives = 1;
 
@@ -168,11 +238,22 @@ class MindLiftChat {
             };
 
             this.recognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript;
-                const confidence = event.results[0][0].confidence;
-                console.log('🎤 Recognized:', transcript, 'Confidence:', confidence);
-                document.getElementById('messageInput').value = transcript;
-                this.showNotification(`✅ Voice recognized: "${transcript}"`, 'success');
+                let transcript = '';
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    transcript += event.results[i][0].transcript;
+                }
+
+                const input = document.getElementById('messageInput');
+                if (input) {
+                    input.value = transcript.trim();
+                }
+
+                const lastResult = event.results[event.results.length - 1];
+                if (lastResult && lastResult.isFinal) {
+                    const confidence = lastResult[0]?.confidence;
+                    console.log('🎤 Recognized:', transcript, 'Confidence:', confidence);
+                    this.showNotification(`✅ Voice recognized`, 'success');
+                }
             };
 
             this.recognition.onerror = (event) => {
@@ -212,6 +293,12 @@ class MindLiftChat {
             };
         } else {
             console.warn('🎤 Speech recognition not supported in this browser');
+            const btn = document.getElementById('voiceBtn');
+            if (btn) {
+                btn.disabled = true;
+                btn.classList.add('opacity-50');
+                btn.title = 'Voice input is not supported in this browser';
+            }
         }
     }
 

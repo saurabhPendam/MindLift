@@ -262,6 +262,70 @@ class ReportGenerator:
         sorted_emotions = sorted(all_emotions.items(), key=lambda x: x[1], reverse=True)
         top_emotions = dict(sorted_emotions[:5]) if sorted_emotions else {}
         
+        # === SEMANTIC INSIGHTS AGGREGATION ===
+        # Aggregate themes
+        all_themes = {}
+        for msg in messages:
+            if msg.themes:
+                for theme, score in msg.themes.items():
+                    all_themes[theme] = all_themes.get(theme, 0) + score
+        sorted_themes = sorted(all_themes.items(), key=lambda x: x[1], reverse=True)
+        top_themes = dict(sorted_themes[:5]) if sorted_themes else {}
+        
+        # Aggregate cognitive distortions
+        all_distortions = {}
+        for msg in messages:
+            if msg.cognitive_distortions:
+                for distortion, patterns in msg.cognitive_distortions.items():
+                    all_distortions[distortion] = all_distortions.get(distortion, 0) + len(patterns)
+        sorted_distortions = sorted(all_distortions.items(), key=lambda x: x[1], reverse=True)
+        top_distortions = dict(sorted_distortions[:5]) if sorted_distortions else {}
+        
+        # Aggregate coping strategies
+        all_coping = {}
+        for msg in messages:
+            if msg.coping_indicators:
+                for strategy in msg.coping_indicators:
+                    all_coping[strategy] = all_coping.get(strategy, 0) + 1
+        sorted_coping = sorted(all_coping.items(), key=lambda x: x[1], reverse=True)
+        top_coping = dict(sorted_coping[:5]) if sorted_coping else {}
+        
+        # Crisis level statistics
+        crisis_immediate = messages.filter(crisis_level='immediate').count()
+        crisis_high = messages.filter(crisis_level='high').count()
+        crisis_moderate = messages.filter(crisis_level='moderate').count()
+        
+        # Average linguistic features
+        avg_first_person = 0
+        avg_negative_ratio = 0
+        feature_count = 0
+        for msg in messages:
+            if msg.linguistic_features:
+                if 'first_person_ratio' in msg.linguistic_features:
+                    avg_first_person += msg.linguistic_features['first_person_ratio']
+                    feature_count += 1
+                if 'negative_word_ratio' in msg.linguistic_features:
+                    avg_negative_ratio += msg.linguistic_features['negative_word_ratio']
+        
+        if feature_count > 0:
+            avg_first_person /= feature_count
+            avg_negative_ratio /= feature_count
+        
+        semantic_insights = {
+            'themes': top_themes,
+            'cognitive_distortions': top_distortions,
+            'coping_strategies': top_coping,
+            'crisis_levels': {
+                'immediate': crisis_immediate,
+                'high': crisis_high,
+                'moderate': crisis_moderate
+            },
+            'linguistic_patterns': {
+                'avg_first_person_ratio': round(avg_first_person, 3),
+                'avg_negative_word_ratio': round(avg_negative_ratio, 3)
+            }
+        }
+        
         # FIXED: Calculate sentiment trend with proper list handling
         sentiment_trend = self._calculate_sentiment_trend(messages)
         
@@ -280,12 +344,13 @@ class ReportGenerator:
             top_emotions=top_emotions,
             trend=sentiment_trend,
             crisis_count=crisis_messages,
-            referral_count=professional_referral_needed
+            referral_count=professional_referral_needed,
+            semantic_insights=semantic_insights
         )
         
         # Generate personalized recommendations
         recommendations = self._generate_recommendations(
-            overall, final_avg_score, top_emotions, sentiment_trend
+            overall, final_avg_score, top_emotions, sentiment_trend, semantic_insights
         )
         
         # Determine date range
@@ -336,6 +401,7 @@ class ReportGenerator:
             },
             'top_emotions': top_emotions,
             'sentiment_trend': sentiment_trend,
+            'semantic_insights': semantic_insights,
             'safety_flags': {
                 'crisis_messages': crisis_messages,
                 'professional_referral_needed': professional_referral_needed
@@ -390,7 +456,7 @@ class ReportGenerator:
     
     def _generate_detailed_summary(self, overall, avg_score, positive, negative, 
                                    neutral, total, top_emotions, trend, 
-                                   crisis_count, referral_count) -> str:
+                                   crisis_count, referral_count, semantic_insights=None) -> str:
         """Generate a comprehensive text summary of the sentiment analysis"""
         
         summary_parts = []
@@ -473,113 +539,512 @@ class ReportGenerator:
                     f"Professional support may be beneficial."
                 )
         
+        # Semantic insights summary
+        if semantic_insights:
+            if semantic_insights.get('themes'):
+                theme_list = list(semantic_insights['themes'].keys())[:3]
+                if theme_list:
+                    summary_parts.append(
+                        f"\n\nPrimary Concerns:\n"
+                        f"Your conversations primarily focused on: {', '.join(theme_list).replace('_', ' ')}."
+                    )
+            
+            if semantic_insights.get('cognitive_distortions'):
+                distortions = list(semantic_insights['cognitive_distortions'].keys())[:3]
+                if distortions:
+                    summary_parts.append(
+                        f"\n\nThinking Patterns:\n"
+                        f"Common cognitive patterns detected: {', '.join(distortions).replace('_', ' ')}. "
+                        f"CBT exercises can help address these thought patterns."
+                    )
+            
+            if semantic_insights.get('coping_strategies'):
+                strategies = list(semantic_insights['coping_strategies'].keys())[:3]
+                if strategies:
+                    summary_parts.append(
+                        f"\n\nPositive Behaviors:\n"
+                        f"You mentioned using: {', '.join(strategies)}. Keep up these healthy coping strategies!"
+                    )
+            
+            crisis_levels = semantic_insights.get('crisis_levels', {})
+            if crisis_levels.get('immediate', 0) > 0 or crisis_levels.get('high', 0) > 0:
+                summary_parts.append(
+                    f"\n\n🚨 Crisis Detection:\n"
+                    f"Immediate: {crisis_levels.get('immediate', 0)}, High: {crisis_levels.get('high', 0)}. "
+                    f"Please seek immediate professional help if you're in crisis."
+                )
+        
         return "".join(summary_parts)
     
     def _generate_recommendations(self, sentiment: str, score: float, 
-                                 emotions: Dict, trend: str) -> str:
-        """Generate personalized, actionable recommendations"""
+                                 emotions: Dict, trend: str, semantic_insights=None) -> str:
+        """
+        Generate HIGHLY PERSONALIZED recommendations based on user's unique patterns
+        Each user gets custom advice based on their specific themes, distortions, and behaviors
+        """
         recommendations = []
         
-        # Based on overall sentiment
-        if sentiment == 'negative' or score < -0.3:
-            recommendations.append(
-                "🔴 Priority Recommendations:\n"
-                "• Consider scheduling a consultation with a mental health professional "
-                "through our Doctor Consultation feature\n"
-                "• Practice daily self-care: Try our guided breathing exercises (5-10 minutes)\n"
-                "• Engage with supportive activities: Visit our Activities page for mood-boosting exercises\n"
-                "• Connect with others: Reach out to trusted friends or family members"
-            )
-            
-            if 'fear' in emotions or 'anxiety' in emotions:
-                recommendations.append(
-                    "\n\nFor Anxiety Management:\n"
-                    "• Try the 4-7-8 breathing technique (breathe in for 4, hold for 7, out for 8)\n"
-                    "• Practice progressive muscle relaxation\n"
-                    "• Limit caffeine intake\n"
-                    "• Establish a consistent sleep schedule"
-                )
-            
-            if 'sadness' in emotions:
-                recommendations.append(
-                    "\n\nFor Managing Sadness:\n"
-                    "• Start a gratitude journal - write 3 things you're grateful for daily\n"
-                    "• Engage in physical activity - even a 10-minute walk can help\n"
-                    "• Listen to uplifting music or content\n"
-                    "• Allow yourself to feel emotions without judgment"
-                )
+        # Extract user-specific data
+        themes = semantic_insights.get('themes', {}) if semantic_insights else {}
+        distortions = semantic_insights.get('cognitive_distortions', {}) if semantic_insights else {}
+        coping = semantic_insights.get('coping_strategies', {}) if semantic_insights else {}
+        crisis_levels = semantic_insights.get('crisis_levels', {}) if semantic_insights else {}
+        linguistic = semantic_insights.get('linguistic_patterns', {}) if semantic_insights else {}
         
-        elif sentiment == 'neutral':
-            recommendations.append(
-                "🟡 Maintenance & Growth:\n"
-                "• Continue your current coping strategies - they're working\n"
-                "• Explore new wellness activities to prevent stagnation\n"
-                "• Set small, achievable goals for personal growth\n"
-                "• Maintain social connections and support networks"
-            )
-            
-            if trend == 'declining':
-                recommendations.append(
-                    "\n\n⚠️ Preventive Action:\n"
-                    "• Monitor your emotional state more closely\n"
-                    "• Increase engagement with wellness activities\n"
-                    "• Consider talking to someone about recent stressors"
-                )
+        # === PERSONALIZED OPENING based on user's primary issues ===
+        opening = self._generate_personalized_opening(sentiment, score, themes, distortions, trend)
+        recommendations.append(opening)
         
-        else:  # positive
-            recommendations.append(
-                "🟢 Excellent Progress!\n"
-                "• Keep up your current wellness practices\n"
-                "• Document what's working well for you\n"
-                "• Consider sharing your strategies with others who might benefit\n"
-                "• Continue building on your positive momentum"
-            )
-            
-            if 'joy' in emotions:
-                recommendations.append(
-                    "\n\nCelebrate Your Success:\n"
-                    "• Take time to acknowledge your emotional growth\n"
-                    "• Reflect on what contributed to your positive state\n"
-                    "• Share your happiness with loved ones"
-                )
+        # === THEME-SPECIFIC RECOMMENDATIONS (Most Important) ===
+        theme_recs = self._generate_theme_recommendations(themes, emotions, coping)
+        if theme_recs:
+            recommendations.append(theme_recs)
         
-        # Trend-based recommendations
-        if trend == 'declining':
-            recommendations.append(
-                "\n\n📉 Addressing the Decline:\n"
-                "• Identify recent changes or stressors in your life\n"
-                "• Increase self-care activities\n"
-                "• Don't hesitate to seek professional support\n"
-                "• Review and adjust your current coping strategies"
-            )
-        elif trend == 'improving':
-            recommendations.append(
-                "\n\n📈 Building on Improvement:\n"
-                "• Identify what's been helping and do more of it\n"
-                "• Set new wellness goals\n"
-                "• Consider mentoring others or sharing your journey"
-            )
+        # === COGNITIVE DISTORTION INTERVENTIONS (CBT) ===
+        distortion_recs = self._generate_distortion_interventions(distortions, themes)
+        if distortion_recs:
+            recommendations.append(distortion_recs)
         
-        # Emotion-specific recommendations
-        if 'anger' in emotions:
-            recommendations.append(
-                "\n\nManaging Anger:\n"
-                "• Try physical activities to release tension (walking, exercise)\n"
-                "• Practice the 'pause and breathe' technique before responding\n"
-                "• Journal about what's triggering your anger\n"
-                "• Consider anger management resources or counseling"
-            )
+        # === REINFORCE EXISTING COPING STRATEGIES ===
+        coping_recs = self._generate_coping_reinforcement(coping, themes)
+        if coping_recs:
+            recommendations.append(coping_recs)
         
-        # Always include crisis resources
-        recommendations.append(
-            "\n\n🆘 Immediate Support Available:\n"
-            "• National Suicide Prevention Lifeline: 988\n"
-            "• Crisis Text Line: Text HOME to 741741\n"
-            "• Emergency: 911\n"
-            "• These services are available 24/7 with trained professionals"
-        )
+        # === TREND-BASED ACTION PLANS ===
+        trend_recs = self._generate_trend_recommendations(trend, score, themes)
+        if trend_recs:
+            recommendations.append(trend_recs)
+        
+        # === COMBINATION ISSUE STRATEGIES ===
+        combo_recs = self._generate_combination_strategies(themes, emotions, distortions)
+        if combo_recs:
+            recommendations.append(combo_recs)
+        
+        # === CRISIS SUPPORT (if needed) ===
+        if crisis_levels.get('immediate', 0) > 0 or crisis_levels.get('high', 0) > 0:
+            recommendations.append(
+                "\n\n🚨 IMMEDIATE CRISIS SUPPORT:\n"
+                "Your messages indicate urgent distress. Please:\n"
+                "• Call 988 (Suicide & Crisis Lifeline) - Available 24/7\n"
+                "• Text HOME to 741741 (Crisis Text Line)\n"
+                "• Call 911 if in immediate danger\n"
+                "• Go to nearest emergency room\n"
+                "• Tell someone you trust RIGHT NOW\n\n"
+                "You don't have to face this alone. Help is available."
+            )
+        else:
+            recommendations.append(
+                "\n\n🆘 Support Resources:\n"
+                "• 988 Suicide & Crisis Lifeline (24/7)\n"
+                "• Text HOME to 741741 (Crisis Text Line)\n"
+                "• MindLift Doctor Consultation for professional guidance"
+            )
         
         return '\n'.join(recommendations)
+    
+    def _generate_personalized_opening(self, sentiment, score, themes, distortions, trend):
+        """Create personalized opening based on user's specific situation"""
+        theme_list = list(themes.keys())[:2] if themes else []
+        distortion_list = list(distortions.keys())[:2] if distortions else []
+        
+        # Build custom opening
+        opening_parts = []
+        
+        if sentiment == 'negative' and score < -0.5:
+            opening_parts.append("🔴 Personalized Support Plan for You:")
+            if theme_list:
+                concerns = ', '.join([t.replace('_', ' ') for t in theme_list])
+                opening_parts.append(f"Based on your conversations, you're primarily dealing with {concerns}.")
+            if distortion_list:
+                patterns = ', '.join([d.replace('_', ' ') for d in distortion_list])
+                opening_parts.append(f"I've noticed thinking patterns like {patterns} in your messages.")
+        elif sentiment == 'negative':
+            opening_parts.append("🟠 Your Personalized Wellness Plan:")
+            if theme_list:
+                concerns = ', '.join([t.replace('_', ' ') for t in theme_list])
+                opening_parts.append(f"You've been talking about {concerns} - let's address these specifically.")
+        elif sentiment == 'neutral' and trend == 'declining':
+            opening_parts.append("🟡 Early Intervention Plan:")
+            opening_parts.append("I've noticed your mood declining. Let's take proactive steps now.")
+        elif sentiment == 'neutral':
+            opening_parts.append("🟡 Maintaining Your Progress:")
+            if theme_list:
+                concerns = ', '.join([t.replace('_', ' ') for t in theme_list])
+                opening_parts.append(f"You've mentioned {concerns} - here's how to keep managing these effectively.")
+        else:  # positive
+            opening_parts.append("🟢 Celebrating Your Growth:")
+            if theme_list:
+                concerns = ', '.join([t.replace('_', ' ') for t in theme_list])
+                opening_parts.append(f"You're making progress with {concerns}. Let's build on this success!")
+        
+        return '\n'.join(opening_parts)
+    
+    def _generate_theme_recommendations(self, themes, emotions, coping):
+        """Generate specific recommendations for each theme the user struggles with"""
+        if not themes:
+            return None
+        
+        recs = ["\n\n📋 For Your Specific Concerns:"]
+        
+        # Anxiety
+        if 'anxiety' in themes:
+            has_breathing = any('breath' in c for c in coping.keys())
+            recs.append(
+                f"\nManaging Your Anxiety:\n"
+                f"{'• Continue your breathing exercises - they are working!' if has_breathing else '• Start with 4-7-8 breathing: Breathe in 4s, hold 7s, out 8s (do 3-5 cycles)'}\n"
+                "• Try the 5-4-3-2-1 grounding: Name 5 things you see, 4 you hear, 3 you feel, 2 you smell, 1 you taste\n"
+                "• Schedule 'worry time': Set aside 15 minutes daily to address anxious thoughts\n"
+                "• Limit caffeine and alcohol - these amplify anxiety symptoms\n"
+                "• Practice saying 'I notice I'm feeling anxious' instead of 'I am anxious'"
+            )
+        
+        # Depression
+        if 'depression' in themes:
+            has_exercise = any('exercise' in c or 'walk' in c for c in coping.keys())
+            recs.append(
+                f"\nFor Your Depression:\n"
+                f"{'• Keep up your physical activity - even small walks make a huge difference!' if has_exercise else '• Start small: Take a 5-minute walk today, increase by 2 minutes each day'}\n"
+                "• Behavioral activation: Do ONE enjoyable activity daily, even if you don't feel like it\n"
+                "• Set micro-goals: Instead of 'clean house', start with 'put 3 items away'\n"
+                "• Connect with one person daily - even a text message counts\n"
+                "• Track small wins: Write down 3 things you accomplished today (no matter how small)"
+            )
+        
+        # Work Stress
+        if 'work_stress' in themes:
+            recs.append(
+                "\nManaging Work-Related Stress:\n"
+                "• Use the Pomodoro technique: 25 min focused work, 5 min break\n"
+                "• Set boundaries: Define work hours and stick to them\n"
+                "• Practice saying no: You can't pour from an empty cup\n"
+                "• Take real lunch breaks away from your desk\n"
+                "• Sunday planning: List top 3 priorities for the week to reduce overwhelm\n"
+                "• Consider talking to your manager about workload if it's consistently unmanageable"
+            )
+        
+        # Sleep Issues
+        if 'sleep' in themes:
+            recs.append(
+                "\nImproving Your Sleep:\n"
+                "• Consistent schedule: Same bedtime/wake time (even weekends) for 2 weeks\n"
+                "• 10-3-2-1-0 rule: No caffeine 10h before bed, no food 3h, no work 2h, no screens 1h, zero snoozes\n"
+                "• If awake >20 min, leave bed and do something boring (don't check phone)\n"
+                "• Create sleep ritual: Dim lights, cool room (65-68°F), white noise or fan\n"
+                "• Morning sunlight: Get 10-15 minutes of outdoor light within 1 hour of waking\n"
+                "• Track your sleep patterns to identify what helps"
+            )
+        
+        # Relationships
+        if 'relationships' in themes:
+            recs.append(
+                "\nFor Relationship Challenges:\n"
+                "• Use 'I' statements: 'I feel ___ when ___ because ___' instead of blaming\n"
+                "• Practice active listening: Repeat back what you heard before responding\n"
+                "• Schedule quality time: Put relationship time in calendar like any important meeting\n"
+                "• Express appreciation daily: Tell someone one thing you appreciate about them\n"
+                "• Set boundaries clearly: 'I need ___' is okay to say\n"
+                "• Consider couples/family counseling if conflicts persist"
+            )
+        
+        # Self-Esteem
+        if 'self_esteem' in themes:
+            recs.append(
+                "\nBuilding Your Self-Esteem:\n"
+                "• Write down 5 things you like about yourself (start with anything, even 'I'm breathing')\n"
+                "• Challenge self-criticism: Would you say that to a friend? If not, don't say it to yourself\n"
+                "• Track accomplishments: Keep a 'wins jar' - write small victories on paper, read when down\n"
+                "• Stop comparing: Their Chapter 20 vs your Chapter 1 isn't fair comparison\n"
+                "• Affirmations: 'I am enough' - say it even if you don't believe it yet\n"
+                "• Celebrate effort, not just results: Trying matters"
+            )
+        
+        # Anger
+        if 'anger' in themes:
+            recs.append(
+                "\nManaging Your Anger:\n"
+                "• Pause technique: Count to 10 before responding when angry\n"
+                "• Physical release: Intense exercise, punch a pillow, squeeze ice cubes\n"
+                "• Identify triggers: Keep anger journal - what happened right before?\n"
+                "• Communicate assertively: 'I feel angry when ___ because I need ___'\n"
+                "• Time-outs: It's okay to say 'I need a break' and walk away\n"
+                "• Address underlying issues: Anger is often covering hurt, fear, or frustration"
+            )
+        
+        # Trauma/PTSD
+        if 'trauma' in themes:
+            recs.append(
+                "\nFor Trauma Recovery:\n"
+                "• Grounding techniques: Focus on physical sensations (feet on floor, hands on legs)\n"
+                "• Safety plan: Identify safe people, places, and coping tools\n"
+                "• EMDR or trauma-focused therapy: Seek specialist for evidence-based treatment\n"
+                "• Self-compassion: Healing isn't linear - setbacks are part of recovery\n"
+                "• Establish routine: Predictability helps nervous system feel safe\n"
+                "• Avoid self-medicating: Alcohol/drugs worsen PTSD long-term"
+            )
+        
+        return '\n'.join(recs)
+    
+    def _generate_distortion_interventions(self, distortions, themes):
+        """Generate CBT interventions for specific cognitive distortions"""
+        if not distortions:
+            return None
+        
+        recs = ["\n\n🧠 Challenging Your Thinking Patterns:"]
+        
+        if 'all_or_nothing' in distortions:
+            recs.append(
+                "\nAll-or-Nothing Thinking:\n"
+                "You tend to see things in extremes. Try this:\n"
+                "• When you catch 'always/never', ask: 'Is there a time when this wasn't true?'\n"
+                "• Use percentages: Instead of 'I'm a total failure', say 'I succeeded 60% of the time'\n"
+                "• Gray thinking: 'Both/and' instead of 'either/or' - Most situations aren't black/white\n"
+                "• Example: Change 'I always mess up' to 'I messed up this time, but I've succeeded before'"
+            )
+        
+        if 'catastrophizing' in distortions:
+            recs.append(
+                "\nCatastrophizing:\n"
+                "You jump to worst-case scenarios. Challenge this:\n"
+                "• Ask: 'What's the most likely outcome?' (not worst, not best - most likely)\n"
+                "• Evidence check: 'How many times has my worst fear actually happened?'\n"
+                "• Decatastrophize: 'Even if that happens, I can handle it by ___'\n"
+                "• Probability scale: Rate 1-10 how likely the catastrophe is (usually <3)\n"
+                "• Focus on what you CAN control, accept what you can't"
+            )
+        
+        if 'should_statements' in distortions:
+            recs.append(
+                "\nShould Statements:\n"
+                "You're putting pressure on yourself with 'shoulds'. Replace them:\n"
+                "• 'I should' → 'I prefer' or 'I choose to' or 'It would be nice if'\n"
+                "• Ask: 'Where did this rule come from? Is it really my rule?'\n"
+                "• Self-compassion: 'I'm doing my best with what I have right now'\n"
+                "• Realistic expectations: Perfect doesn't exist - good enough IS good enough\n"
+                "• Example: Change 'I should be happy' to 'I prefer to feel happy, and I'm working toward that'"
+            )
+        
+        if 'mind_reading' in distortions:
+            recs.append(
+                "\nMind Reading:\n"
+                "You assume you know what others think. Reality check:\n"
+                "• Ask directly: 'What did you mean by that?' - Don't assume\n"
+                "• Evidence: 'What proof do I have they think this?' (Usually zero)\n"
+                "• Alternative explanations: List 3 other reasons for their behavior\n"
+                "• Remember: Most people are thinking about themselves, not judging you\n"
+                "• Your thoughts about what they think aren't facts"
+            )
+        
+        if 'fortune_telling' in distortions:
+            recs.append(
+                "\nFortune Telling:\n"
+                "You predict negative futures. Ground yourself:\n"
+                "• Fact vs. prediction: 'I don't know the future - this is just a prediction'\n"
+                "• Past evidence: 'How many times was I wrong about predicting failure?'\n"
+                "• Possibility thinking: 'It COULD go badly, but it could also go well'\n"
+                "• Control what you can NOW: Focus on present actions, not future what-ifs\n"
+                "• Anxiety lies: Your brain overestimates danger to protect you - it's not accurate"
+            )
+        
+        if 'labeling' in distortions:
+            recs.append(
+                "\nLabeling:\n"
+                "You attach harsh labels to yourself/others. Reframe:\n"
+                "• Separate behavior from identity: 'I made a mistake' not 'I AM a mistake'\n"
+                "• Specificity: Instead of 'I'm stupid', say 'I struggled with this specific task'\n"
+                "• Counter-labels: For every negative label, list 3 positive qualities\n"
+                "• Compassion: Would you call a friend that label? Then don't use it on yourself\n"
+                "• Remember: You are not your actions - you're a complex human having experiences"
+            )
+        
+        if 'personalization' in distortions:
+            recs.append(
+                "\nPersonalization:\n"
+                "You blame yourself for things outside your control. Consider:\n"
+                "• Responsibility pie: List ALL factors that contributed (you're probably <20%)\n"
+                "• Ask: 'What was truly in my control?' - Only own your part\n"
+                "• External factors: Other people's moods, choices, reactions aren't about you\n"
+                "• Self-compassion: Everyone makes mistakes - it doesn't mean you're defective\n"
+                "• Shared responsibility: Most outcomes have multiple contributors"
+            )
+        
+        if 'overgeneralization' in distortions:
+            recs.append(
+                "\nOvergeneralization:\n"
+                "One event becomes 'always' or 'everyone'. Be specific:\n"
+                "• Quantify: 'This happened once' not 'this always happens'\n"
+                "• Specific language: 'This person' not 'everyone', 'Today' not 'always'\n"
+                "• Counter-examples: List times when the opposite was true\n"
+                "• Sample size: One or two events don't equal a pattern\n"
+                "• Stay present: This moment isn't every moment"
+            )
+        
+        return '\n'.join(recs)
+    
+    def _generate_coping_reinforcement(self, coping, themes):
+        """Reinforce and expand on coping strategies user is already using"""
+        if not coping:
+            return None
+        
+        recs = ["\n\n✅ Building on What's Working for You:"]
+        
+        strategies = []
+        if 'meditation' in coping or 'breathing' in coping:
+            strategies.append(
+                "• Meditation/Breathing - You're already doing this! Level up:\n"
+                "  - Try guided meditations on YouTube (search '10 minute anxiety meditation')\n"
+                "  - Experiment with body scan meditation before bed\n"
+                "  - Use apps: Insight Timer (free), Headspace, Calm"
+            )
+        
+        if 'exercise' in coping or 'walk' in coping:
+            strategies.append(
+                "• Physical Activity - Great job staying active! Expand this:\n"
+                "  - Vary intensity: Mix calming walks with energizing workouts\n"
+                "  - Outdoor exercise: Nature exposure boosts mood 30% more than indoor\n"
+                "  - Social exercise: Join a class or exercise with a friend"
+            )
+        
+        if 'journal' in coping:
+            strategies.append(
+                "• Journaling - Powerful tool! Try these formats:\n"
+                "  - Gratitude journal: 3 good things daily\n"
+                "  - Thought records: Situation → Thought → Feeling → Alternative thought\n"
+                "  - Prompt journal: 'Today I felt ___ because ___ and I coped by ___'"
+            )
+        
+        if 'therapy' in coping or 'counseling' in coping:
+            strategies.append(
+                "• Therapy - Excellent! Maximize your sessions:\n"
+                "  - Prepare beforehand: Write topics you want to discuss\n"
+                "  - Practice between sessions: Do the homework your therapist assigns\n"
+                "  - Track progress: Notice patterns across sessions"
+            )
+        
+        if 'talk' in coping or 'friends' in coping or 'support' in coping:
+            strategies.append(
+                "• Social Support - Keep connecting! Deepen these connections:\n"
+                "  - Be vulnerable: Share how you really feel, not just surface level\n"
+                "  - Ask for specific help: 'Can you check in on me tomorrow?'\n"
+                "  - Give back: Supporting others also helps you feel better"
+            )
+        
+        if strategies:
+            recs.extend(strategies)
+            recs.append(
+                "\nContinue what's working - Consistency matters more than perfection. "
+                "Even on hard days, doing one coping strategy is progress."
+            )
+            return '\n'.join(recs)
+        
+        return None
+    
+    def _generate_trend_recommendations(self, trend, score, themes):
+        """Generate action plan based on mood trend"""
+        if trend == 'declining':
+            return (
+                "\n\n📉 Your Mood is Declining - Action Plan:\n"
+                "Early intervention prevents crisis. Do these NOW:\n"
+                "• Identify what changed: New stressor? Stopped a helpful habit? Sleep issues?\n"
+                "• Increase self-care intensity: Double your coping activities this week\n"
+                "• Reach out: Tell someone you trust that you're struggling\n"
+                "• Schedule check-in: See your therapist sooner or book MindLift consultation\n"
+                "• Prevention: Don't wait until you feel worse - act now\n"
+                "• Remember: Asking for help is strength, not weakness"
+            )
+        elif trend == 'improving':
+            return (
+                "\n\n📈 Your Mood is Improving - Sustain This:\n"
+                "Build momentum while you have it:\n"
+                "• Document what's helping: Write down what you've been doing differently\n"
+                "• Create a 'wellness formula': List specific actions that boost your mood\n"
+                "• Set new goals: Use this energy to tackle something you've been avoiding\n"
+                "• Plan for future dips: 'When I feel down again, I will ___'\n"
+                "• Share your success: Tell someone about your progress\n"
+                "• Keep going: Healing continues even when you feel better"
+            )
+        elif trend == 'stable':
+            primary_theme = list(themes.keys())[0] if themes else None
+            if primary_theme:
+                return (
+                    f"\n\n⚖️ Maintaining Stability While Working on {primary_theme.replace('_', ' ').title()}:\n"
+                    "Consistency is key:\n"
+                    "• Stick to routines: What you're doing is working - don't stop\n"
+                    "• Gradual improvement: Small steps forward compound over time\n"
+                    "• Challenge yourself: Take one small risk outside comfort zone weekly\n"
+                    "• Anticipate obstacles: Plan how you'll handle difficult situations\n"
+                    "• Celebrate stability: Staying level IS progress"
+                )
+        
+        return None
+    
+    def _generate_combination_strategies(self, themes, emotions, distortions):
+        """Address specific combinations of issues that often co-occur"""
+        theme_list = list(themes.keys()) if themes else []
+        combos = []
+        
+        # Anxiety + Sleep
+        if 'anxiety' in theme_list and 'sleep' in theme_list:
+            combos.append(
+                "\n\n💤 Anxiety + Sleep Issues:\n"
+                "These feed each other - break the cycle:\n"
+                "• Worry postponement: If anxious at night, write worries down, promise to address at 3pm tomorrow\n"
+                "• Sleep anxiety: Accept that some sleep loss is okay - anxiety about sleep makes it worse\n"
+                "• Wind-down: Start relaxation 90 minutes before bed, not when you're already in bed anxious\n"
+                "• Morning routine: Even if you slept poorly, get up at same time - this fixes your circadian rhythm"
+            )
+        
+        # Depression + Work Stress
+        if 'depression' in theme_list and 'work_stress' in theme_list:
+            combos.append(
+                "\n\n💼 Depression + Work Stress:\n"
+                "Work drains energy you don't have - protect yourself:\n"
+                "• Energy management: Do hardest tasks when energy is highest (usually morning)\n"
+                "• Lower bar: 'Good enough' is your standard now, not 'perfect'\n"
+                "• Breaks mandatory: 5 min break every hour - non-negotiable\n"
+                "• Consider accommodations: Talk to HR about flexible hours or reduced workload temporarily\n"
+                "• Separate identity: You are not your job - your worth isn't your productivity"
+            )
+        
+        # Anxiety + Depression
+        if 'anxiety' in theme_list and 'depression' in theme_list:
+            combos.append(
+                "\n\n🔄 Anxiety + Depression:\n"
+                "This combo is tough but treatable:\n"
+                "• Opposite action: Anxiety says 'run away', Depression says 'stay in bed' - do opposite\n"
+                "• Scheduled activity: Put ONE positive activity in calendar daily (accountability helps both)\n"
+                "• Focus on now: Depression focuses on past, anxiety on future - ground yourself in present\n"
+                "• Medication consideration: This combo often responds well to medication + therapy\n"
+                "• One thing: Just commit to one coping strategy daily - both disorders lie about ability"
+            )
+        
+        # Relationships + Self-Esteem
+        if 'relationships' in theme_list and 'self_esteem' in theme_list:
+            combos.append(
+                "\n\n❤️ Relationships + Self-Esteem:\n"
+                "Low self-esteem affects relationships - work on both:\n"
+                "• Boundaries: Saying no strengthens relationships AND self-respect\n"
+                "• Stop people-pleasing: Authentic connection requires showing real you\n"
+                "• Receive compliments: Say 'thank you' without deflecting - practice believing them\n"
+                "• Separate worth from relationships: Being single/in conflict doesn't mean you're unworthy\n"
+                "• Choose supportive people: Surround yourself with those who lift you up"
+            )
+        
+        # Any distortion + Depression
+        if distortions and 'depression' in theme_list:
+            combos.append(
+                "\n\n🧠 Negative Thinking + Depression:\n"
+                "Depression amplifies distorted thoughts:\n"
+                "• Depression filter: Everything looks worse when depressed - your thoughts aren't facts\n"
+                "• Behavioral activation first: Sometimes you can't think your way out - act first, mood follows\n"
+                "• Thought logs: Write thoughts down - they're less powerful on paper than in your head\n"
+                "• Challenge gently: Don't fight thoughts aggressively - curiosity works better than combat\n"
+                "• Get help: CBT therapy specifically targets thought patterns + depression together"
+            )
+        
+        if combos:
+            return '\n'.join(combos)
+        
+        return None
     
     def get_user_sentiment_trend(self, user, days=30):
         """Get detailed sentiment trend over time"""

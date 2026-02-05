@@ -122,12 +122,26 @@ class Message(models.Model):
     contains_crisis_keywords = models.BooleanField(default=False)
     requires_professional_referral = models.BooleanField(default=False)
     
+    # Semantic Analysis Fields (Advanced NLP)
+    themes = models.JSONField(default=dict, blank=True, help_text='Mental health themes detected')
+    cognitive_distortions = models.JSONField(default=dict, blank=True, help_text='CBT cognitive distortions')
+    coping_indicators = models.JSONField(default=list, blank=True, help_text='Positive coping strategies')
+    crisis_level = models.CharField(max_length=20, null=True, blank=True, help_text='Crisis urgency level')
+    crisis_confidence = models.FloatField(null=True, blank=True, help_text='Crisis detection confidence')
+    key_phrases = models.JSONField(default=list, blank=True, help_text='Key phrases extracted')
+    linguistic_features = models.JSONField(default=dict, blank=True, help_text='Linguistic analysis data')
+    semantic_similarity = models.FloatField(null=True, blank=True, help_text='Similarity with history')
+    
     def __str__(self):
         return f"{self.sender}: {self.content[:50]}..."
     
     class Meta:
         db_table = 'messages'
         ordering = ['timestamp']
+        indexes = [
+            models.Index(fields=['crisis_level'], name='msg_crisis_lvl_idx'),
+            models.Index(fields=['sender', 'timestamp'], name='msg_sender_time_idx'),
+        ]
 
 
 class SentimentReport(models.Model):

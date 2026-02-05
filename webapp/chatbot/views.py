@@ -22,6 +22,7 @@ from .models import (
     CBTExposureHierarchy, InterventionOutcome, TheoreticalFramework
 )
 from .sentiment_service import SentimentAnalyzer, ReportGenerator
+from .semantic_analyzer import semantic_analyzer
 from .groq_service import groq_service
 from .cbt_service import CBTService, AssessmentAnalytics, SDTFramework
 
@@ -961,6 +962,50 @@ def send_message(request):
             logger.error(f"Sentiment analysis error: {str(e)}")
             sentiment_result = {'label': 'neutral', 'score': 0.0}
         
+        # === SEMANTIC ANALYSIS ===
+        semantic_result = None
+        try:
+            # Get conversation history for context
+            history_messages = Message.objects.filter(
+                conversation=conversation,
+                sender='user'
+            ).order_by('-timestamp')[:10].values_list('content', flat=True)
+            
+            history = list(history_messages)[1:]  # Exclude current message
+            
+            # Perform semantic analysis
+            semantic_result = semantic_analyzer.analyze_text(
+                text=user_message,
+                conversation_history=history
+            )
+            
+            # Generate insights
+            insights = semantic_analyzer.generate_insights(semantic_result)
+            
+            logger.info(f"🔍 Semantic Analysis: Themes={list(semantic_result['themes'].keys())[:3]}")
+            if semantic_result['cognitive_distortions']:
+                logger.info(f"🧠 Cognitive Distortions: {list(semantic_result['cognitive_distortions'].keys())}")
+            if insights:
+                logger.info(f"💡 Insights: {insights}")
+            
+            # Store semantic data in database
+            user_msg.themes = semantic_result.get('themes', {})
+            user_msg.cognitive_distortions = semantic_result.get('cognitive_distortions', {})
+            user_msg.coping_indicators = semantic_result.get('coping_indicators', [])
+            if semantic_result.get('crisis_level'):
+                user_msg.crisis_level = semantic_result['crisis_level']['level']
+                user_msg.crisis_confidence = semantic_result['crisis_level']['confidence']
+            user_msg.key_phrases = semantic_result.get('key_phrases', [])
+            user_msg.linguistic_features = semantic_result.get('linguistic_features', {})
+            if semantic_result.get('semantic_similarity'):
+                user_msg.semantic_similarity = semantic_result['semantic_similarity']['avg_similarity']
+            user_msg.save()
+            logger.info("✅ Semantic data saved to database")
+                
+        except Exception as e:
+            logger.error(f"Semantic analysis error: {str(e)}")
+            semantic_result = None
+        
         # Get conversation context
         context_messages = Message.objects.filter(
             conversation=conversation
@@ -1051,6 +1096,13 @@ def send_message(request):
                 'text': user_message,
                 'sentiment': sentiment_result.get('label', 'neutral'),
                 'score': sentiment_result.get('score', 0.0),
+                'semantic_analysis': {
+                    'themes': list(semantic_result['themes'].keys())[:3] if semantic_result else [],
+                    'cognitive_distortions': list(semantic_result['cognitive_distortions'].keys()) if semantic_result and semantic_result['cognitive_distortions'] else [],
+                    'coping_indicators': semantic_result['coping_indicators'][:3] if semantic_result else [],
+                    'crisis_level': semantic_result['crisis_level']['level'] if semantic_result else 'none',
+                    'key_phrases': semantic_result['key_phrases'][:5] if semantic_result else []
+                } if semantic_result else None,
                 'timestamp': user_msg.timestamp.isoformat()
             },
             'bot_messages': [{
