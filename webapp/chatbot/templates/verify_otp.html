@@ -3,41 +3,23 @@
 
 {% block content %}
 <div class="auth-container">
-    <div class="auth-background"></div>
-    
-    <!-- 3D Robot Illustration -->
-    <div class="auth-illustration">
-        <!-- 3D Robot Container -->
-        <div class="robot-container">
-            <!-- Speech Bubble -->
-            <div class="speech-bubble">
-                Verify it's you! 🔒
-            </div>
-            
-            <!-- Robot Head with Antenna -->
-            <div class="robot-head">
-                <div class="robot-antenna"></div>
-                <div class="robot-visor">
-                    <div class="robot-eye left"></div>
-                    <div class="robot-eye right"></div>
-                </div>
-            </div>
-            
-            <!-- Robot Body with Arms -->
-            <div class="robot-body">
-                <div class="robot-arm left"></div>
-                <div class="robot-arm right"></div>
-            </div>
-        </div>
-    </div>
+    <!-- Animated Floating Bubbles -->
+    <div class="bubble" style="--i: 1; background: rgba(139, 92, 246, 0.25);"></div>
+    <div class="bubble" style="--i: 2; background: rgba(236, 72, 153, 0.25);"></div>
+    <div class="bubble" style="--i: 3; background: rgba(59, 130, 246, 0.25);"></div>
+    <div class="bubble" style="--i: 4; background: rgba(139, 92, 246, 0.25);"></div>
+    <div class="bubble" style="--i: 5; background: rgba(236, 72, 153, 0.25);"></div>
+    <div class="bubble" style="--i: 6; background: rgba(59, 130, 246, 0.25);"></div>
+    <div class="bubble" style="--i: 7; background: rgba(139, 92, 246, 0.25);"></div>
+    <div class="bubble" style="--i: 8; background: rgba(236, 72, 153, 0.25);"></div>
     
     <div class="container">
         <div class="row justify-content-center align-items-center" style="min-height: 100%;">
             <div class="col-md-8 col-lg-7">
                 <div class="auth-card" data-aos="zoom-in" data-aos-duration="600">
                     <div class="text-center mb-4" data-aos="fade-down" data-aos-delay="100">
-                        <div class="auth-logo mb-3">
-                            <img src="{% static 'images/Logo_1.png' %}" alt="MindLift" class="auth-logo-img">
+                        <div class="logo-container mb-3">
+                            <img src="{% static 'images/Logo_1.png' %}" alt="MindLift" class="auth-page-logo">
                         </div>
                         <h2 class="fw-bold mb-2">Two-Factor Authentication</h2>
                         <p class="text-muted">We've sent a 6-digit code to your email</p>

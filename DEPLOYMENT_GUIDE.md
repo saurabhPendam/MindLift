@@ -980,19 +980,19 @@ MindLift includes an adaptive learning system that improves over time by trainin
 
 ```bash
 # Create scripts directory
-mkdir -p /home/mindlift/mindlift/scripts
+mkdir -p /home/mindlift/mindlift/MindLift/scripts
 
 # Upload setup script (from local machine)
 # Or create it on server:
-sudo nano /home/mindlift/mindlift/scripts/setup_cron.sh
+sudo nano /home/mindlift/mindlift/MindLift/scripts/setup_cron.sh
 
 # Copy the content from scripts/setup_cron.sh
 # Make executable
-chmod +x /home/mindlift/mindlift/scripts/setup_cron.sh
-chmod +x /home/mindlift/mindlift/scripts/check_training_status.sh
+chmod +x /home/mindlift/mindlift/MindLift/scripts/setup_cron.sh
+chmod +x /home/mindlift/mindlift/MindLift/scripts/check_training_status.sh
 
 # Run setup script
-bash /home/mindlift/mindlift/scripts/setup_cron.sh
+bash /home/mindlift/mindlift/MindLift/scripts/setup_cron.sh
 ```
 
 ### Step 12.3: Verify Automatic Training
@@ -1006,10 +1006,10 @@ crontab -l
 # 0 3 * * * /home/mindlift/mindlift/scripts/run_auto_training.sh
 
 # Check training status
-bash /home/mindlift/mindlift/scripts/check_training_status.sh
+bash /home/mindlift/mindlift/MindLift/scripts/check_training_status.sh
 
 # View training logs
-tail -f /home/mindlift/mindlift/logs/auto_training.log
+tail -f /home/mindlift/mindlift/MindLift/logs/auto_training.log
 ```
 
 ### Step 12.4: Manual Training (Optional)
@@ -1051,7 +1051,7 @@ crontab -e
 
 ```bash
 # Check trained models
-ls -lh /home/mindlift/mindlift/webapp/ml_models/
+ls -lh /home/mindlift/mindlift/MindLift/webapp/ml_models/
 
 # Expected files:
 # sentiment_classifier.pkl
@@ -1082,7 +1082,7 @@ ls -lh /home/mindlift/mindlift/webapp/ml_models/
 
 ```bash
 # Check why training didn't run
-tail -f /home/mindlift/mindlift/logs/auto_training.log
+tail -f /home/mindlift/mindlift/MindLift/logs/auto_training.log
 
 # Common issues:
 # "Insufficient data" - Need more user messages
@@ -1092,7 +1092,7 @@ tail -f /home/mindlift/mindlift/logs/auto_training.log
 grep -i "training" /var/log/syslog
 
 # Manual test run
-cd /home/mindlift/mindlift/webapp
+cd /home/mindlift/mindlift/MindLift/webapp
 source ../venv/bin/activate
 python manage.py auto_train_models --force
 ```

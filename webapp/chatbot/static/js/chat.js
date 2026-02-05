@@ -235,6 +235,11 @@ class MindLiftChat {
 
             this.recognition.onstart = () => {
                 console.log('🎤 Speech recognition started');
+                const input = document.getElementById('messageInput');
+                if (input) {
+                    input.disabled = true;
+                    input.placeholder = '🎤 Listening...';
+                }
             };
 
             this.recognition.onresult = (event) => {
@@ -246,6 +251,7 @@ class MindLiftChat {
                 const input = document.getElementById('messageInput');
                 if (input) {
                     input.value = transcript.trim();
+                    input.focus();
                 }
 
                 const lastResult = event.results[event.results.length - 1];
@@ -289,6 +295,12 @@ class MindLiftChat {
 
             this.recognition.onend = () => {
                 console.log('🎤 Speech recognition ended');
+                const input = document.getElementById('messageInput');
+                if (input) {
+                    input.disabled = false;
+                    input.placeholder = 'Type your message...';
+                    input.focus();
+                }
                 this.resetVoiceButton();
             };
         } else {
@@ -304,10 +316,18 @@ class MindLiftChat {
 
     resetVoiceButton() {
         const btn = document.getElementById('voiceBtn');
+        const input = document.getElementById('messageInput');
+        
         if (btn) {
             btn.innerHTML = '<i class="fas fa-microphone"></i>';
             btn.classList.remove('btn-danger', 'recording');
             btn.classList.add('btn-light');
+            btn.disabled = false;
+        }
+        
+        if (input) {
+            input.disabled = false;
+            input.placeholder = 'Type your message...';
         }
     }
 
@@ -365,14 +385,17 @@ class MindLiftChat {
     }
 
     // ===== TEXT TO SPEECH =====
-    speakText(text) {
+    speakText(text, buttonElement) {
         if (!this.synthesis) {
             this.showNotification('Text-to-speech not supported in this browser', 'warning');
             return;
         }
 
-        // Cancel any ongoing speech
-        this.synthesis.cancel();
+        // If already speaking, stop it
+        if (this.synthesis.speaking) {
+            this.stopSpeaking();
+            return;
+        }
 
         // Clean text for better speech output
         const cleanText = text
@@ -419,15 +442,26 @@ class MindLiftChat {
 
         utterance.onstart = () => {
             console.log('🔊 Speaking with soothing voice...');
+            // Update all speaker buttons to show stop icon
+            document.querySelectorAll('.speaker-btn').forEach(btn => {
+                if (btn.getAttribute('data-original-html') === null) {
+                    btn.setAttribute('data-original-html', btn.innerHTML);
+                }
+                btn.innerHTML = '<i class="fas fa-stop-circle"></i> Stop';
+                btn.classList.add('btn-danger');
+                btn.classList.remove('btn-light');
+            });
         };
 
         utterance.onend = () => {
             console.log('🔊 Speech finished');
+            this.resetSpeakerButtons();
         };
 
         utterance.onerror = (event) => {
             console.error('🔊 Speech synthesis error:', event);
             this.showNotification('Could not play audio', 'danger');
+            this.resetSpeakerButtons();
         };
 
         try {
@@ -435,7 +469,30 @@ class MindLiftChat {
         } catch (error) {
             console.error('🔊 Error speaking text:', error);
             this.showNotification('Text-to-speech failed', 'danger');
+            this.resetSpeakerButtons();
         }
+    }
+
+    stopSpeaking() {
+        if (this.synthesis) {
+            this.synthesis.cancel();
+            this.resetSpeakerButtons();
+            console.log('🔊 Speech stopped');
+        }
+    }
+
+    resetSpeakerButtons() {
+        document.querySelectorAll('.speaker-btn').forEach(btn => {
+            const originalHtml = btn.getAttribute('data-original-html');
+            if (originalHtml) {
+                btn.innerHTML = originalHtml;
+                btn.removeAttribute('data-original-html');
+            } else {
+                btn.innerHTML = '<i class="fas fa-volume-up"></i> Listen';
+            }
+            btn.classList.remove('btn-danger');
+            btn.classList.add('btn-light');
+        });
     }
 
     async sendMessage() {
@@ -534,7 +591,7 @@ class MindLiftChat {
             // Add speaker button for bot messages
             if (sender === 'bot') {
                 messageContent += `
-                    <button class="btn btn-sm btn-light mt-2 speaker-btn" onclick="chatApp.speakText(\`${text.replace(/`/g, '\\`').replace(/\n/g, ' ')}\`)" title="Listen">
+                    <button class="btn btn-sm btn-light mt-2 speaker-btn" onclick="chatApp.speakText(\`${text.replace(/`/g, '\\`').replace(/\n/g, ' ')}\`, this)" title="Listen">
                         <i class="fas fa-volume-up"></i> Listen
                     </button>
                 `;
@@ -672,7 +729,7 @@ class MindLiftChat {
             speakerBtn.className = 'btn btn-sm btn-light mt-2 speaker-btn';
             speakerBtn.title = 'Listen';
             speakerBtn.innerHTML = '<i class="fas fa-volume-up"></i> Listen';
-            speakerBtn.onclick = () => this.speakText(text);
+            speakerBtn.onclick = function() { chatApp.speakText(text, this); };
             contentDiv.appendChild(speakerBtn);
         } else {
             textElement.innerHTML = this.formatMessage(text);

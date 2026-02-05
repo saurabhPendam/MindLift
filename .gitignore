@@ -44,3 +44,4 @@ webapp/.env.example
 # Allow banner image and requirements
 !banner.png
 !requirements.txt
+

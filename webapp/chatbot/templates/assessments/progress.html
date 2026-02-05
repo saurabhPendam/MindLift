@@ -137,17 +137,38 @@
 <style>
 .progress-container {
     min-height: 100vh;
-    background: linear-gradient(135deg, #e8e2d9 0%, #d4cbc0 100%);
+    background: linear-gradient(135deg, #fff5f0 0%, #ffe8db 100%);
     padding-top: 80px;
+}
+
+.card, .card-body, .card-header {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #2d3748 !important;
+}
+
+.card {
+    background: #ffffff !important;
+    color: #2d3748 !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+.card h5, .card h6, .card p, .card span, .card div {
+    color: #2d3748 !important;
+}
+
+.card-body {
+    background: #ffffff !important;
 }
 
 .action-card {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: #ffffff !important;
 }
 
 .action-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+    box-shadow: 0 10px 30px rgba(93, 173, 226, 0.25) !important;
 }
 
 .icon-box {
@@ -165,20 +186,20 @@
 .progress-metric {
     text-align: center;
     padding: 1.5rem;
-    background: var(--bg-secondary);
+    background: #f8f9fa !important;
     border-radius: 12px;
     margin-bottom: 1rem;
 }
 
 .progress-metric h3 {
-    color: var(--primary);
+    color: #5dade2 !important;
     font-size: 2.5rem;
     margin-bottom: 0.5rem;
 }
 
 .progress-metric p {
     margin: 0;
-    color: var(--text-secondary);
+    color: #5a4a42 !important;
 }
 
 .trend-badge {
@@ -250,19 +271,31 @@ function renderPhq9Chart(history) {
             datasets: [{
                 label: 'PHQ-9 Score',
                 data: scores,
-                borderColor: 'rgb(75, 192, 192)',
-                backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                borderColor: 'rgb(93, 173, 226)',
+                backgroundColor: 'rgba(93, 173, 226, 0.1)',
                 tension: 0.4,
-                fill: true
+                fill: true,
+                borderWidth: 3,
+                pointBackgroundColor: 'rgb(93, 173, 226)',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 5,
+                pointHoverRadius: 7
             }]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: true,
             plugins: {
                 legend: {
                     display: false
                 },
                 tooltip: {
+                    backgroundColor: '#ffffff',
+                    titleColor: '#2d3748',
+                    bodyColor: '#2d3748',
+                    borderColor: '#e2e8f0',
+                    borderWidth: 1,
                     callbacks: {
                         label: function(context) {
                             return 'Score: ' + context.parsed.y + '/27';
@@ -276,7 +309,26 @@ function renderPhq9Chart(history) {
                     max: 27,
                     title: {
                         display: true,
-                        text: 'Score (0-27)'
+                        text: 'Score (0-27)',
+                        color: '#5a4a42',
+                        font: {
+                            size: 13,
+                            weight: '600'
+                        }
+                    },
+                    ticks: {
+                        color: '#5a4a42'
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: '#5a4a42'
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
                     }
                 }
             }
@@ -340,19 +392,31 @@ function renderGad7Chart(history) {
             datasets: [{
                 label: 'GAD-7 Score',
                 data: scores,
-                borderColor: 'rgb(255, 99, 132)',
-                backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                borderColor: 'rgb(255, 149, 132)',
+                backgroundColor: 'rgba(255, 149, 132, 0.1)',
                 tension: 0.4,
-                fill: true
+                fill: true,
+                borderWidth: 3,
+                pointBackgroundColor: 'rgb(255, 149, 132)',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 5,
+                pointHoverRadius: 7
             }]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: true,
             plugins: {
                 legend: {
                     display: false
                 },
                 tooltip: {
+                    backgroundColor: '#ffffff',
+                    titleColor: '#2d3748',
+                    bodyColor: '#2d3748',
+                    borderColor: '#e2e8f0',
+                    borderWidth: 1,
                     callbacks: {
                         label: function(context) {
                             return 'Score: ' + context.parsed.y + '/21';
@@ -366,7 +430,26 @@ function renderGad7Chart(history) {
                     max: 21,
                     title: {
                         display: true,
-                        text: 'Score (0-21)'
+                        text: 'Score (0-21)',
+                        color: '#5a4a42',
+                        font: {
+                            size: 13,
+                            weight: '600'
+                        }
+                    },
+                    ticks: {
+                        color: '#5a4a42'
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: '#5a4a42'
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
                     }
                 }
             }
