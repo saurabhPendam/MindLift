@@ -7,6 +7,8 @@
 
 > A comprehensive mental health support platform combining AI chatbot technology, sentiment analysis, and professional consultation features to provide 24/7 emotional wellness support.
 
+🌐 **Live Demo**: [https://mindlift-app.duckdns.org/](https://mindlift-app.duckdns.org/)
+
 <p align="center">
   <img src="banner.png" alt="MindLift – AI Mental Health Chatbot" width="900"/>
 </p>
@@ -15,43 +17,78 @@
 ## 🌟 Features
 
 ### 💬 Intelligent AI Chatbot
-- **Hybrid AI System**: Combines RASA NLU for intent detection with Groq LLM for natural, empathetic responses
-- **Crisis Detection**: Automatic identification of crisis keywords with immediate professional resource recommendations
-- **Context-Aware**: Maintains conversation history for coherent, personalized interactions
-- **Multi-modal Support**: Text and voice input capabilities
+- **Advanced Hybrid AI System**: Seamlessly integrates RASA NLU for precise intent detection with Groq's Llama 3.1 LLM for natural, empathetic, and contextually-aware responses
+- **Real-time Crisis Detection**: Intelligent monitoring system that identifies crisis keywords and emotional distress signals, providing immediate professional resource recommendations and emergency helpline information
+- **Contextual Memory**: Advanced conversation history management that maintains context across multiple sessions for coherent, personalized, and meaningful interactions
+- **Multi-modal Input**: Supports both text and voice input with speech recognition capabilities for enhanced accessibility
+- **Adaptive Response Generation**: Dynamic response tuning based on user's emotional state and conversation history
+- **Therapeutic Dialogue**: Trained on mental health best practices to provide supportive, non-judgmental conversations
 
-### 📊 Sentiment Analysis
-- **Real-time Analysis**: VADER sentiment analysis on every user message
-- **Emotion Detection**: NRCLex-based emotion recognition (joy, sadness, anger, fear, etc.)
-- **Trend Tracking**: Monitor emotional patterns over time
-- **Detailed Reports**: Generate comprehensive sentiment reports with actionable insights
+### 📊 Advanced Sentiment & Emotion Analysis
+- **Real-time Sentiment Tracking**: VADER sentiment analysis engine processes every message instantly to gauge emotional tone (positive, negative, neutral)
+- **Multi-dimensional Emotion Detection**: NRCLex-based emotion recognition identifies 10+ emotions including joy, sadness, anger, fear, trust, anticipation, and surprise
+- **Cognitive Distortion Identification**: Detects common cognitive distortions using CBT principles (catastrophizing, black-and-white thinking, overgeneralization)
+- **Emotional Pattern Analysis**: Machine learning algorithms track mood trends over time with visualization dashboards
+- **Comprehensive Sentiment Reports**: Generate detailed PDF/HTML reports with actionable insights, emotion timelines, and wellness recommendations
+- **Crisis Alert System**: Automatic flagging of concerning emotional patterns for early intervention
 
-### 🎥 Therapeutic Content Integration
-- **YouTube Integration**: Context-aware mental health video recommendations
-- **Curated Resources**: Fallback library of verified mental health content
-- **Activity Suggestions**: Guided breathing exercises, meditation, mindfulness activities
+### 🎥 Personalized Therapeutic Content
+- **Smart YouTube Integration**: AI-powered YouTube Data API v3 integration delivers context-aware mental health video recommendations based on current mood and conversation topics
+- **Curated Resource Library**: Professionally vetted collection of mental health videos, articles, podcasts, and guided exercises
+- **Interactive Wellness Activities**: 
+  - Guided breathing exercises with visual timers
+  - Progressive muscle relaxation techniques
+  - Mindfulness meditation sessions
+  - Cognitive Behavioral Therapy (CBT) worksheets
+  - Journaling prompts and mood trackers
+- **Evidence-Based Content**: All recommendations aligned with clinical psychology best practices
+- **Personalized Recommendations**: Content suggestions adapt based on user history, preferences, and therapeutic goals
 
-### 🏥 Professional Support
-- **Video Consultations**: Integrated Jitsi Meet for secure video calls with mental health professionals
-- **Doctor Profiles**: Browse and connect with licensed therapists and psychiatrists
-- **Appointment Scheduling**: Book and manage therapy sessions
+### 🏥 Professional Mental Health Support
+- **Secure Video Consultations**: Integrated Jitsi Meet platform for HIPAA-compliant, end-to-end encrypted video sessions with licensed mental health professionals
+- **Comprehensive Doctor Profiles**: Browse detailed profiles of therapists, psychiatrists, and counselors with specializations, credentials, and availability
+- **Flexible Appointment System**: Book, reschedule, and manage therapy sessions with automated email/SMS reminders
+- **Session Notes**: Secure storage of therapy session summaries and treatment plans (with professional access controls)
+- **Professional Dashboard**: Dedicated interface for healthcare providers to manage patients, appointments, and clinical notes
+- **Insurance Integration Ready**: Framework prepared for insurance verification and billing integration
 
-### 📈 Wellness Tracking
-- **Activity Logger**: Track completion of wellness activities with ratings
-- **Progress Visualization**: Charts and graphs showing emotional journey
-- **Motivational Quotes**: Daily inspirational content with favorites system
-- **Goal Setting**: Personal wellness objectives and milestones
+### 📈 Comprehensive Wellness Tracking
+- **Activity Completion Logger**: Track and rate effectiveness of completed wellness activities including mood improvements
+- **Interactive Progress Dashboards**: Beautiful charts and graphs visualizing emotional journey, sentiment trends, and wellness metrics over time
+- **Daily Motivational Content**: Curated inspirational quotes with favorites system and sharing capabilities
+- **Goal Setting Framework**: Set, track, and achieve personal wellness objectives with milestone celebrations
+- **Habit Tracking**: Monitor consistency of wellness practices with streak counters and achievement badges
+- **Weekly/Monthly Reports**: Automated progress summaries delivered via email
+- **Data Export**: Download complete wellness data in CSV/PDF format for personal records or sharing with healthcare providers
 
-### 🔒 Privacy & Security
-- **Two-Way Authentication**: Email verification during registration + 2FA OTP on login
-- **Email Verification**: All users must verify email ownership before account creation
-- **2FA by Default**: Email-based OTP authentication for every login
-- **Rate Limiting**: Maximum 5 OTP attempts with 10-minute expiration
-- **End-to-End Encryption**: Secure data transmission (TLS/SSL)
-- **Account Deletion**: 30-day grace period for account deletion with data export
-- **Audit Logging**: Comprehensive security event tracking
-- **GDPR Compliant**: User data rights and privacy controls
-- **Gmail-Only Policy**: Verified Gmail accounts required for enhanced security
+### 🔒 Enterprise-Grade Privacy & Security
+- **Two-Factor Authentication (2FA)**: Mandatory email verification during registration + OTP-based 2FA on every login for enhanced security
+- **Email Verification System**: All users must verify email ownership before account activation, preventing fake accounts
+- **Time-Limited OTPs**: Secure one-time passwords with 10-minute expiration and maximum 5 attempts to prevent brute force attacks
+- **End-to-End Encryption**: All data transmission secured with TLS 1.3, sensitive data encrypted at rest using AES-256
+- **Graceful Account Deletion**: 30-day grace period for account deletion requests with complete data export and secure purging after retention period
+- **Comprehensive Audit Logging**: All security events, data access, and administrative actions logged for compliance and forensics
+- **GDPR & HIPAA Ready**: Full compliance with data protection regulations including right to access, rectification, and erasure
+- **Gmail-Only Authentication**: Enhanced security through verified Gmail accounts with OAuth 2.0 integration
+- **Session Management**: Automatic session timeout, secure cookie handling with HttpOnly and SameSite flags
+- **SQL Injection Prevention**: Parameterized queries and ORM-based database access
+- **XSS Protection**: Content Security Policy headers and automatic template escaping
+- **Rate Limiting**: API request throttling and DDoS protection
+
+### 🧠 Advanced AI Capabilities
+- **Semantic Analysis**: Deep understanding of user intent beyond keyword matching
+- **Emotion-Aware Responses**: AI adjusts tone and content based on detected emotional state
+- **Crisis Escalation Protocol**: Automatic escalation paths for high-risk situations
+- **Continual Learning**: System improves over time through user feedback and interaction patterns
+- **Multi-language Support Ready**: Architecture prepared for internationalization
+
+### 📱 User Experience Excellence
+- **Responsive Design**: Fully optimized for desktop, tablet, and mobile devices
+- **Progressive Web App (PWA)**: Install as native-like app on any device
+- **Accessibility First**: WCAG 2.1 AA compliant with screen reader support and keyboard navigation
+- **Dark Mode**: Eye-friendly dark theme option
+- **Offline Mode**: Basic functionality available without internet connection
+- **Fast Loading**: Optimized performance with lazy loading and caching strategies
 
 ## 🚀 Quick Start
 
